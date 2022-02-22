@@ -5,9 +5,7 @@ package cs.epfl.javelo;
  * @author Loris Tran (341214)
  */
 public final class Preconditions {
-    private Preconditions() {
-
-    }
+    private Preconditions() {}
 
     /**
      * Verify a condition and throws an exception if the condition isn't true
@@ -19,6 +17,4 @@ public final class Preconditions {
             throw new IllegalArgumentException();
         }
     }
-
-
 }

@@ -6,7 +6,6 @@ package cs.epfl.javelo;
  * @author Loris Tran (341214)
  */
 public final class Math2 {
-
     private Math2(){}
 
     /**
@@ -31,7 +30,6 @@ public final class Math2 {
         return Math.fma(y1 - y0, x, y0);
     }
 
-
     /**
      * @param x coordinates of point
      * @return hyperbolix sinus inverse of point x
@@ -40,7 +38,6 @@ public final class Math2 {
         Preconditions.checkArgument(x>= Math.sqrt(Math.pow(x, 2) + 1));
         return Math.log(x + Math.sqrt(Math.pow(x, 2) + 1));
     }
-
 
     /**
      * @param min minimum bound for variable v
@@ -115,6 +112,4 @@ public final class Math2 {
         Preconditions.checkArgument(vect != 0);
         return dotProduct(aX, aY, pX, pY)/vect;
     }
-
-
 }

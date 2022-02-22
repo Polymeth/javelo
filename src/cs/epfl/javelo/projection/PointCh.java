@@ -8,7 +8,7 @@ import cs.epfl.javelo.Preconditions;
  */
 public record PointCh(double e, double n) {
     public PointCh {
-        Preconditions.checkArgument(SwissBound.containsEN(e, n));
+        Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 
     /**
@@ -33,13 +33,13 @@ public record PointCh(double e, double n) {
      * @return the longitude of the point in radians
      */
     public double lon() {
-        return Math.toRadians(Ch1903.lon(e, n));
+        return Ch1903.lon(e, n);
     }
 
     /**
      * @return the latitude of the point in radians
      */
     public double lat() {
-        return Math.toRadians(Ch1903.lat(e, n));
+        return Ch1903.lat(e, n);
     }
 }

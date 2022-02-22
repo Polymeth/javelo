@@ -15,7 +15,8 @@ public final class Math2 {
      * @return the ceiled value of the division of x by y
      */
     public static int ceilDiv(int x, int y){
-        Preconditions.checkArgument(x>0 || y >=0);
+        Preconditions.checkArgument(x>=0);
+        Preconditions.checkArgument(y>0);
         return ((x+y-1)/y);
     }
 
@@ -86,7 +87,7 @@ public final class Math2 {
      * @return the norm of the vector u
      */
     public static double norm(double uX, double uY) {
-        return uX*uX+uY*uY;
+        return Math.sqrt(dotProduct(uX, uY, uX, uY));
     }
 
     /**
@@ -110,6 +111,6 @@ public final class Math2 {
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY){
         double vect = norm((bX-aX), (bY-aY));
         Preconditions.checkArgument(vect != 0);
-        return dotProduct(aX, aY, pX, pY)/vect;
+        return dotProduct(pX-aX, pY-aY, bX-aX, bY-aY)/vect;
     }
 }

@@ -1,4 +1,4 @@
-package cs.epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
 /**
  * @author Rayan BOUCHENY (327575)

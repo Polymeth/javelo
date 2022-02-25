@@ -1,4 +1,4 @@
-package cs.epfl.javelo;
+package ch.epfl.javelo;
 
 
 /**
@@ -36,7 +36,7 @@ public final class Math2 {
      * @return hyperbolix sinus inverse of point x
      */
     public static double asinh(double x){
-        Preconditions.checkArgument(x>= Math.sqrt(Math.pow(x, 2) + 1));
+        Preconditions.checkArgument(x+ Math.sqrt(Math.pow(x, 2) + 1) >0);
         return Math.log(x + Math.sqrt(Math.pow(x, 2) + 1));
     }
 

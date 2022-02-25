@@ -1,6 +1,4 @@
-package cs.epfl.javelo.projection;
-
-import cs.epfl.javelo.Math2;
+package ch.epfl.javelo.projection;
 
 /**
  * @author Rayan BOUCHENY (327575)
@@ -8,9 +6,6 @@ import cs.epfl.javelo.Math2;
  */
 public final class Ch1903 {
     private Ch1903() {}
-
-    //todo: eviter la répétion des constantes dans les 4 méthodes
-    //todo: verif radians degrés etc mes couilles zzz
 
     /**
      * @param lon longitude

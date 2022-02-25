@@ -1,6 +1,6 @@
-package cs.epfl.javelo.projection;
+package ch.epfl.javelo.projection;
 
-import cs.epfl.javelo.Preconditions;
+import ch.epfl.javelo.Preconditions;
 
 /**
  * @author Rayan BOUCHENY (327575)

@@ -1,4 +1,4 @@
-package cs.epfl.javelo;
+package ch.epfl.javelo;
 
 /**
  * @author Rayan BOUCHENY (327575)

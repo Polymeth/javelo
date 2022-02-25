@@ -2,6 +2,8 @@ package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Preconditions;
 
+import java.awt.*;
+
 public record PointWebMercator(double  x, double y) {
     public PointWebMercator {
         Preconditions.checkArgument(x <= 1 && x >= 0);
@@ -17,19 +19,19 @@ public record PointWebMercator(double  x, double y) {
     }
 
     public double xAtZoomLevel(int zoomLevel) {
-
+        return Math.scalb(x, 8+zoomLevel);
     }
 
     public double yAtZoomLevel(int zoomLevel) {
-
+        return Math.scalb(y, 8+ zoomLevel);
     }
 
     public double lon() {
-
+        return WebMercator.lon(x);
     }
 
     public double lat() {
-
+        return WebMercator.lat(y);
     }
 
     public PointCh toPointCh() {

@@ -13,6 +13,7 @@ public final class WebMercator {
      * @return x-coordinates of point (WebMercator system)
      */
     public static double x(double lon) {
+        lon = Math.toRadians(lon);
         return (1/(2*Math.PI))*(lon+Math.PI);
     }
 

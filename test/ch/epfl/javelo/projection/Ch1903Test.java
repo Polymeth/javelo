@@ -1,11 +1,6 @@
 package ch.epfl.javelo.projection;
 
-import cs.epfl.javelo.projection.Ch1903;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

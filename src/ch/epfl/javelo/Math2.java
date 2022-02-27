@@ -27,7 +27,6 @@ public final class Math2 {
      * @return slope of line at point x
      */
     public static double interpolate(double y0, double y1, double x) {
-        Preconditions.checkArgument(x >= 0 || x <= 1);
         return Math.fma(y1 - y0, x, y0);
     }
 

@@ -1,0 +1,50 @@
+package ch.epfl.javelo;
+
+import java.util.function.DoubleUnaryOperator;
+
+/**
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
+public final class Functions {
+    private Functions() {
+    }
+
+    /**
+     * @param y a real number
+     * @return returns a constant function that is always y
+     */
+    public static DoubleUnaryOperator constant(double y) {
+        return new Constant(y);
+    }
+
+    /**
+     * @param samples equally spaced height points
+     * @param xMax the maximum distance (the distance of the last height point)
+     * @return returns the interpolated function based on the equally spaced given heigh points
+     */
+    public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
+        Preconditions.checkArgument(samples.length >= 2);
+        Preconditions.checkArgument(xMax > 0);
+        return new Sampled(samples, xMax);
+    }
+
+    // verif pour le passage au record
+    private record Constant(double y) implements DoubleUnaryOperator {
+        @Override
+        public double applyAsDouble(double operand) {
+            return y;
+        }
+    }
+
+    private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
+        @Override
+        public double applyAsDouble(double operand) {
+            // gets interval length between points
+            double interval = xMax/(samples.length);
+            // gets the closest floored point from the entered x
+            double closestLowestIntervalX = Math.floor(operand/interval);
+            return Math2.interpolate(samples[(int)(closestLowestIntervalX)], samples[(int)(closestLowestIntervalX+1)], (operand-closestLowestIntervalX*interval)/interval);
+        }
+    }
+}

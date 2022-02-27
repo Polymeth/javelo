@@ -8,7 +8,6 @@ import java.awt.*;
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-
 public record PointWebMercator(double  x, double y) {
     public PointWebMercator {
         Preconditions.checkArgument(x <= 1 && x >= 0);
@@ -26,7 +25,6 @@ public record PointWebMercator(double  x, double y) {
         return new PointWebMercator(Math.scalb(x, -zoomLevel-8), Math.scalb(y, -zoomLevel-8));
     }
 
-
     /**
      * Converts a pointCh to WebMercator
      * @param pointCh point in Swiss Bounds system
@@ -35,7 +33,6 @@ public record PointWebMercator(double  x, double y) {
     public static PointWebMercator ofPointCh(PointCh pointCh) {
         return new PointWebMercator(WebMercator.x(pointCh.lon()), WebMercator.y(pointCh.lat()));
     }
-
 
     /**
      *
@@ -75,7 +72,6 @@ public record PointWebMercator(double  x, double y) {
      * Convert local point (this) to Swiss System
      * @return Point in Swiss System if point is in SwissBounds limits, null otherwise
      */
-    //\lambda=6.5790772, \phi=46.5218976
     public PointCh toPointCh() {
         double e = Ch1903.e(Math.toRadians(lon()), Math.toRadians(lat()));
         double n = Ch1903.n(Math.toRadians(lon()), Math.toRadians(lat()));

@@ -10,7 +10,6 @@ class Q28_4Test {
     void ofInt() {
         var value = 0b10011100;
         var actual = Q28_4.asFloat(value);
-        System.out.println("actual"+actual);
         var expected = -6.25;
         assertEquals(expected, actual);
     }

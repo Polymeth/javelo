@@ -16,24 +16,39 @@ public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
+    /**
+     * @return count the number of nodes
+     */
     public int count(){
         return buffer.capacity()/NODE_INTS;
     }
 
-    // E N ? E N ? E N ?
+    /**
+     * @param nodeId the index of the node
+     * @return returns the E coordinates of the enetered node
+     */
     public double nodeE(int nodeId){
-        int index = nodeId * + OFFSET_E;
+        return buffer.get(nodeId * 3 + OFFSET_E);
     }
 
+    /**
+     * @param nodeId the index of the node
+     * @return returns the N coordinates of the enetered node
+     */
     public double nodeN(int nodeId){
-        return 0.00;
+        return buffer.get(nodeId * 3 + OFFSET_N);
     }
 
+    /**
+     * @param nodeId the index of the node
+     * @return returns the numbers of ARETE WTF EN ANGLAIS IS THAT
+     */
     public int outDegree(int nodeId){
-        return 0;
+        return buffer.get(nodeId * 3 + OFFSET_OUT_EDGES);
     }
 
     public int edgeId(int nodeId, int edgeIndex){
-        return 0;
+        int aaaaa = outDegree(nodeId);
+//Xd
     }
 }

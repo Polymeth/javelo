@@ -29,7 +29,6 @@ public final class Functions {
         return new Sampled(samples, xMax);
     }
 
-    // verif pour le passage au record
     private record Constant(double y) implements DoubleUnaryOperator {
         @Override
         public double applyAsDouble(double operand) {
@@ -40,11 +39,15 @@ public final class Functions {
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
         @Override
         public double applyAsDouble(double operand) {
-            // gets interval length between points
-            double interval = xMax/(samples.length);
-            // gets the closest floored point from the entered x
-            double closestLowestIntervalX = Math.floor(operand/interval);
-            return Math2.interpolate(samples[(int)(closestLowestIntervalX)], samples[(int)(closestLowestIntervalX+1)], (operand-closestLowestIntervalX*interval)/interval);
+            if (operand > xMax) {
+                return samples[samples.length - 1];
+            } else if (operand < 0) {
+                return samples[0];
+            } else {
+                double interval = xMax/(samples.length-1);
+                double closestLowestIntervalX = Math.floor(operand/interval);
+                return Math2.interpolate(samples[(int)(closestLowestIntervalX)], samples[(int)(closestLowestIntervalX+1)], (operand-closestLowestIntervalX*interval)/interval);
+            }
         }
     }
 }

@@ -40,4 +40,14 @@ public record PointCh(double e, double n) {
     public double lat() {
         return Ch1903.lat(e, n);
     }
+
+    @Override
+    public double e() {
+        return e;
+    }
+
+    @Override
+    public double n() {
+        return n;
+    }
 }

@@ -16,7 +16,6 @@ public record PointCh(double e, double n) {
      * @return returns the distance in meter from this point to the entered point
      */
     public double distanceTo(PointCh that) {
-        //todo: je crois que la distance là est en km faut la convertir mais à vérif
         return Math.hypot(that.e - this.e, that.n - this.n);
     }
 
@@ -25,7 +24,6 @@ public record PointCh(double e, double n) {
      * @return returns the squared distance in meter from this point to the entered point
      */
     public double squaredDistanceTo(PointCh that) {
-        //todo: verif le sens des - (this avant that ptet idk)
         return Math.pow(distanceTo(that), 2);
     }
 

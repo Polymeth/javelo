@@ -17,7 +17,7 @@ public final class SwissBounds {
     /**
      * @param e East coordinates (swiss system)
      * @param n North coordinates (swiss system)
-     * @return true if the entered coordinates are located in switzerland //todo: flemme de bien écrire anglais
+     * @return true if the entered coordinates are located in switzerland
      */
     public static boolean containsEN(double e, double n) {
         //if(e == Math2.clamp(MIN_E, e, MAX_E)) //test si c'est worth it

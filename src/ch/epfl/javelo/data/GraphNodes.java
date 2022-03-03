@@ -48,7 +48,7 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     public int edgeId(int nodeId, int edgeIndex){
-        int aaaaa = outDegree(nodeId);
-//Xd
+        System.out.println(Integer.toBinaryString(outDegree(nodeId) >> 28));
+        return (outDegree(nodeId) << 4) >> 4;
     }
 }

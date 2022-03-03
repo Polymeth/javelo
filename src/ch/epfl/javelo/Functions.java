@@ -46,6 +46,8 @@ public final class Functions {
             } else {
                 double interval = xMax/(samples.length-1);
                 double closestLowestIntervalX = Math.floor(operand/interval);
+                // 4 - 6
+                // 5,7/2 = 2.7
                 return Math2.interpolate(samples[(int)(closestLowestIntervalX)], samples[(int)(closestLowestIntervalX+1)], (operand-closestLowestIntervalX*interval)/interval);
             }
         }

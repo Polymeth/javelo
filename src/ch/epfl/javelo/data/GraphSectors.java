@@ -56,7 +56,7 @@ public record GraphSectors(ByteBuffer buffer) {
                 int firstnode = buffer.getInt(bytes_index); //todo verifier unsigned
                 int lastnodes = firstnode +buffer.getShort(bytes_index + OFFSET_BYTES);
 
-                Sector sect = new Sector(firstnode, lastnodes);
+                Sector sect = new Sector(firstnode, lastnodes +1);
                 sectors.add(sect);
             }
         }

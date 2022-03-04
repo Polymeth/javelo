@@ -6,16 +6,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ch.epfl.javelo.projection.SwissBounds.MAX_E;
-import static ch.epfl.javelo.projection.SwissBounds.MIN_E;
+import static ch.epfl.javelo.projection.SwissBounds.*;
 
 public record GraphSectors(ByteBuffer buffer) {
 
     private static final int constant_byte = Short.BYTES; //2 bytes
     private static final int constant_int = Integer.BYTES; //4 bytes
+    private static final int BYTES_CST = Integer.BYTES + Short.BYTES;
 
-    private static final int OFFSET_E = 0;
-    private static final int OFFSET_N = OFFSET_E + 1;
+    private static final int OFFSET_E = 0; //todo redefinir les constantes en fonction de bytes et non d'int
+    private static final int OFFSET_BYTES = OFFSET_E + Integer.BYTES;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
@@ -40,12 +40,28 @@ public record GraphSectors(ByteBuffer buffer) {
         double up_square_e = center_e + distance;
         double up_square_n = center_n + distance;
 
-        int downsector = (int)((down_square_e -MIN_E)/((2.7265625)*1000)); //index du secteur en bas a gauche
-        int upsector = (int)(( MAX_E - up_square_e)/((2.7265625)*1000)); //index du secteur en haut a droite //Todo check les bouds avec MAXE et MINE
+        int downsector_e = (int)((down_square_e -MIN_E)/((2.7265625)*1000)); //index du secteur en bas a gauche
+        int downsector_n = (int)((down_square_n -MIN_N)/((2.7265625)*1000)); //index du secteur en bas a gauche
 
-        for(double i = - distance; i <  distance; i++){
-            sectors.add(buffer.getInt(i));
+        int upsector_e = (int)(( MAX_E - up_square_e)/((2.7265625)*1000)); //index du secteur en haut a droite //Todo check les bounds avec MAXE et MINE
+        int upsector_n = (int)(( MAX_N - up_square_n)/((2.7265625)*1000));
+
+
+
+
+        for(int i = downsector_e; i < upsector_e; i++){
+            for(int j = downsector_n; j < upsector_n; j ++){
+                int index = 128* j + i;
+                int bytes_index = index * BYTES_CST;
+                int firstnode = buffer.getInt(bytes_index); //todo verifier unsigned
+                int lastnodes = firstnode +buffer.getShort(bytes_index + OFFSET_BYTES);
+
+                Sector sect = new Sector(firstnode, lastnodes);
+                sectors.add(sect);
+            }
         }
+
+
         return sectors;
 
     }

@@ -12,11 +12,11 @@ public record GraphSectors(ByteBuffer buffer) {
 
     private static final int constant_byte = Short.BYTES; //2 bytes
     private static final int constant_int = Integer.BYTES; //4 bytes
-    private static final int BYTES_CST = Integer.BYTES + Short.BYTES;
+    private static final int SECTOR_BYTES = Integer.BYTES + Short.BYTES;
 
     private static final int OFFSET_E = 0; //todo redefinir les constantes en fonction de bytes et non d'int
     private static final int OFFSET_BYTES = OFFSET_E + Integer.BYTES;
-    private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
+    private static final int OFFSET_OUT_EDGES = OFFSET_BYTES + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
 
 
@@ -52,11 +52,11 @@ public record GraphSectors(ByteBuffer buffer) {
         for(int i = downsector_e; i < upsector_e; i++){
             for(int j = downsector_n; j < upsector_n; j ++){
                 int index = 128* j + i;
-                int bytes_index = index * BYTES_CST;
+                int bytes_index = index * SECTOR_BYTES;
                 int firstnode = buffer.getInt(bytes_index); //todo verifier unsigned
-                int lastnodes = firstnode +buffer.getShort(bytes_index + OFFSET_BYTES);
+                int lastnodes = firstnode + Short.toUnsignedInt(buffer.getShort(bytes_index + OFFSET_BYTES)); //id first node + last 2 bytes of buffer (aka number of nodes)
 
-                Sector sect = new Sector(firstnode, lastnodes +1);
+                Sector sect = new Sector(firstnode, lastnodes);
                 sectors.add(sect);
             }
         }

@@ -24,9 +24,9 @@ public record GraphSectors(ByteBuffer buffer) {
 
     /**
      *
-     * @param center
-     * @param distance
-     * @return
+     * @param center Coordinates of center of radius (in PointCh format)
+     * @param distance distance in meters from center
+     * @return ArrayList of Sectors that have a
      */
     public List<Sector> sectorsInArea(PointCh center, double distance){
         ArrayList<Sector> sectors = new ArrayList<Sector>();

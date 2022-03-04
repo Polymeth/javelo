@@ -1,8 +1,6 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.projection.PointCh;
-
-import java.awt.*;
+import ch.epfl.javelo.Q28_4;
 import java.nio.IntBuffer;
 
 /**
@@ -36,19 +34,23 @@ public record GraphNodes(IntBuffer buffer) {
      * @return returns the N coordinates of the enetered node
      */
     public double nodeN(int nodeId){
-        return buffer.get(nodeId * 3 + OFFSET_N);
+        return Q28_4.asDouble(buffer.get(nodeId * 3 + OFFSET_N));
     }
 
     /**
      * @param nodeId the index of the node
-     * @return returns the numbers of ARETE WTF EN ANGLAIS IS THAT
+     * @return returns the numbers of edges
      */
     public int outDegree(int nodeId){
         return buffer.get(nodeId * 3 + OFFSET_OUT_EDGES);
     }
 
+    /**
+     * @param nodeId the index of the node
+     * @param edgeIndex the index of the edge you want in this node
+     * @return returns the global index of the edge id you want on this node
+     */
     public int edgeId(int nodeId, int edgeIndex){
-        System.out.println(Integer.toBinaryString(outDegree(nodeId) >> 28));
-        return (outDegree(nodeId) << 4) >> 4;
+        return outDegree(nodeId) + edgeIndex - 1;
     }
 }

@@ -21,12 +21,10 @@ public record AttributeSet(long bits) {
      * @param attributes attributes you want to build your AttributeSet with
      * @return an AttributeSet built on the entered attributes
      */
-   public static AttributeSet of(Attribute... attributes) {
+    public static AttributeSet of(Attribute... attributes) {
         long temp = 0L;
-        long mask;
         for (Attribute a : attributes) {
-            mask = 1L << a.ordinal();
-            temp = temp | mask;
+            temp = temp | (1L << a.ordinal());
         }
         return new AttributeSet(temp);
     }

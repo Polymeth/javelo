@@ -42,7 +42,7 @@ public record AttributeSet(long bits) {
 
     /**
      * @param that the attribute you wanna test
-     * @return
+     * @return true if attributeset has common elements with given attribuset that
      */
     public boolean intersects(AttributeSet that) {
         return !((bits&that.bits()) == 0);

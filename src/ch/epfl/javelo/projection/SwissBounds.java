@@ -20,7 +20,6 @@ public final class SwissBounds {
      * @return true if the entered coordinates are located in switzerland
      */
     public static boolean containsEN(double e, double n) {
-        //if(e == Math2.clamp(MIN_E, e, MAX_E)) //test si c'est worth it
         return (e <= MAX_E && e >= MIN_E && n <= MAX_N && n >= MIN_N);
     }
 }

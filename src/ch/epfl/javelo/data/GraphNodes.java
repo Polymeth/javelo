@@ -25,7 +25,7 @@ public record GraphNodes(IntBuffer buffer) {
 
     /**
      * @param nodeId the index of the node
-     * @return returns the E coordinates of the enetered node
+     * @return returns the E coordinates of the entered node
      */
     public double nodeE(int nodeId){
         return buffer.get(nodeId * 3 + OFFSET_E);

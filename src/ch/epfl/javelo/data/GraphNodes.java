@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Q28_4;
 import java.nio.IntBuffer;
 
@@ -26,7 +27,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return returns the E coordinates of the entered node
      */
     public double nodeE(int nodeId){
-        return buffer.get(nodeId * 3 + OFFSET_E);
+        return Q28_4.asDouble(buffer.get(nodeId * 3 + OFFSET_E));
     }
 
     /**
@@ -42,7 +43,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return returns the numbers of edges
      */
     public int outDegree(int nodeId){
-        return buffer.get(nodeId * 3 + OFFSET_OUT_EDGES);
+        return Bits.extractUnsigned(buffer.get(nodeId * 3 + OFFSET_OUT_EDGES), 28, 4);
     }
 
     /**
@@ -51,6 +52,6 @@ public record GraphNodes(IntBuffer buffer) {
      * @return returns the global index of the edge id you want on this node
      */
     public int edgeId(int nodeId, int edgeIndex){
-        return outDegree(nodeId) + edgeIndex - 1;
+        return Bits.extractUnsigned(buffer.get(nodeId * 3 + OFFSET_OUT_EDGES), 0, 28) + edgeIndex;
     }
 }

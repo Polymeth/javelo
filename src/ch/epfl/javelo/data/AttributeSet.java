@@ -10,7 +10,6 @@ import java.util.StringJoiner;
  * @author Loris Tran (341214)
  */
 public record AttributeSet(long bits) {
-
     public AttributeSet {
         Preconditions.checkArgument(
                 !((bits&(1L << 62)) != 0 || (bits&(1L << 63)) != 0)

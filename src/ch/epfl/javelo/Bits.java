@@ -16,7 +16,7 @@ public final class Bits {
      * @return extract a signed version of a certain number of bits located in the bit sequence
      */
     public static int extractSigned(int value, int start, int length) {
-        Preconditions.checkArgument(length < 32 && length >= 0 && start >= 0 && start < 31 && start+length <= 32);
+        Preconditions.checkArgument(length <= 32 && length >= 0 && start >= 0 && start < 31 && start+length <= 32);
         int temp = value << 32 - start - length;
         return temp >> 32 - length;
     }
@@ -28,7 +28,7 @@ public final class Bits {
      * @return extract an unsigned version of a certain number of bits located in the bit sequence
      */
    public static int extractUnsigned(int value, int start, int length){
-        Preconditions.checkArgument(length < 32 && length >= 0 && start >= 0 && start < 31 && start+length <= 32);
+        Preconditions.checkArgument(length <= 32 && length >= 0 && start >= 0 && start <= 31 && start+length <= 32);
         int temp = value << 32 - start - length;
         return temp >>> 32-length;
    }

@@ -41,12 +41,10 @@ public record PointCh(double e, double n) {
         return Ch1903.lat(e, n);
     }
 
-    @Override
     public double e() {
         return e;
     }
 
-    @Override
     public double n() {
         return n;
     }

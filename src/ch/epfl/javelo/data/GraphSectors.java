@@ -32,8 +32,6 @@ public record GraphSectors(ByteBuffer buffer) {
     public List<Sector> sectorsInArea(PointCh center, double distance){
         ArrayList<Sector> sectors = new ArrayList<Sector>();
 
-        //todo check les index si inferieur a 0 ou  superieur a 127
-
         double center_e = center.e(); //centre du parametre
         double center_n = center.n();
 

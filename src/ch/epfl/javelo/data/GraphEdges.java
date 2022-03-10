@@ -11,22 +11,21 @@ import java.nio.ShortBuffer;
 
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations)
 {
-    //   0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |   8  |   9  |
-    //   8  |  8  |  8  |  8  |  8  |  8  |  8  |  8  |   8  |   8  |
-    // inv+target             | longueur  |  denivlé  | osm shit
-
     private static final int EMPTY = 0;
     private static final int UNCOMPRESSED = 1;
     private static final int COMPRESSED_Q_4_4 = 2;
     private static final int COMPRESSED_Q_0_4 = 3;
 
-    //todo: correct index
+    /**
+     * @param edgeId id of the edge you want to study
+     * @return if the OSM
+     */
     public boolean isInverted(int edgeId) {
-        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId*2), 31, 1) == 1;
+        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId*10), 31, 1) == 1;
     }
 
     public int targetNodeId(int edgeId) {
-        int value = Bits.extractUnsigned(edgesBuffer.getInt(edgeId*2), 0, 32);
+        int value = Bits.extractUnsigned(edgesBuffer.getInt(edgeId*10), 0, 32);
         if (isInverted(edgeId)) {
             return ~value;
         } else {
@@ -50,49 +49,49 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         return Bits.extractUnsigned(profileIds.get(0), 30, 2) != 0;
     }
 
-    // 16 | 4 4 4 4 | 4 4 4 4 | 4
-
     public float[] profileSamples(int edgeId) {
-        // taille du tableau = nbEchantillon
         int firstIndex = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
         int samplesNumber = 1 + Math2.ceilDiv(Short.toUnsignedInt(edgesBuffer.getShort(4 + edgeId * 10)), Q28_4.ofInt(2)); // number of samples
-        int count = 0;
         float[] decompressed = new float[samplesNumber];
 
         switch (Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)) {
             case EMPTY:
                 return new float[0];
             case UNCOMPRESSED:
-               /* for (int i = 0; i < samplesNumber; i++) {
-                    int lol = elevations.get(firstIndex + i);
-                    System.out.println(lol);
-                }*/
-                break;
-            case COMPRESSED_Q_4_4:
-                break;
-
-                // horriblement moche
-            case COMPRESSED_Q_0_4:
-                for (int i = 0; i < Math2.ceilDiv(samplesNumber-1, 4)+1; i++) {
-                    if (i == 0) {
-                        decompressed[i] = Q28_4.asFloat(elevations.get(firstIndex));
-                    } else {
-                        for (int j = 0; j < 4; j++) {
-                            if (i+j+3*(i-1) < samplesNumber) {
-                                float difference = Q28_4.asFloat(Bits.extractSigned(elevations.get(firstIndex + i), 12-4*j, 4));
-                                decompressed[i+j+3*(i-1)] = (decompressed[i+j+3*(i-1)-1])+difference;
-                            }
-                        }
-                    }
+                for (int i = 0; i < samplesNumber; i++) {
+                    decompressed[i] = Q28_4.asFloat(Bits.extractSigned(elevations.get(firstIndex + i), 0, 16));
                 }
-                return isInverted(edgeId) ? reverseOrder(decompressed) : decompressed;
-
+                return decompressed;
+            case COMPRESSED_Q_4_4:
+                return decompressSamples(samplesNumber, firstIndex, edgeId, 8);
+            case COMPRESSED_Q_0_4:
+                return decompressSamples(samplesNumber, firstIndex, edgeId, 4);
         }
         return new float[0];
     }
 
-    private float[] decompressSamples(float[] list, int samplesNumber, DecompressionTypes type) {
-        return new float[0];
+    private float[] decompressSamples(int samplesNumber, int firstIndex, int edgeId, int type) {
+        float[] decompressed = new float[samplesNumber];
+        int samplesCount = 0;
+        // type = 4, 8
+        for (int i = 0; i < Math2.ceilDiv(samplesNumber-1, 16/type)+1; i++) {
+            if (i == 0) {
+                System.out.println("yolo: " + elevations.get(firstIndex));
+                decompressed[i] = Q28_4.asFloat(elevations.get(firstIndex));
+            } else {
+                for (int j = 0; j < 16/type; j++) {
+                    samplesCount++;
+                    if (samplesCount < samplesNumber) {
+
+                        int start = (type == 4) ? 12-4*j : 8-8*j;
+                        System.out.println("infdex de mort : " + firstIndex + i);
+                        float difference = Q28_4.asFloat(Bits.extractSigned(elevations.get(firstIndex + i), start, type));
+                        decompressed[samplesCount] = (decompressed[samplesCount-1])+difference;
+                    }
+                }
+            }
+        }
+        return isInverted(edgeId) ? reverseOrder(decompressed) : decompressed;
     }
 
     private float[] reverseOrder(float[] list) {

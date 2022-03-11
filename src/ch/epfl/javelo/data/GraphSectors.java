@@ -9,6 +9,10 @@ import java.util.List;
 
 import static ch.epfl.javelo.projection.SwissBounds.*;
 
+/**
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public record GraphSectors(ByteBuffer buffer) {
 
     private static final int constant_byte = Short.BYTES; //2 bytes
@@ -16,11 +20,10 @@ public record GraphSectors(ByteBuffer buffer) {
 
     private static final int SECTOR_BYTES = Integer.BYTES + Short.BYTES;
 
-    private static final int OFFSET_E = 0; //todo redefinir les constantes en fonction de bytes et non d'int
+    private static final int OFFSET_E = 0;
     private static final int OFFSET_BYTES = OFFSET_E + Integer.BYTES;
 
-
-
+    //Composition du buffer
     //8bit_index 8bit_index 8bit_index 8bit_index 8bit_nbnoeud 8bit nbnoeuds
 
     /**
@@ -32,7 +35,7 @@ public record GraphSectors(ByteBuffer buffer) {
     public List<Sector> sectorsInArea(PointCh center, double distance){
         ArrayList<Sector> sectors = new ArrayList<Sector>();
 
-        double center_e = center.e(); //centre du parametre
+        double center_e = center.e();
         double center_n = center.n();
 
         double down_square_e = (center_e - distance);

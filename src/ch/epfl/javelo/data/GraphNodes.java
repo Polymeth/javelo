@@ -52,6 +52,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return returns the global index of the edge id you want on this node
      */
     public int edgeId(int nodeId, int edgeIndex){
+        assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         return Bits.extractUnsigned(buffer.get(nodeId * 3 + OFFSET_OUT_EDGES), 0, 28) + edgeIndex;
     }
 }

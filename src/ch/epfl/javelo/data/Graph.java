@@ -101,22 +101,43 @@ public final class Graph {
         return new Graph(graphNodes, graphSectors, graphEdges, attributeSet);
     }
 
+    /**
+     * @param nodeId any nodeId
+     * @return a PointCh for this node
+     */
     public PointCh nodePoint(int nodeId){
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
+    /**
+     * @return the number of nodes
+     */
     public int nodeCount(){
         return nodes.count();
     }
 
+    /**
+     * @param nodeId any nodeId
+     * @return the number of out edges
+     */
     public int nodeOutDegree(int nodeId){
         return nodes.outDegree(nodeId);
     }
 
+    /**
+     * @param nodeId any nodeId
+     * @param edgeIndex any edgeIndex
+     * @return the index of the edge at index nodeId on the entered edge
+     */
     public int nodeOutEdgeId(int nodeId, int edgeIndex){
         return nodes.edgeId(nodeId, edgeIndex);
     }
 
+    /**
+     * @param point any point
+     * @param searchDistance a search distance
+     * @return the closest node from the entered point within the search distance
+     */
     public int nodeClosestTo(PointCh point, double searchDistance){
         List<GraphSectors.Sector> sectorsWithinPoint = sectors.sectorsInArea(point, searchDistance);
         int startNodeId, endNodeId, minId = -1;
@@ -137,26 +158,50 @@ public final class Graph {
         return minId;
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return the target nodeId at the entered edgeId
+     */
     public int edgeTargetNodeId(int edgeId){
         return edges.targetNodeId(edgeId);
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return weither or not the edge is inverted
+     */
     public boolean edgeIsInverted(int edgeId){
         return edges.isInverted(edgeId);
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return return the AttributeSet of the corresponding edge
+     */
     public AttributeSet edgeAttributes(int edgeId){
         return attributeSets.get(edges.attributesIndex(edgeId));
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return the length of the edge
+     */
     public double edgeLength(int edgeId){
         return edges.length(edgeId);
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return the elevation gain of the edge
+     */
     public double edgeElevationGain(int edgeId){
         return edges.elevationGain(edgeId);
     }
 
+    /**
+     * @param edgeId any edgeId
+     * @return the function corresponding to the profile interpolation of the edge
+     */
     public DoubleUnaryOperator edgeProfile(int edgeId){
         if (!edges.hasProfile(edgeId)) {
             return (x) -> Double.NaN;

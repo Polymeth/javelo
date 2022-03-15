@@ -4,6 +4,10 @@ import ch.epfl.javelo.projection.PointCh;
 
 import java.util.List;
 
+/**
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public interface Route {
     int indexOfSegmentAt(double position);
 

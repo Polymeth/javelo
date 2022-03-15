@@ -13,6 +13,7 @@ import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -90,9 +91,11 @@ public final class Graph {
         GraphEdges graphEdges = new GraphEdges(edgesBuffer, profileIdsBuffer, elevationsBuffer);
         ArrayList<AttributeSet> attributeSet = new ArrayList<>();
 
+        //Arrays.stream(attributesBuffer.array() )
+
+        //todo : lambda
         for (int i = 0; i < attributesBuffer.capacity(); i++) {
-            AttributeSet yolo = new AttributeSet(attributesBuffer.get(i));
-            attributeSet.add(yolo);
+            attributeSet.add(new AttributeSet(attributesBuffer.get(i)));
         }
 
         return new Graph(graphNodes, graphSectors, graphEdges, attributeSet);
@@ -116,9 +119,22 @@ public final class Graph {
 
     public int nodeClosestTo(PointCh point, double searchDistance){
         List<GraphSectors.Sector> sectorsWithinPoint = sectors.sectorsInArea(point, searchDistance);
-        int lowestNode = sectorsWithinPoint.get(0).startNodeId();
-        int highestNode = sectorsWithinPoint
-        return 0;
+        int startNodeId, endNodeId, minId = -1;
+        double minDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < sectorsWithinPoint.size(); i++) {
+            startNodeId = sectorsWithinPoint.get(i).startNodeId();
+            endNodeId = sectorsWithinPoint.get(i).endNodeId();
+            for (int j = startNodeId; j <= endNodeId; j++) {
+                PointCh targetPoint = new PointCh(nodes.nodeE(j), nodes.nodeN(j));
+                double distance = targetPoint.squaredDistanceTo(point);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    minId = j;
+                }
+            }
+        }
+        return minId;
     }
 
     public int edgeTargetNodeId(int edgeId){

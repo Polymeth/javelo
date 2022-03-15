@@ -53,7 +53,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the length (in meter) of the edge
      */
     public double length(int edgeId) {
-        return Q28_4.asDouble(edgesBuffer.getShort(OFFSET_LENGTH+edgeId*OFFSET_EDGE));
+        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)));
     }
 
     /**
@@ -61,7 +61,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the elevation gain of the edge
      */
     public double elevationGain(int edgeId) {
-        return Q28_4.asDouble(edgesBuffer.getShort(OFFSET_ELEVATION+edgeId*OFFSET_EDGE));
+        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_ELEVATION+edgeId*OFFSET_EDGE)));
     }
 
     /**

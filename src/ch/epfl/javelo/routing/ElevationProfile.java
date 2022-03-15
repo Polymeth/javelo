@@ -12,19 +12,16 @@ import java.util.function.Function;
  * @author Loris Tran (341214)
  */
 public final class ElevationProfile {
-
     private final double length;
-    private final  float[] elevationSamples;
+    private final float[] elevationSamples;
 
     public ElevationProfile(double length, float[] elevationSamples){
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples;
-
     }
 
     /**
-     *
      * @return length of profile (in meters)
      */
     public double length(){
@@ -32,7 +29,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return minimum height of the profile (in meters)
      */
     public double minElevation(){
@@ -43,9 +39,7 @@ public final class ElevationProfile {
         return stats.getMin();
     }
 
-
     /**
-     *
      * @return maximum height of profile (in meters)
      */
     public double maxElevation(){
@@ -57,7 +51,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return total positive ascent of profile (in meters)
      */
     public double totalAscent(){
@@ -71,7 +64,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @return total positive descent of profile (in meters)
      */
     public double totalDescent(){
@@ -85,16 +77,15 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * @param position of wanted point height (can be negative or over length of samples)
      * @return height of profile at given position
      */
     public double elevationAt(double position){
         if(position < 0){
             return elevationSamples[0];
-        }else if(position > elevationSamples.length){
+        } else if(position > elevationSamples.length){
             return elevationSamples[elevationSamples.length -1];
-        }else{
+        } else{
             DoubleUnaryOperator sample = Functions.sampled(elevationSamples, elevationSamples.length);
 
             return sample.applyAsDouble(position);

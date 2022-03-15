@@ -18,4 +18,6 @@ public interface Route {
     int nodeClosestTo(double position);
 
     RoutePoint pointClosestTo(PointCh point);
+
+    double elevationAt(double position);
 }

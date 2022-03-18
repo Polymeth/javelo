@@ -39,7 +39,6 @@ public final class Graph {
     public static Graph loadFrom(Path basePath) throws IOException {
         Path nodesPath = Path.of("nodes.bin");
 
-        // todo: ne pas mettre dans une liste?
         Path[] paths = {
                 Path.of("nodes.bin"),
                 Path.of("profile_ids.bin"),
@@ -54,7 +53,6 @@ public final class Graph {
         ShortBuffer elevationsBuffer;
         LongBuffer attributesBuffer;
 
-        // todo: fonction vrmnt mieux ?
         try (FileChannel channel = FileChannel.open(basePath.resolve(paths[0]))) {
             nodesBuffer = channel
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
@@ -91,9 +89,6 @@ public final class Graph {
         GraphEdges graphEdges = new GraphEdges(edgesBuffer, profileIdsBuffer, elevationsBuffer);
         ArrayList<AttributeSet> attributeSet = new ArrayList<>();
 
-        //Arrays.stream(attributesBuffer.array() )
-
-        //todo : lambda
         for (int i = 0; i < attributesBuffer.capacity(); i++) {
             attributeSet.add(new AttributeSet(attributesBuffer.get(i)));
         }

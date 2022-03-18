@@ -94,7 +94,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 return new float[0];
             case UNCOMPRESSED:
                 for (int i = 0; i < samplesNumber; i++) {
-                    decompressed[i] = Q28_4.asFloat(Bits.extractSigned(elevations.get(firstIndex + i), 0, 16));
+                    decompressed[i] = Q28_4.asFloat(Bits.extractUnsigned(elevations.get(firstIndex + i), 0, 16));
                 }
                 return isInverted(edgeId) ? reverseOrder(decompressed) : decompressed;
             case COMPRESSED_Q_4_4:

@@ -83,7 +83,7 @@ public final class ElevationProfile {
     public double elevationAt(double position){
         if(position < 0){
             return elevationSamples[0];
-        } else if(position > length){
+        } else if(position >= length){
             return elevationSamples[elevationSamples.length -1];
         } else{
             DoubleUnaryOperator sample = Functions.sampled(elevationSamples, length);

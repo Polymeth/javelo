@@ -16,7 +16,9 @@ public final class ElevationProfileComputer {
         double distanceBetweenPoints = route.length() / stepNumber;
 
         for (int i = 0; i < route.edges().size(); i++) {
-            edgesElevations.add(route.edges().get(i).elevationAt(distanceBetweenPoints*i);
+            //edgesElevations.add(route.edges().get(i).elevationAt(distanceBetweenPoints*i);
         }
+
+        return null;
     }
 }

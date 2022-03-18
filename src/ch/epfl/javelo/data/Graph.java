@@ -21,7 +21,7 @@ public final class Graph {
 
     private GraphNodes nodes;
     private GraphSectors sectors;
-    private GraphEdges edges;
+    public GraphEdges edges;
     private List<AttributeSet> attributeSets;
 
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
@@ -54,7 +54,7 @@ public final class Graph {
         ShortBuffer elevationsBuffer;
         LongBuffer attributesBuffer;
 
-        // todo faire une fonction avec le try with ressources
+        // todo: fonction vrmnt mieux ?
         try (FileChannel channel = FileChannel.open(basePath.resolve(paths[0]))) {
             nodesBuffer = channel
                     .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
@@ -147,7 +147,7 @@ public final class Graph {
             startNodeId = sectorsWithinPoint.get(i).startNodeId();
             endNodeId = sectorsWithinPoint.get(i).endNodeId();
             for (int j = startNodeId; j <= endNodeId; j++) {
-                PointCh targetPoint = new PointCh(nodes.nodeE(j), nodes.nodeN(j));
+                PointCh targetPoint = nodePoint(j);
                 double distance = targetPoint.squaredDistanceTo(point);
                 if (distance < minDistance) {
                     minDistance = distance;

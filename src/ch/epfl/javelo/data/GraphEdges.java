@@ -9,6 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import static java.lang.Short.toUnsignedInt;
+
 /**
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
@@ -53,7 +55,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the length (in meter) of the edge
      */
     public double length(int edgeId) {
-        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)));
+        return Q28_4.asDouble(toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)));
     }
 
     /**
@@ -61,7 +63,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the elevation gain of the edge
      */
     public double elevationGain(int edgeId) {
-        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_ELEVATION+edgeId*OFFSET_EDGE)));
+        return Q28_4.asDouble(toUnsignedInt(edgesBuffer.getShort(OFFSET_ELEVATION+edgeId*OFFSET_EDGE)));
     }
 
     /**
@@ -69,7 +71,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return returns the index of the first attribute
      */
     public int attributesIndex(int edgeId) {
-        return Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_ATTRIBUTES+edgeId*OFFSET_EDGE));
+        return toUnsignedInt(edgesBuffer.getShort(OFFSET_ATTRIBUTES+edgeId*OFFSET_EDGE));
     }
 
     /**
@@ -86,7 +88,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     public float[] profileSamples(int edgeId) {
         int firstIndex = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
-        int samplesNumber = 1 + Math2.ceilDiv(Short.toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)), Q28_4.ofInt(2));
+        int samplesNumber = 1 + Math2.ceilDiv(toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)), Q28_4.ofInt(2));
         float[] decompressed = new float[samplesNumber];
 
         switch (Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)) {
@@ -94,7 +96,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 return new float[0];
             case UNCOMPRESSED:
                 for (int i = 0; i < samplesNumber; i++) {
-                    decompressed[i] = Q28_4.asFloat(Bits.extractUnsigned(elevations.get(firstIndex + i), 0, 16));
+                    decompressed[i] = Q28_4.asFloat(toUnsignedInt(elevations.get(firstIndex + i)));
                 }
                 return isInverted(edgeId) ? reverseOrder(decompressed) : decompressed;
             case COMPRESSED_Q_4_4:

@@ -21,7 +21,7 @@ public final class Graph {
 
     private GraphNodes nodes;
     private GraphSectors sectors;
-    public GraphEdges edges;
+    private GraphEdges edges;
     private List<AttributeSet> attributeSets;
 
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
@@ -141,7 +141,7 @@ public final class Graph {
         for (int i = 0; i < sectorsWithinPoint.size(); i++) {
             startNodeId = sectorsWithinPoint.get(i).startNodeId();
             endNodeId = sectorsWithinPoint.get(i).endNodeId();
-            for (int j = startNodeId; j <= endNodeId; j++) {
+            for (int j = startNodeId; j < endNodeId; j++) {
                 PointCh targetPoint = nodePoint(j);
                 double distance = targetPoint.squaredDistanceTo(point);
                 if (distance < minDistance) {

@@ -1,24 +1,87 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.Preconditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class ElevationProfileComputer {
 
     private ElevationProfileComputer() {}
 
-    public ElevationProfile elevationProfile(Route route, double maxStepLength){
-        //todo: preconditions+check max length
-        ArrayList<Double> edgesElevations = new ArrayList<Double>();
-        int stepNumber = (int)Math.ceil(route.length() / maxStepLength);
-        double distanceBetweenPoints = route.length() / stepNumber;
+    public static ElevationProfile elevationProfile(Route route, double maxStepLength){
 
-        for (int i = 0; i < route.edges().size(); i++) {
-            //edgesElevations.add(route.edges().get(i).elevationAt(distanceBetweenPoints*i);
+        Preconditions.checkArgument(maxStepLength > 0); //check si maxsteplength est positif
+        //todo: preconditions+check max length
+
+
+
+        int stepNumber = (int)Math.ceil(route.length() / maxStepLength) +1; //nombre d'echantilons
+        double distanceBetweenPoints = route.length() / stepNumber; //distance entre les points
+
+        ArrayList<Double> edgesElevations = new ArrayList<Double>();
+        float[] edgesElevations2 = new float[stepNumber];
+
+        //remplissage du tableau
+        for (int i = 0; i < stepNumber; i++) {
+            //edgesElevations.add(route.elevationAt(distanceBetweenPoints*i));
+            edgesElevations2[i] = (float)route.elevationAt(distanceBetweenPoints*i);
         }
 
-        return null;
+        //cas si que des Nan
+        int counter = 0;
+        for(int i=0; i< edgesElevations2.length; i++){
+            if(Float.isNaN(edgesElevations2[i])){
+                counter++;
+            }
+        }
+        if(counter == edgesElevations2.length){
+            for (int i=0; i< edgesElevations2.length; i++){
+                edgesElevations2[i] = 0;
+            }
+        }
+
+        //todo verifier condition pour trouver les nan
+        //BOucher les trous en tete en prenant la première valeur non nan et en bouchant
+        for(int i = 0; Float.isNaN(edgesElevations2[i]); i++){
+            Arrays.fill(edgesElevations2, 0, i, edgesElevations2[i]);
+        }
+
+        /*
+        for(int i = 0; i < edgesElevations2.length; i++){
+            if(!Float.isNaN((float)edgesElevations2[i]) && i != 0){ //première valeur non nan
+                    Arrays.fill(edgesElevations2, 0, i, edgesElevations2[i]);
+            }
+        }
+
+         */
+
+
+        //Boucher les trous en fin en prenant la première valeur non nan
+        for(int j = edgesElevations2.length-1; Float.isNaN(edgesElevations2[j]); j--){
+            Arrays.fill(edgesElevations2, j, edgesElevations2.length , edgesElevations2[j]);
+        }
+        /*
+        for(int j = edgesElevations2.length-1 ; j == 0; j--){
+            if(!Float.isNaN((float)edgesElevations2[j]) && j != edgesElevations2.length-1){
+                Arrays.fill(edgesElevations2, j,edgesElevations2.length-1 , edgesElevations2[j]);
+            }
+        }
+
+         */
+
+        //boucher les trous du milleu en interpollant avec les points avant et apres
+        for(int k = 0; k < edgesElevations2.length; k++){
+            if(Float.isNaN((float)edgesElevations2[k])){
+                edgesElevations2[k] = (float)Math2.interpolate(edgesElevations2[k-1], edgesElevations2[k+1], 0.5);
+            }
+        }
+
+
+        ElevationProfile profile = new ElevationProfile(route.length(), edgesElevations2);
+
+        return profile;
     }
 }

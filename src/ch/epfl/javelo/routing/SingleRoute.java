@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
@@ -8,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class SingleRoute implements Route {
-
     private final ArrayList<Edge> allEdges = new ArrayList<>();
 
     public SingleRoute(List<Edge> edges) {
@@ -26,13 +26,12 @@ public final class SingleRoute implements Route {
     @Override
     public double length() {
         double length = 0;
-        for (int i = 0; i < allEdges.size(); i++) {
-            length += allEdges.get(i).length();
+        for (Edge edge : allEdges) {
+            length += edge.length();
         }
         return length;
     }
 
-    // todo: raisonnement correct ? immuable donc copy
     @Override
     public List<Edge> edges() {
         return List.copyOf(allEdges);
@@ -41,9 +40,7 @@ public final class SingleRoute implements Route {
     @Override
     public List<PointCh> points() {
         double[] distances = distanceList();
-       // double[] distances = {0d, 5800d, 8100d, 9200d, 11400d, 13100d};
         List<PointCh> points = new ArrayList<>();
-
         for (double distance : distances) {
             points.add(pointAt(distance));
         }
@@ -53,35 +50,65 @@ public final class SingleRoute implements Route {
     @Override
     public PointCh pointAt(double position) {
         double[] distances = distanceList();
-        int edgeId = nodeClosestTo(position);
-        return allEdges.get(edgeId).pointAt(position - distances[edgeId]);
+        int edgeId = edgeIndexAtPosition(position);
+        return (edgeId < distances.length-1)
+                ? allEdges.get(edgeId).pointAt(position - distances[edgeId])
+                : allEdges.get(edgeId-1).pointAt(allEdges.get(edgeId-1).length()); // kinda sus
+        // todo passer le bidule du edgeId - 1 dans la methode index
     }
 
     @Override
     public int nodeClosestTo(double position) {
         double[] distances = distanceList();
-        return (Arrays.binarySearch(distances, position) < 0) ? -(Arrays.binarySearch(distances, position) + 2) : Arrays.binarySearch(distances, position);
+        int edgeId = edgeIndexAtPosition(position);
+        double distanceOnEdge = position - distances[edgeId];
+
+        if (distanceOnEdge < allEdges.get(edgeId).length()) {
+            //SEX
+        }
+
+        return 0;
+
+
     }
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
+        RoutePoint minimum = RoutePoint.NONE;
+        //for (Edge edge : allEdges) {
+
+        //}
         return null;
     }
 
     @Override
     public double elevationAt(double position) {
         //double[] distances = {0d, 5800d, 8100d, 9200d, 11400d, 13100d};
-        if (position < 0d) position = 0d;
         double[] distances = distanceList();
-        int edgeId = nodeClosestTo(position);
+        if (position < 0d) {
+            return allEdges.get(0).elevationAt(position - distances[0]);
+        } else if (position > distances[distances.length-1]) {
+            return allEdges.get(distances.length-2).elevationAt(allEdges.get(distances.length-1).length());
+        }
+        int edgeId = edgeIndexAtPosition(position);
         return allEdges.get(edgeId).elevationAt(position - distances[edgeId]);
     }
 
+    private int edgeIndexAtPosition(double position) {
+        double[] distances = distanceList();
+        return (Arrays.binarySearch(distances, position) < 0) ? -(Arrays.binarySearch(distances, position) + 2) : Arrays.binarySearch(distances, position);
+    }
+
+    /**
+     * @return a
+     */
     private double[] distanceList() {
-        double[] distances = new double[allEdges.size()];
-        for (int i = 0; i < allEdges.size(); i++) {
+        double[] distances = new double[allEdges.size()+1];
+
+        for (int i = 0; i <= allEdges.size(); i++) {
             if (i != 0) {
-                distances[i] = distances[i-1] + allEdges.get(i).length();
+                Edge edge = allEdges.get(i-1);
+                distances[i] = distances[i-1] + allEdges.get(i-1).length();
             } else {
                 distances[i] = 0d;
             }

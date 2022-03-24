@@ -39,7 +39,7 @@ public final class Functions {
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
         @Override
         public double applyAsDouble(double operand) {
-            if (operand > xMax) {
+            if (operand >= xMax) {
                 return samples[samples.length - 1];
             } else if (operand < 0) {
                 return samples[0];

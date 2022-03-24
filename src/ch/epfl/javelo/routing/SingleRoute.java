@@ -85,12 +85,12 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         //double[] distances = {0d, 5800d, 8100d, 9200d, 11400d, 13100d};
         double[] distances = distanceList();
-        if (position < 0d) {
-            return allEdges.get(0).elevationAt(position - distances[0]);
-        } else if (position > distances[distances.length-1]) {
-            return allEdges.get(distances.length-2).elevationAt(allEdges.get(distances.length-1).length());
-        }
         int edgeId = edgeIndexAtPosition(position);
+        if (position < 0d) {
+            return allEdges.get(0).elevationAt(0);
+        } else if (position > distances[distances.length-1]) {
+            return allEdges.get(edgeId-1).elevationAt(allEdges.get(edgeId-1).length());
+        }
         return allEdges.get(edgeId).elevationAt(position - distances[edgeId]);
     }
 

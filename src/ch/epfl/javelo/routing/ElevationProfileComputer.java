@@ -19,9 +19,10 @@ public final class ElevationProfileComputer {
 
 
         int stepNumber = (int)Math.ceil(route.length() / maxStepLength) +1; //nombre d'echantilons
-        double distanceBetweenPoints = route.length() / stepNumber; //distance entre les points
+        //int stepNumber = ((int)((route.length()+ maxStepLength -1)/maxStepLength)) +1;
 
-        ArrayList<Double> edgesElevations = new ArrayList<Double>();
+        double distanceBetweenPoints = route.length() / (stepNumber -1); //distance entre les points
+
         float[] edgesElevations2 = new float[stepNumber];
 
         //remplissage du tableau
@@ -116,6 +117,7 @@ public final class ElevationProfileComputer {
                 counter++;
             }
         }
+
         if(counter == edgesElevations2.length){
             for (int i=0; i< edgesElevations2.length; i++){
                 edgesElevations2[i] = 0;

@@ -185,8 +185,8 @@ class ElevationProfileComputerTest {
         };
         DoubleUnaryOperator profile2 = Functions.sampled(type3Array2, 10);
 
-        Edge edge1 = new Edge(0, 3, fromPoint, toPoint, 10, profile);
-        Edge edge2 = new Edge(0, 3, fromPoint, toPoint, 10, profile2);
+        Edge edge1 = new Edge(0, 3, fromPoint, toPoint, 5, profile);
+        Edge edge2 = new Edge(0, 3, fromPoint, toPoint, 5, profile2);
 
         ArrayList<Edge> testEdges = new ArrayList<Edge>();
         testEdges.add(edge1);
@@ -203,7 +203,7 @@ class ElevationProfileComputerTest {
         float[] expectedtype3Array = new float[]{
                 384.5f, 384.4375f, 384.375f, 384.3125f, 384.25f, 384.125f, 384.3125f, 384.25f, 384.125f, 384.0625f
         };
-        for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length); i+= 1){
+        for (int i = 0; i < stepNumber; i+= distanceBetweenPoints){
             actualtype3Array[i] = (float)Elevprofile.elevationAt(i);
 
         }

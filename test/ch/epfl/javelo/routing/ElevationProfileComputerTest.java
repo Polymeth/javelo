@@ -183,7 +183,7 @@ class ElevationProfileComputerTest {
         float[] type3Array2 = new float[]{
                 384.5f, 384.4375f, 384.375f, Float.NaN, Float.NaN, Float.NaN, 384.3125f, 384.25f, 384.125f, 384.0625f
         };
-        DoubleUnaryOperator profile2 = Functions.sampled(type3Array, 10);
+        DoubleUnaryOperator profile2 = Functions.sampled(type3Array2, 10);
 
         Edge edge1 = new Edge(0, 3, fromPoint, toPoint, 10, profile);
         Edge edge2 = new Edge(0, 3, fromPoint, toPoint, 10, profile2);

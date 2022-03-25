@@ -92,6 +92,7 @@ public final class ElevationProfileComputer {
                 }
                 for(int p = begin + 1; p < end; p++){ //todo fix interpolate
                     edgesElevations2[p] = (float)Math2.interpolate(v1, v2, (double)(p-begin)/(end-begin));
+                    alreadyFound = false;
                 }
 
             }

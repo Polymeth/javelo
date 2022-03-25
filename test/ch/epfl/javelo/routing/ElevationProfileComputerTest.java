@@ -109,7 +109,7 @@ class ElevationProfileComputerTest {
         }
 
         for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length); i++){
-            assertEquals(expectedtype3Array[i], actualtype3Array[i], 1e-1);
+            assertEquals(expectedtype3Array[i], actualtype3Array[i], 5*1e-1);
         }
 
 
@@ -159,7 +159,7 @@ class ElevationProfileComputerTest {
         }
 
         for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length) ; i++){
-            assertEquals(expectedtype3Array[i], actualtype3Array[i], 1e-1);
+            assertEquals(expectedtype3Array[i], actualtype3Array[i], 5*1e-1);
         }
 
 
@@ -209,7 +209,7 @@ class ElevationProfileComputerTest {
         }
 
         for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length); i++){
-            assertEquals(expectedtype3Array[i], actualtype3Array[i], 1e-1);
+            assertEquals(expectedtype3Array[i], actualtype3Array[i], 5*1e-1);
         }
 
 
@@ -253,7 +253,9 @@ class ElevationProfileComputerTest {
 
         }
 
-        assertArrayEquals(expected, actual);
+        for (int i = 0; i < Math.min(stepNumber, expected.length); i++){
+            assertEquals(actual[i], expected[i], 5*1e-1);
+        }
     }
     @Test
     void elevationProfileReturnsTheRightTabFirstNan(){
@@ -262,14 +264,14 @@ class ElevationProfileComputerTest {
 
         float[] elevationSamples = {(float) Double.NaN, (float) Double.NaN, 2f, 3f, 4f};
 
-        DoubleUnaryOperator profile = Functions.sampled(elevationSamples, 10);
+        DoubleUnaryOperator profile = Functions.sampled(elevationSamples, 6);
 
-        Edge edge1 = new Edge(0, 3, fromPoint, toPoint, 5, profile);
+        Edge edge1 = new Edge(0, 3, fromPoint, toPoint, 6, profile);
         ArrayList<Edge> testEdges = new ArrayList<Edge>();
         testEdges.add(edge1);
         SingleRoute route = new SingleRoute(testEdges);
 
-        double maxStepLength = 1.5;
+        double maxStepLength = 1.9;
         int stepNumber = (int)Math.ceil(route.length() / maxStepLength) +1;
         double distanceBetweenPoints = route.length() / stepNumber;
 
@@ -279,10 +281,12 @@ class ElevationProfileComputerTest {
         float[] actual = new float[expected.length];
 
         for (int i = 0; i < Math.min(stepNumber, expected.length); i+=1){
-            actual[i] = (float)Elevprofile.elevationAt(i);
+            actual[i] = (float)Elevprofile.elevationAt(i*distanceBetweenPoints);
         }
 
-        assertArrayEquals(expected, actual);
+        for (int i = 0; i < Math.min(stepNumber, expected.length); i++){
+            assertEquals(actual[i], expected[i], 5*1e-1);
+        }
     }
 
     @Test
@@ -318,12 +322,12 @@ class ElevationProfileComputerTest {
         float[] expectedtype3Array = new float[]{0f, 0f, 0f, 1f, 2f, 3f, 4f, 5f, 5f};
 
         for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length); i+= 1){
-            actualtype3Array[i] = (float)Elevprofile.elevationAt(i);
+            actualtype3Array[i] = (float)Elevprofile.elevationAt(i*distanceBetweenPoints);
 
         }
 
         for (int i = 0; i < Math.min(stepNumber, expectedtype3Array.length); i++){
-            assertEquals(expectedtype3Array[i], actualtype3Array[i], 1e-1);
+            assertEquals(expectedtype3Array[i], actualtype3Array[i], 1e0);
         }
 
     }

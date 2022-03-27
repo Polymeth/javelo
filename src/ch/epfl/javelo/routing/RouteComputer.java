@@ -4,15 +4,19 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import org.w3c.dom.Node;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
 // immuable
 public final class RouteComputer {
     final Graph graph;
+    final CostFunction costFunction;
 
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
+        this.costFunction = costFunction;
     }
 
     public Route bestRouteBetween(int startNodeId, int endNodeId){
@@ -37,9 +41,8 @@ public final class RouteComputer {
         toExplore.add(new WeightedNode(startNodeId, 0));
 
         // initialisation des tableaux
-        distance[startNodeId] = 0;
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(previous, 0);
+        distance[startNodeId] = 0;
 
         // trouver le plus court chemin
         WeightedNode currentNode;
@@ -51,7 +54,8 @@ public final class RouteComputer {
 
                 // Itere sur le nombre d'edges sortant d'un node donné
                 for (int i = 0; i < graph.nodeOutDegree(currentNode.nodeId); i++) {
-                    double distanceToPoint = distance[currentNode.nodeId] + graph.edgeLength(graph.nodeOutEdgeId(currentNode.nodeId, i)); //distance du node id avant + longuer du graph courrant
+                    double costToAdd = costFunction.costFactor(currentNode.nodeId, graph.nodeOutEdgeId(currentNode.nodeId, i));
+                    double distanceToPoint = distance[currentNode.nodeId] + (graph.edgeLength(graph.nodeOutEdgeId(currentNode.nodeId, i))) * costToAdd; //distance du node id avant + longuer du graph courrant
                     int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(currentNode.nodeId, i));
 
                     // si la distance est plus petite que la distance la plus petite connue
@@ -67,8 +71,14 @@ public final class RouteComputer {
         }
 
         // remonter le plus court chemin
+        WeightedNode rNode;
+        ArrayList<Edge> path = new ArrayList<>();
+        int id = endNodeId;
+        while (id != startNodeId) {
+            path.add(Edge.of(graph, 0, id, previous[id]));
+            id = previous[id];
+        }
 
-
-        return null;
+        return new SingleRoute(path);
     }
 }

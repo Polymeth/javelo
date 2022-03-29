@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+//todo: clamp pour la position
 /**
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
@@ -97,9 +99,9 @@ public final class SingleRoute implements Route {
             return (index<allEdges.size()) ? allEdges.get(index).fromNodeId() : allEdges.get(index-1).toNodeId();
         } else {
             index = -(index + 2);
-            double normFirstNode = Math2.norm(position - allEdges.get(index).fromPoint().e(), position - allEdges.get(index).fromPoint().n());
-            double normSecondNode = Math2.norm(position - allEdges.get(index).toPoint().e(), position - allEdges.get(index).toPoint().n());
-            return (normFirstNode < normSecondNode) ? allEdges.get(index).fromNodeId() : allEdges.get(index).toNodeId();
+            PointCh point = allEdges.get(index).pointAt(position);
+            double u = position - distances[index];
+            return (u < allEdges.get(index).length()/2) ? allEdges.get(index).fromNodeId() : allEdges.get(index).toNodeId();
         }
     }
 

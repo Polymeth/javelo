@@ -14,6 +14,15 @@ import java.util.function.DoubleUnaryOperator;
  * @author Loris Tran (341214)
  */
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length, DoubleUnaryOperator profile) {
+
+    /**
+     *
+     * @param graph graph you want the instance of edges
+     * @param edgeId given id of edge
+     * @param fromNodeId given id of starting node
+     * @param toNodeId given id of end node
+     * @return instance of Edge with given parameters
+     */
     public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
         return new Edge(fromNodeId, toNodeId, graph.nodePoint(fromNodeId), graph.nodePoint(toNodeId), graph.edgeLength(edgeId), graph.edgeProfile(edgeId));
     }

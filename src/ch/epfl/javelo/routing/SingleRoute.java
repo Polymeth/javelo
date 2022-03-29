@@ -77,6 +77,8 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
+        position = correctedPosition(position);
+
         int edgeId = edgeIndexAtPosition(position);
         return (edgeId < distances.length-1)
                 ? allEdges.get(edgeId).pointAt(position - distances[edgeId])
@@ -90,6 +92,7 @@ public final class SingleRoute implements Route {
     @Override
     public int nodeClosestTo(double position) {
         position = correctedPosition(position);
+
         int index = Arrays.binarySearch(distances, position);
 
         if (index >= 0) {

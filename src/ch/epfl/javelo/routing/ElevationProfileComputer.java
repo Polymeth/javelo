@@ -95,6 +95,7 @@ public final class ElevationProfileComputer {
 
         return new ElevationProfile(route.length(), edgesElevations2);
     }
+
      public static float[] tab(float[] edgesElevations2, int samples){
         int counter = 0;
         for(int i=0; i< edgesElevations2.length; i++){

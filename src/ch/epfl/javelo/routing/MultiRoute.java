@@ -2,6 +2,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,16 +42,22 @@ public final class MultiRoute implements Route{
     public List<Edge> edges() {
         List<Edge> allEdges = new ArrayList<>();
         for(Route route : allRoutes){
-            for(Edge edge : route.edges()) {
-                allEdges.add(edge);
-            }
+            allEdges.addAll(route.edges());
         }
         return allEdges;
     }
 
     @Override
     public List<PointCh> points() {
-        return null;
+        List<PointCh> allPoints = new ArrayList<>();
+        for(Route route : allRoutes){
+            for(PointCh point : route.points()){
+                if(!(allPoints.contains(point))){
+                    allPoints.add(point);
+                }
+            }
+        }
+        return allPoints;
     }
 
     @Override
@@ -68,12 +75,21 @@ public final class MultiRoute implements Route{
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        return null;
+        RoutePoint minimum = RoutePoint.NONE;
+
+        for(Route route : allRoutes){
+            minimum = route.pointClosestTo(point);
+        }
+        return minimum;
     }
 
     @Override
     public double elevationAt(double position) {
-        return 0;
+        position = Math2.clamp(0, position, length());
+
+
+
+        return elevation;
     }
 
     /**

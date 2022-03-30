@@ -77,7 +77,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public PointCh pointAt(double position) {
-        position = correctedPosition(position);
+        position = Math2.clamp(0, position, length());
 
         int edgeId = edgeIndexAtPosition(position);
         return (edgeId < distances.length-1)
@@ -91,8 +91,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public int nodeClosestTo(double position) {
-        position = correctedPosition(position);
-
+        position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
 
         if (index >= 0) {
@@ -125,7 +124,7 @@ public final class SingleRoute implements Route {
      */
     @Override
     public double elevationAt(double position) {
-        position = correctedPosition(position);
+        position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
 
         if (index < 0) {
@@ -144,18 +143,5 @@ public final class SingleRoute implements Route {
      */
     private int edgeIndexAtPosition(double position) {
         return (Arrays.binarySearch(distances, position) < 0) ? -(Arrays.binarySearch(distances, position) + 2) : Arrays.binarySearch(distances, position);
-    }
-
-    /**
-     * @param position any position
-     * @return the corrected position if it's out of bound, or itself otherwise
-     */
-    private double correctedPosition(double position) {
-        if (position < 0) {
-            return 0d;
-        } else if (position > length()) {
-            return length();
-        }
-        return position;
     }
 }

@@ -1,5 +1,7 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.awt.*;
@@ -12,6 +14,7 @@ public final class MultiRoute implements Route{
     private final double[] distances;
 
     public MultiRoute(List<Route> segments){
+        //Preconditions.checkArgument(!segments.isEmpty());
         allRoutes = List.copyOf(segments); // faire de même dans singleroute
         this.distances = new double[allRoutes.size()+1];
         distances[0] = 0;
@@ -22,18 +25,27 @@ public final class MultiRoute implements Route{
 
     @Override
     public int indexOfSegmentAt(double position) {
-        position = correctedPosition(position);
-        // first step = find which route of the list
-        int indexOnList = (Arrays.binarySearch(distances, position) < 0) ? -(Arrays.binarySearch(distances, position) + 2) : Arrays.binarySearch(distances, position);
+        position = Math2.clamp(0, position, length());
+        int index = 0;
+        double pos = position;
 
-
+        for (Route route : allRoutes) {
+            if (route.length() < pos) {
+                index += route.indexOfSegmentAt(pos) + 1;
+                pos-=route.length();
+            } else {
+                index += route.indexOfSegmentAt(pos) + 1;
+                break;
+            }
+        }
+        return index-1;
     }
 
     @Override
     public double length() {
         double length = 0;
         for (Route route : allRoutes) {
-            length+=route.length();
+            length += route.length();
         }
         return length;
     }
@@ -62,14 +74,24 @@ public final class MultiRoute implements Route{
 
     @Override
     public PointCh pointAt(double position) {
-        position = correctedPosition(position);
-        return null;
+        position = Math2.clamp(0, position, length());
+        PointCh point = null;
+
+        for(Route route : allRoutes){
+            point = route.pointAt(position);
+        }
+        return point;
     }
 
     @Override
     public int nodeClosestTo(double position) {
-        position = correctedPosition(position);
-        return 0;
+        position = Math2.clamp(0, position, length());
+        int node = 0;
+
+        for(Route route : allRoutes){
+            node = route.nodeClosestTo(position);
+        }
+        return node;
     }
 
 
@@ -90,18 +112,5 @@ public final class MultiRoute implements Route{
 
 
         return elevation;
-    }
-
-    /**
-     * @param position any position
-     * @return the corrected position if it's out of bound, or itself otherwise
-     */
-    private double correctedPosition(double position) {
-        if (position < 0) {
-            return 0d;
-        } else if (position > length()) {
-            return length();
-        }
-        return position;
     }
 }

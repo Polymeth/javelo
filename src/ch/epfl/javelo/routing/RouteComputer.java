@@ -2,6 +2,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
 import org.w3c.dom.Node;
 
 import java.awt.*;
@@ -44,8 +45,7 @@ public final class RouteComputer {
         // initialisation des tableaux
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
         distance[startNodeId] = 0;
-
-        // trouver le plus court chemin
+        int debug = 0;
         WeightedNode currentNode;
         while(!(toExplore.isEmpty())) {
             currentNode = toExplore.remove();
@@ -55,20 +55,18 @@ public final class RouteComputer {
 
                 // Itere sur le nombre d'edges sortant d'un node donné
                 for (int i = 0; i < graph.nodeOutDegree(currentNode.nodeId); i++) {
+                    PointCh endPoint = graph.nodePoint(endNodeId);
+                    double Hcost = endPoint.distanceTo(graph.nodePoint(currentNode.nodeId));
                     double costToAdd = costFunction.costFactor(currentNode.nodeId, graph.nodeOutEdgeId(currentNode.nodeId, i));
-                    double distanceToPoint = distance[currentNode.nodeId] + (graph.edgeLength(graph.nodeOutEdgeId(currentNode.nodeId, i))) * costToAdd; //distance du node id avant + longuer du graph courrant
+                    double distanceToPoint = distance[currentNode.nodeId] + Hcost + (graph.edgeLength(graph.nodeOutEdgeId(currentNode.nodeId, i))) * costToAdd; //distance du node id avant + longuer du graph courrant
                     int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(currentNode.nodeId, i));
 
                     // si la distance est plus petite que la distance la plus petite connue
                     if (distanceToPoint < distance[targetNodeId]) {
                         distance[targetNodeId] = distanceToPoint;
                         previous[targetNodeId] = currentNode.nodeId;
-
-                        // alors on explore ce node
-                        if (distance[currentNode.nodeId] != Double.NEGATIVE_INFINITY) {
-                            toExplore.add(new WeightedNode(targetNodeId, (float)distanceToPoint));
-                        }
-
+                        toExplore.add(new WeightedNode(targetNodeId, (float)distanceToPoint));
+                        //distance[currentNode.nodeId] = Float.NEGATIVE_INFINITY;
                     }
                 }
             } else {
@@ -157,5 +155,7 @@ public final class RouteComputer {
     }
 
 */
+
+
 
 

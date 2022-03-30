@@ -75,12 +75,17 @@ public final class MultiRoute implements Route{
     @Override
     public PointCh pointAt(double position) {
         position = Math2.clamp(0, position, length());
-        PointCh point = null;
+        double pos = 0;
 
-        for(Route route : allRoutes){
-            point = route.pointAt(position);
+        //todo: rendre ça plus joli
+        for (Route route : allRoutes) {
+            if (position > pos + route.length()) {
+                pos+=route.length();
+            } else {
+                return route.pointAt(position-pos);
+            }
         }
-        return point;
+        return null;
     }
 
     @Override
@@ -111,6 +116,6 @@ public final class MultiRoute implements Route{
 
 
 
-        return elevation;
+        return 0d;
     }
 }

@@ -26,7 +26,6 @@ public final class RouteComputer {
 
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
         distance[startNodeId] = 0;
-        int debug = 0;
         WeightedNode currentNode;
         PointCh endPoint = graph.nodePoint(endNodeId);
 
@@ -43,7 +42,7 @@ public final class RouteComputer {
             for (int i = 0; i < graph.nodeOutDegree(currentNode.nodeId); i++) {
                 int edgeId = graph.nodeOutEdgeId(currentNode.nodeId, i);
                 int targetNodeId = graph.edgeTargetNodeId(edgeId);
-                double Hcost = endPoint.distanceTo(graph.nodePoint(currentNode.nodeId));
+                double Hcost = endPoint.distanceTo(graph.nodePoint(targetNodeId));
                 double cost = costFunction.costFactor(currentNode.nodeId, edgeId);
                 double distanceToPoint = distance[currentNode.nodeId]
                         + (graph.edgeLength(edgeId)) * cost;
@@ -64,6 +63,7 @@ public final class RouteComputer {
         List<Edge> path = new ArrayList<>();
         int id = endNodeId;
         while (id != startNodeId) {
+            //graph.edg
             path.add(Edge.of(graph, 0, id, previous[id]));
             id = previous[id];
         }

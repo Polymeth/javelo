@@ -9,7 +9,6 @@ import java.nio.IntBuffer;
  * @author Loris Tran (341214)
  */
 public record GraphNodes(IntBuffer buffer) {
-
     private static final int OFFSET_E = 0;
     private static final int OFFSET_N = OFFSET_E + 1;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;

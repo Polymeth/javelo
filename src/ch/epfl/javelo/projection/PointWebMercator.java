@@ -9,6 +9,7 @@ import java.awt.*;
  * @author Loris Tran (341214)
  */
 public record PointWebMercator(double  x, double y) {
+
     public PointWebMercator {
         Preconditions.checkArgument(x <= 1 && x >= 0);
         Preconditions.checkArgument(y <= 1 && y >= 0);

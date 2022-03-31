@@ -18,11 +18,10 @@ import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 public final class Graph {
-
-    private GraphNodes nodes;
-    private GraphSectors sectors;
-    private GraphEdges edges;
-    private List<AttributeSet> attributeSets;
+    private final GraphNodes nodes;
+    private final GraphSectors sectors;
+    private final GraphEdges edges;
+    private final List<AttributeSet> attributeSets;
 
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
         this.nodes = nodes;
@@ -88,7 +87,6 @@ public final class Graph {
         GraphSectors graphSectors = new GraphSectors(sectorsBuffer);
         GraphEdges graphEdges = new GraphEdges(edgesBuffer, profileIdsBuffer, elevationsBuffer);
         ArrayList<AttributeSet> attributeSet = new ArrayList<>();
-
         for (int i = 0; i < attributesBuffer.capacity(); i++) {
             attributeSet.add(new AttributeSet(attributesBuffer.get(i)));
         }

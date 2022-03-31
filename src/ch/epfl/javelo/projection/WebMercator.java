@@ -7,6 +7,7 @@ import ch.epfl.javelo.Math2;
  * @author Loris Tran (341214)
  */
 public final class WebMercator {
+
     private WebMercator() {}
 
     /**
@@ -15,7 +16,7 @@ public final class WebMercator {
      * @return x-coordinates of point (WebMercator system)
      */
     public static double x(double lon) {
-        return (1/(2*Math.PI))*(lon+Math.PI);
+        return (1 / (2*Math.PI)) * (lon + Math.PI);
     }
 
     /**
@@ -24,7 +25,7 @@ public final class WebMercator {
      * @return y-coordinates of point (WebMercator)
      */
     public static  double y(double lat) {
-        return (1/(2 * Math.PI))*(Math.PI-Math2.asinh(Math.tan(lat)));
+        return (1 / (2*Math.PI)) * (Math.PI - Math2.asinh(Math.tan(lat)));
     }
 
     /**

@@ -6,6 +6,7 @@ package ch.epfl.javelo;
  * @author Loris Tran (341214)
  */
 public final class Math2 {
+
     private Math2(){}
 
     /**
@@ -17,7 +18,7 @@ public final class Math2 {
     public static int ceilDiv(int x, int y){
         Preconditions.checkArgument(x>=0);
         Preconditions.checkArgument(y>0);
-        return ((x+y-1)/y);
+        return ((x + y - 1) / y);
     }
 
     /**
@@ -35,8 +36,9 @@ public final class Math2 {
      * @return hyperbolix sinus inverse of point x
      */
     public static double asinh(double x){
-        Preconditions.checkArgument(x+ Math.sqrt(Math.pow(x, 2) + 1) >0);
-        return Math.log(x + Math.sqrt(Math.pow(x, 2) + 1));
+        double exp = x + Math.sqrt(Math.pow(x, 2) + 1);
+        Preconditions.checkArgument(exp > 0);
+        return Math.log(exp);
     }
 
     /**
@@ -77,7 +79,7 @@ public final class Math2 {
      * @return the dot product of the vectors u and v
      */
     public static double dotProduct(double uX, double uY, double vX, double vY) {
-        return uX*vX+uY*vY;
+        return uX*vX + uY*vY;
     }
 
     /**
@@ -108,8 +110,8 @@ public final class Math2 {
      * @return the lenght of the orthogonal projection of the vector from A to P on the vector from A to B
      */
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY){
-        double vect = norm((bX-aX), (bY-aY));
+        double vect = norm((bX - aX), (bY - aY));
         Preconditions.checkArgument(vect != 0);
-        return dotProduct(pX-aX, pY-aY, bX-aX, bY-aY)/vect;
+        return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY)/vect;
     }
 }

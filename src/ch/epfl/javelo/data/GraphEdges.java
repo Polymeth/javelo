@@ -28,7 +28,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final byte OFFSET_ATTRIBUTES = OFFSET_ELEVATION + Short.BYTES; // 8
     private static final byte OFFSET_EDGE = OFFSET_ATTRIBUTES + Short.BYTES; // 10
 
-
     /**
      * @param edgeId id of the edge you want to study
      * @return true if the edge is going to the inverse of the direction of its OSM data
@@ -43,11 +42,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     public int targetNodeId(int edgeId) {
         int value = edgesBuffer.getInt(edgeId*OFFSET_EDGE);
-        if (isInverted(edgeId)) {
-            return ~value;
-        } else {
-            return value;
-        }
+        return (isInverted(edgeId)) ? ~value : value;
     }
 
     /**
@@ -92,7 +87,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         float[] decompressed = new float[samplesNumber];
 
         switch (Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)) {
-            case EMPTY:
+            case EMPTY: // todo : enum ? could be swag
                 return new float[0];
             case UNCOMPRESSED:
                 for (int i = 0; i < samplesNumber; i++) {

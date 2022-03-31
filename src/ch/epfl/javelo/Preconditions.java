@@ -5,6 +5,7 @@ package ch.epfl.javelo;
  * @author Loris Tran (341214)
  */
 public final class Preconditions {
+
     private Preconditions() {}
 
     /**

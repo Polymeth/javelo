@@ -24,7 +24,9 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return instance of Edge with given parameters
      */
     public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
-        return new Edge(fromNodeId, toNodeId, graph.nodePoint(fromNodeId), graph.nodePoint(toNodeId), graph.edgeLength(edgeId), graph.edgeProfile(edgeId));
+        return new Edge(fromNodeId, toNodeId,
+                graph.nodePoint(fromNodeId), graph.nodePoint(toNodeId),
+                graph.edgeLength(edgeId), graph.edgeProfile(edgeId));
     }
 
     /**
@@ -32,7 +34,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return the closest position of the desired point on the edge
      */
     public double positionClosestTo(PointCh point) {
-        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
+        return Math2.projectionLength(fromPoint.e(), fromPoint.n(),
+                toPoint.e(), toPoint.n(), point.e(), point.n());
     }
 
     /**
@@ -41,7 +44,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
     public PointCh pointAt(double position) {
         double progression = position/length;
-        return new PointCh(Math2.interpolate(fromPoint.e(), toPoint.e(), progression), Math2.interpolate(fromPoint.n(), toPoint.n(), progression));//not position
+        return new PointCh(Math2.interpolate(fromPoint.e(), toPoint.e(), progression),
+                Math2.interpolate(fromPoint.n(), toPoint.n(), progression));
     }
 
     /**

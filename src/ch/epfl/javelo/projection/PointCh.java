@@ -7,6 +7,7 @@ import ch.epfl.javelo.Preconditions;
  * @author Loris Tran (341214)
  */
 public record PointCh(double e, double n) {
+
     public PointCh {
         Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }

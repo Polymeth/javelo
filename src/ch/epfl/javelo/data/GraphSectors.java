@@ -14,12 +14,7 @@ import static ch.epfl.javelo.projection.SwissBounds.*;
  * @author Loris Tran (341214)
  */
 public record GraphSectors(ByteBuffer buffer) {
-
-    private static final int constant_byte = Short.BYTES; //2 bytes
-    private static final int constant_int = Integer.BYTES; //4 bytes
-
     private static final int SECTOR_BYTES = Integer.BYTES + Short.BYTES;
-
     private static final int OFFSET_E = 0;
     private static final int OFFSET_BYTES = OFFSET_E + Integer.BYTES;
 
@@ -33,14 +28,12 @@ public record GraphSectors(ByteBuffer buffer) {
      * @return ArrayList of Sectors that are in the radius of the center
      */
     public List<Sector> sectorsInArea(PointCh center, double distance){
-        ArrayList<Sector> sectors = new ArrayList<Sector>();
-
+        ArrayList<Sector> sectors = new ArrayList<>();
+// todo: clean un peu les variables
         double center_e = center.e();
         double center_n = center.n();
-
         double down_square_e = (center_e - distance);
         double down_square_n = (center_n - distance);
-
         double up_square_e = (center_e + distance);
         double up_square_n = (center_n + distance);
 
@@ -59,25 +52,21 @@ public record GraphSectors(ByteBuffer buffer) {
         upsector_n = Math2.clamp(0, upsector_n, 128);
 
 
-        for(int j = downsector_n; j < upsector_n; j ++){
-            for(int i = downsector_e; i < upsector_e; i++){
-            int index = 128* j + i;
-            int bytes_index = index * SECTOR_BYTES;
+        for(int j = downsector_n; j < upsector_n; j ++) {
+            for(int i = downsector_e; i < upsector_e; i++) {
+                int index = 128* j + i;
+                int bytes_index = index * SECTOR_BYTES;
 
-            int firstnode = buffer.getInt(bytes_index);
-            int lastnodes = firstnode + Short.toUnsignedInt(buffer.getShort(bytes_index + OFFSET_BYTES)); //id first node + last 2 bytes of buffer (aka number of nodes)
+                int firstnode = buffer.getInt(bytes_index);
+                int lastnodes = firstnode + Short.toUnsignedInt(buffer.getShort(bytes_index + OFFSET_BYTES)); //id first node + last 2 bytes of buffer (aka number of nodes)
 
-            Sector sect = new Sector(firstnode, lastnodes);
-            sectors.add(sect);
-             }
+                Sector sect = new Sector(firstnode, lastnodes);
+                sectors.add(sect);
+            }
         }
-
         return sectors;
-
     }
 
-    public record Sector(int startNodeId, int endNodeId){
-
-    }
+    public record Sector(int startNodeId, int endNodeId){} //todo: utile ?
 
 }

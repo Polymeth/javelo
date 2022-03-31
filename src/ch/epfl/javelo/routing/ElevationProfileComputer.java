@@ -22,7 +22,6 @@ public final class ElevationProfileComputer {
      * @return the ElevationProfile (without NaN)
      */
     public static ElevationProfile elevationProfile(Route route, double maxStepLength){
-
         //check if maxsteplength is positif
         Preconditions.checkArgument(maxStepLength > 0);
 
@@ -63,7 +62,6 @@ public final class ElevationProfileComputer {
         }
 
         //Case If NaN in Middle
-        int counter2 = 0;
         int begin = 0;
         int end = 0;
         float v2 = 0f;

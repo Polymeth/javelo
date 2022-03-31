@@ -14,7 +14,7 @@ public record AttributeSet(long bits) {
         Preconditions.checkArgument(
                 !((bits&(1L << 62)) != 0 || (bits&(1L << 63)) != 0)
         );
-   }
+    }
 
     /**
      * @param attributes attributes you want to build your AttributeSet with
@@ -47,11 +47,11 @@ public record AttributeSet(long bits) {
 
     @Override
     public String toString() {
-        StringJoiner strJoin = new StringJoiner(",", "{", "}");
+        StringJoiner str = new StringJoiner(",", "{", "}");
         for (Attribute att : Attribute.ALL) {
-            if (this.contains(att)) strJoin.add(att.key() + "=" + att.value());
+            if (this.contains(att)) str.add(att.key() + "=" + att.value());
         }
-        return strJoin.toString();
+        return str.toString();
     }
 }
 

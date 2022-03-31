@@ -10,14 +10,14 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * @author Loris Tran (341214)
  */
 public record RoutePoint(PointCh point,double position, double distanceToReference) {
-    public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
+    public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);//todo rly public?
 
     /**
      * @param positionDifference positive or negative difference
      * @return a RoutePoint located at the position of your point plus the difference
      */
     public RoutePoint withPositionShiftedBy(double positionDifference){
-        return new RoutePoint(point, position+positionDifference, distanceToReference);
+        return new RoutePoint(point, position + positionDifference, distanceToReference);
     }
 
     /**
@@ -35,6 +35,8 @@ public record RoutePoint(PointCh point,double position, double distanceToReferen
      * @return itself if the distance to reference is lower than the entered one, otherwise it creates a new point with the entered arguments
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
-        return (this.distanceToReference < thatDistanceToReference) ? this : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
+        return (this.distanceToReference < thatDistanceToReference)
+                ? this
+                : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }
 }

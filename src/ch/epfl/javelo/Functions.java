@@ -7,6 +7,7 @@ import java.util.function.DoubleUnaryOperator;
  * @author Loris Tran (341214)
  */
 public final class Functions {
+
     private Functions() {
     }
 

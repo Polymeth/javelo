@@ -59,14 +59,20 @@ public final class RouteComputer {
     }
 
     private Route constructPath(int[] previous, int startNodeId, int endNodeId) {
-        WeightedNode rNode;
         List<Edge> path = new ArrayList<>();
         int id = endNodeId;
         while (id != startNodeId) {
-            //graph.edg
-            path.add(Edge.of(graph, 0, id, previous[id]));
+            for (int i = 0; i < graph.nodeOutDegree(id); i++) {
+                int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(id, i));
+                if (targetNodeId == previous[id]) {
+                    path.add(Edge.of(graph, graph.nodeOutEdgeId(id, i), id, previous[id]));
+                    System.out.println("previous: " + previous[id]);
+                    break;
+                }
+            }
             id = previous[id];
         }
+
         Collections.reverse(path);
         return new SingleRoute(path);
     }

@@ -7,6 +7,7 @@ import ch.epfl.javelo.projection.PointCh;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class MultiRoute implements Route{
@@ -23,6 +24,11 @@ public final class MultiRoute implements Route{
         }
     }
 
+    /**
+     *
+     * @param position
+     * @return index of the segment that contains the given position
+     */
     @Override
     public int indexOfSegmentAt(double position) {
         position = Math2.clamp(0, position, length());
@@ -41,6 +47,11 @@ public final class MultiRoute implements Route{
         return index-1;
     }
 
+
+    /**
+     * Iterates of all the routes in the Multiroute.
+     * @return Total length of the path, in meters.
+     */
     @Override
     public double length() {
         double length = 0;
@@ -50,6 +61,10 @@ public final class MultiRoute implements Route{
         return length;
     }
 
+    /**
+     * Iterates of all the routes in the Multiroute.
+     * @return All the edges of the path
+     */
     @Override
     public List<Edge> edges() {
         List<Edge> allEdges = new ArrayList<>();
@@ -59,6 +74,10 @@ public final class MultiRoute implements Route{
         return allEdges;
     }
 
+    /**
+     * Iterates of all the routes in the Multiroute.
+     * @return All points on the end of the edges, without duplicates
+     */
     @Override
     public List<PointCh> points() {
         List<PointCh> allPoints = new ArrayList<>();
@@ -72,6 +91,12 @@ public final class MultiRoute implements Route{
         return allPoints;
     }
 
+    /**
+     * Iterates on all the routes. If the position is over the length of a route, then it must be on a route after it,
+     * so we substract the length of the route to the position, and look on the next route
+     * @param position the position
+     * @return the PointCh at the given position
+     */
     @Override
     public PointCh pointAt(double position) {
         position = Math2.clamp(0, position, length());
@@ -88,28 +113,52 @@ public final class MultiRoute implements Route{
         return null;
     }
 
+    /**
+     * Iterates on all the routes. If the position is over the length of a route, then it must be on a route after it,
+     * so we substract the length of the route to the position, and look on the next route
+     * @param position the position
+     * @return the closest node of the path to the position
+     */
     @Override
     public int nodeClosestTo(double position) {
         position = Math2.clamp(0, position, length());
-        int node = 0;
+        double pos = 0;
 
-        for(Route route : allRoutes){
-            node = route.nodeClosestTo(position);
+        for (Route route : allRoutes) {
+            if (position > pos + route.length()) {
+                pos+=route.length();
+            } else {
+                return route.nodeClosestTo(position-pos);
+            }
         }
-        return node;
+
+        return 0;
     }
 
-
+    /**
+     * Iterates of all the routes in the Multiroute.
+     * @param point
+     * @return RoutePoint closest to the given PointCh point
+     */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint minimum = RoutePoint.NONE;
-
-        for(Route route : allRoutes){
-            minimum = route.pointClosestTo(point);
+        double pos = 0;
+        for (Route route : allRoutes) {
+            PointCh coolPoint = route.pointClosestTo(point).point();
+            double edgePosition = pos + route.pointClosestTo(point).position();
+            double distance = route.pointClosestTo(point).distanceToReference();
+            minimum = minimum.min(coolPoint, edgePosition, distance);
+            pos += route.length();
         }
         return minimum;
     }
 
+    /**
+     *
+     * @param position
+     * @return height of the position on path, can be NaN if edge has no profile
+     */
     @Override
     public double elevationAt(double position) {
         position = Math2.clamp(0, position, length());

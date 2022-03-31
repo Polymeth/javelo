@@ -99,7 +99,7 @@ public final class SingleRoute implements Route {
             index = -(index + 2);
             PointCh point = allEdges.get(index).pointAt(position);
             double u = position - distances[index];
-            return (u < allEdges.get(index).length()/2)
+            return (u <= allEdges.get(index).length()/2)
                     ? allEdges.get(index).fromNodeId()
                     : allEdges.get(index).toNodeId();
         }

@@ -29,7 +29,7 @@ public record GraphSectors(ByteBuffer buffer) {
      */
     public List<Sector> sectorsInArea(PointCh center, double distance){
         ArrayList<Sector> sectors = new ArrayList<>();
-// todo: clean un peu les variables
+
         double center_e = center.e();
         double center_n = center.n();
         double down_square_e = (center_e - distance);
@@ -67,6 +67,6 @@ public record GraphSectors(ByteBuffer buffer) {
         return sectors;
     }
 
-    public record Sector(int startNodeId, int endNodeId){} //todo: utile ?
+    public record Sector(int startNodeId, int endNodeId){}
 
 }

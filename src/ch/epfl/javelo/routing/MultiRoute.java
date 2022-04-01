@@ -4,29 +4,23 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class MultiRoute implements Route{
     private final List<Route> allRoutes;
-    private final double[] distances;
 
     public MultiRoute(List<Route> segments){
-        //Preconditions.checkArgument(!segments.isEmpty());
-        allRoutes = List.copyOf(segments); // faire de même dans singleroute
-        this.distances = new double[allRoutes.size()+1];
-        distances[0] = 0;
-        for (int i = 1; i < distances.length; i++) {
-            distances[i] = distances[i - 1] + (allRoutes.get(i-1).length());
-        }
+        Preconditions.checkArgument(!segments.isEmpty());
+        allRoutes = List.copyOf(segments);
     }
 
     /**
-     *
-     * @param position
+     * @param position any position
      * @return index of the segment that contains the given position
      */
     @Override
@@ -46,7 +40,6 @@ public final class MultiRoute implements Route{
         }
         return index-1;
     }
-
 
     /**
      * Iterates of all the routes in the Multiroute.
@@ -102,7 +95,6 @@ public final class MultiRoute implements Route{
         position = Math2.clamp(0, position, length());
         double pos = 0;
 
-        //todo: rendre ça plus joli
         for (Route route : allRoutes) {
             if (position > pos + route.length()) {
                 pos+=route.length();
@@ -137,7 +129,7 @@ public final class MultiRoute implements Route{
 
     /**
      * Iterates of all the routes in the Multiroute.
-     * @param point
+     * @param point any point
      * @return RoutePoint closest to the given PointCh point
      */
     @Override
@@ -156,7 +148,7 @@ public final class MultiRoute implements Route{
 
     /**
      *
-     * @param position
+     * @param position any position
      * @return height of the position on path, can be NaN if edge has no profile
      */
     @Override
@@ -164,7 +156,6 @@ public final class MultiRoute implements Route{
         position = Math2.clamp(0, position, length());
         double pos = 0;
 
-        //todo: rendre ça plus joli
         for (Route route : allRoutes) {
             if (position > pos + route.length()) {
                 pos+=route.length();
@@ -172,6 +163,6 @@ public final class MultiRoute implements Route{
                 return route.elevationAt(position-pos);
             }
         }
-        return 0d;
+        return 0;
     }
 }

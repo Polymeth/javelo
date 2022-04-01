@@ -10,7 +10,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * @author Loris Tran (341214)
  */
 public record RoutePoint(PointCh point,double position, double distanceToReference) {
-    public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);//todo rly public?
+    public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
 
     /**
      * @param positionDifference positive or negative difference

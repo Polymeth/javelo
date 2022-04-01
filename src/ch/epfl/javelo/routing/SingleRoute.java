@@ -8,22 +8,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-//todo: clamp pour la position
 /**
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
 public final class SingleRoute implements Route {
-    private final ArrayList<Edge> allEdges = new ArrayList<>();
+    private final List<Edge> allEdges;
     private final double[] distances;
 
     public SingleRoute(List<Edge> edges) {
         Preconditions.checkArgument(edges.size() != 0);
 
-        allEdges.addAll(edges);
+        allEdges = List.copyOf(edges);
         this.distances = new double[allEdges.size()+1];
-        distances[0] = 0; // todo inutile je crois
         for (int i = 1; i < distances.length; i++) {
             distances[i] = distances[i - 1] + (allEdges.get(i-1).length());
         }
@@ -64,9 +61,8 @@ public final class SingleRoute implements Route {
     @Override
     public List<PointCh> points() {
         List<PointCh> points = new ArrayList<>();
-        points.add(pointAt(0));
-        for (int i = 1; i < distances.length; i++) {
-            points.add(pointAt(distances[i]));
+        for(double distance : distances) {
+            points.add(pointAt(distance));
         }
         return points;
     }
@@ -89,7 +85,7 @@ public final class SingleRoute implements Route {
      * @return the closest node of the entered position of the route
      */
     @Override
-    public int nodeClosestTo(double position) { // todo: super moche je crois
+    public int nodeClosestTo(double position) {
         position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
 
@@ -99,6 +95,7 @@ public final class SingleRoute implements Route {
             index = -(index + 2);
             PointCh point = allEdges.get(index).pointAt(position);
             double u = position - distances[index];
+
             return (u <= allEdges.get(index).length()/2)
                     ? allEdges.get(index).fromNodeId()
                     : allEdges.get(index).toNodeId();
@@ -112,10 +109,13 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint minimum = RoutePoint.NONE;
+        double pos = 0;
         for (Edge edge : allEdges) {
-            double distance = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
-            minimum = minimum.min(edge.pointAt(distance), distances[edge.fromNodeId()] + distance,
-                    edge.pointAt(distance).distanceTo(point));
+            double edgePosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
+            PointCh newPoint = pointAt(edgePosition + pos);
+            double distance = newPoint.distanceTo(point);
+            minimum = minimum.min(newPoint, edgePosition+pos, distance);
+            pos += edge.length();
         }
         return minimum;
     }
@@ -125,7 +125,7 @@ public final class SingleRoute implements Route {
      * @return the elevation at the entered position of the route
      */
     @Override
-    public double elevationAt(double position) { // todo moche un peu
+    public double elevationAt(double position) {
         position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
 

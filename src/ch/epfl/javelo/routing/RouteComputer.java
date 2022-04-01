@@ -6,6 +6,10 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
@@ -15,6 +19,13 @@ public final class RouteComputer {
         this.costFunction = costFunction;
     }
 
+    /**
+     * Implementation of A* algorithm to find shortest path from a nodeID to a given nodeID
+     * Also implements a cost function to go for an optimal path with a bike
+     * @param startNodeId nodeID of the start of the path
+     * @param endNodeId nodeID of the end of the path
+     * @return best Route to the point
+     */
     public Route bestRouteBetween(int startNodeId, int endNodeId){
         Preconditions.checkArgument(startNodeId != endNodeId);
 
@@ -29,10 +40,13 @@ public final class RouteComputer {
         WeightedNode currentNode;
         PointCh endPoint = graph.nodePoint(endNodeId);
 
-        while(!(toExplore.isEmpty())) {
-            // todo: attention au cas où le while arrive à un cas sans toexplore
+        while(!toExplore.isEmpty()) {
             do {
-                currentNode = toExplore.remove();
+                if (!toExplore.isEmpty()) {
+                    currentNode = toExplore.remove();
+                } else {
+                    return constructPath(previous, startNodeId, endNodeId);
+                }
             } while (distance[currentNode.nodeId] == Float.NEGATIVE_INFINITY);
 
             if (currentNode.nodeId == endNodeId) {
@@ -58,6 +72,12 @@ public final class RouteComputer {
         return null;
     }
 
+    /**
+     * @param previous the array with the parent node of each node
+     * @param startNodeId the first node id
+     * @param endNodeId the last node id
+     * @return the route built of the pathfinding algorithm
+     */
     private Route constructPath(int[] previous, int startNodeId, int endNodeId) {
         List<Edge> path = new ArrayList<>();
         int id = endNodeId;
@@ -66,7 +86,6 @@ public final class RouteComputer {
                 int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(id, i));
                 if (targetNodeId == previous[id]) {
                     path.add(Edge.of(graph, graph.nodeOutEdgeId(id, i), id, previous[id]));
-                    System.out.println("previous: " + previous[id]);
                     break;
                 }
             }
@@ -77,6 +96,9 @@ public final class RouteComputer {
         return new SingleRoute(path);
     }
 
+    /**
+     * WeightedNode that have a weighted distance and an ID associated to it
+     */
     private record WeightedNode(int nodeId, float distance)
             implements Comparable<WeightedNode> {
         @Override

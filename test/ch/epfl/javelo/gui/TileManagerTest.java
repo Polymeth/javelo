@@ -11,7 +11,7 @@ class TileManagerTest {
 
     @Test
     void imageForTileAt() throws Exception {
-      //  TileManager manager = new TileManager(Path.of("lol",));
-      //  manager.imageForTileAt(191919);
+        TileManager manager = new TileManager(Path.of("cache"), "tile.openstreetmap.org");
+        manager.imageForTileAt(new TileManager.TileId(19, 271725, 185422));
     }
 }

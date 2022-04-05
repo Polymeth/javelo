@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +96,7 @@ public final class MultiRoute implements Route{
 
         for (Route route : allRoutes) {
             if (position > pos + route.length()) {
-                pos+=route.length();
+                pos += route.length();
             } else {
                 return route.pointAt(position-pos);
             }
@@ -118,12 +117,11 @@ public final class MultiRoute implements Route{
 
         for (Route route : allRoutes) {
             if (position > pos + route.length()) {
-                pos+=route.length();
+                pos += route.length();
             } else {
                 return route.nodeClosestTo(position-pos);
             }
         }
-
         return 0;
     }
 

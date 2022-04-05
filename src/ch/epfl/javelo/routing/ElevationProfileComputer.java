@@ -2,10 +2,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Rayan BOUCHENY (327575)
@@ -47,7 +44,6 @@ public final class ElevationProfileComputer {
                 edgesElevations2[i] = 0;
             }
         }
-
 
         //Case if NaN in front
         for(int i = 0; Float.isNaN(edgesElevations2[i]); i++){

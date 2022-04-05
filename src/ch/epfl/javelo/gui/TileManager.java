@@ -8,29 +8,35 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class TileManager {
+    private final Path path;
+    private final String serverName;
 
-    Map<Integer, Image> cache = new LinkedHashMap<>();
+    private final Map<TileId, Image> cache = new LinkedHashMap<>();
 
-    public TileManager(Path path, String ServerName){
-
+    public TileManager(Path path, String ServerName) throws IOException {
+        this.serverName = ServerName;
+        this.path = path;
+        if (!Files.exists(path)) Files.createDirectories(path);
     }
 
     // todo: mieux gérer les exceptions
-    public Image imageForTileAt(int tileId) throws Exception {
+    public Image imageForTileAt(TileId tileId) throws Exception {
         if(cache.get(tileId) != null){
             return cache.get(tileId);
-
         } else { // todo: bouger ça dans une condition "if not dans le cache disk"
-            URL u = new URL("https://tile.openstreetmap.org/19/271725/185422.png");
+
+            URL u = new URL("https://" + serverName + "/" + tileId.zoomLevel + "/" + tileId.x + "/" + tileId.y + ".png");
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
-
-            OutputStream o = new FileOutputStream("cache/test/yolo.png");
+            
+            Path imagePath = Path.of(tileId.zoomLevel + "/" + tileId.x + "/" + tileId.y + ".png");
+            OutputStream o = new FileOutputStream(path.resolve(imagePath).toString());
             try(InputStream i = c.getInputStream()) {
                 i.transferTo(o);
             }

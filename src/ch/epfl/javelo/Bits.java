@@ -1,7 +1,5 @@
 package ch.epfl.javelo;
 
-import javax.swing.text.AbstractDocument;
-
 /**
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)

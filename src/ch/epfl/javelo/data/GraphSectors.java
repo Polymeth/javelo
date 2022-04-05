@@ -2,11 +2,9 @@ package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
 import static ch.epfl.javelo.projection.SwissBounds.*;
 
 /**
@@ -20,7 +18,6 @@ public record GraphSectors(ByteBuffer buffer) {
 
     //Composition du buffer
     //8bit_index 8bit_index 8bit_index 8bit_index 8bit_nbnoeud 8bit nbnoeuds
-
     /**
      *
      * @param center Coordinates of center of radius (in PointCh format)
@@ -51,14 +48,13 @@ public record GraphSectors(ByteBuffer buffer) {
         int upsector_n = (int)(( up_square_n- MIN_N)/((1.7265625)*1000))+1;
         upsector_n = Math2.clamp(0, upsector_n, 128);
 
-
-        for(int j = downsector_n; j < upsector_n; j ++) {
+        for(int j = downsector_n; j < upsector_n; j++) {
             for(int i = downsector_e; i < upsector_e; i++) {
-                int index = 128* j + i;
+                int index = 128*j + i;
                 int bytes_index = index * SECTOR_BYTES;
 
                 int firstnode = buffer.getInt(bytes_index);
-                int lastnodes = firstnode + Short.toUnsignedInt(buffer.getShort(bytes_index + OFFSET_BYTES)); //id first node + last 2 bytes of buffer (aka number of nodes)
+                int lastnodes = firstnode + Short.toUnsignedInt(buffer.getShort(bytes_index + OFFSET_BYTES));
 
                 Sector sect = new Sector(firstnode, lastnodes);
                 sectors.add(sect);
@@ -68,5 +64,4 @@ public record GraphSectors(ByteBuffer buffer) {
     }
 
     public record Sector(int startNodeId, int endNodeId){}
-
 }

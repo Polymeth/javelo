@@ -1,8 +1,6 @@
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Preconditions;
-import org.w3c.dom.Attr;
-
 import java.util.StringJoiner;
 
 /**

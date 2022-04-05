@@ -56,12 +56,12 @@ public final class RouteComputer {
             for (int i = 0; i < graph.nodeOutDegree(currentNode.nodeId); i++) {
                 int edgeId = graph.nodeOutEdgeId(currentNode.nodeId, i);
                 int targetNodeId = graph.edgeTargetNodeId(edgeId);
-                double Hcost = endPoint.distanceTo(graph.nodePoint(targetNodeId));
                 double cost = costFunction.costFactor(currentNode.nodeId, edgeId);
                 double distanceToPoint = distance[currentNode.nodeId]
                         + (graph.edgeLength(edgeId)) * cost;
 
                 if (distanceToPoint < distance[targetNodeId]) {
+                    double Hcost = endPoint.distanceTo(graph.nodePoint(targetNodeId));
                     distance[targetNodeId] = (float)distanceToPoint;
                     previous[targetNodeId] = currentNode.nodeId;
                     toExplore.add(new WeightedNode(targetNodeId, (float)(distanceToPoint+Hcost)));
@@ -81,6 +81,7 @@ public final class RouteComputer {
     private Route constructPath(int[] previous, int startNodeId, int endNodeId) {
         List<Edge> path = new ArrayList<>();
         int id = endNodeId;
+
         while (id != startNodeId) {
             for (int i = 0; i < graph.nodeOutDegree(id); i++) {
                 int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(id, i));
@@ -91,7 +92,6 @@ public final class RouteComputer {
             }
             id = previous[id];
         }
-
         Collections.reverse(path);
         return new SingleRoute(path);
     }

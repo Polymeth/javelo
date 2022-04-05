@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,7 +127,7 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
-
+//todo: meilleur if (et le test)
         if (index < 0) {
             index = -(index)-2;
             return (allEdges.get(index).elevationAt(position - distances[index]));

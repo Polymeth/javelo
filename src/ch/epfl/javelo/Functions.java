@@ -27,7 +27,7 @@ public final class Functions {
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
         Preconditions.checkArgument(samples.length >= 2);
         Preconditions.checkArgument(xMax > 0);
-        return new Sampled(samples, xMax);
+        return new Sampled(samples.clone(), xMax);
     }
 
     private record Constant(double y) implements DoubleUnaryOperator {

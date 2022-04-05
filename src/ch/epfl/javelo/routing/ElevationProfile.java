@@ -2,10 +2,9 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Preconditions;
-
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
-import java.util.function.Function;
+
 
 /**
  * @author Rayan BOUCHENY (327575)
@@ -33,9 +32,14 @@ public final class ElevationProfile {
      */
     public double minElevation(){
         DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
-        for(int i = 0; i< elevationSamples.length; i++){
-            stats.accept(elevationSamples[i]);
+//todo: test
+        for(float elevationSample : elevationSamples) {
+            stats.accept(elevationSample);
         }
+
+       // for(int i = 0; i< elevationSamples.length; i++){
+         //   stats.accept(elevationSamples[i]);
+        //}
         return stats.getMin();
     }
 
@@ -44,8 +48,8 @@ public final class ElevationProfile {
      */
     public double maxElevation(){
         DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
-        for(int i = 0; i< elevationSamples.length; i++){
-            stats.accept(elevationSamples[i]);
+        for (float elevationSample : elevationSamples) {
+            stats.accept(elevationSample);
         }
         return stats.getMax();
     }

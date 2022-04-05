@@ -41,12 +41,5 @@ public record PointCh(double e, double n) {
     public double lat() {
         return Ch1903.lat(e, n);
     }
-
-    public double e() {
-        return e;
-    }
-
-    public double n() {
-        return n;
-    }
+    
 }

@@ -2,9 +2,6 @@ package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
-
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -12,9 +9,7 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
 public final class Graph {
@@ -139,6 +134,7 @@ public final class Graph {
         for (int i = 0; i < sectorsWithinPoint.size(); i++) {
             startNodeId = sectorsWithinPoint.get(i).startNodeId();
             endNodeId = sectorsWithinPoint.get(i).endNodeId();
+
             for (int j = startNodeId; j < endNodeId; j++) {
                 PointCh targetPoint = nodePoint(j);
                 double distance = targetPoint.squaredDistanceTo(point);

@@ -3,9 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
-
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -15,7 +13,6 @@ import static java.lang.Short.toUnsignedInt;
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations)
 {
     private static final int EMPTY = 0;
@@ -83,7 +80,9 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
     public float[] profileSamples(int edgeId) {
         int firstIndex = Bits.extractUnsigned(profileIds.get(edgeId), 0, 30);
-        int samplesNumber = 1 + Math2.ceilDiv(toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)), Q28_4.ofInt(2));
+        int samplesNumber = 1 + Math2.ceilDiv(toUnsignedInt(edgesBuffer.getShort(OFFSET_LENGTH + edgeId * OFFSET_EDGE)),
+                Q28_4.ofInt(2));
+
         float[] decompressed = new float[samplesNumber];
 
         switch (Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)) {

@@ -1,6 +1,5 @@
 package ch.epfl.javelo;
 
-
 /**
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)

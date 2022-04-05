@@ -85,7 +85,7 @@ public final class RouteComputer {
             for (int i = 0; i < graph.nodeOutDegree(id); i++) {
                 int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(id, i));
                 if (targetNodeId == previous[id]) {
-                    path.add(Edge.of(graph, graph.nodeOutEdgeId(id, i), id, previous[id]));
+                    path.add(Edge.of(graph, graph.nodeOutEdgeId(id, i), previous[id], id));
                     break;
                 }
             }

@@ -80,8 +80,8 @@ public record PointWebMercator(double x, double y) {
      * @return Point in Swiss System if point is in SwissBounds limits, null otherwise
      */
     public PointCh toPointCh() {
-        double e = Ch1903.e(Math.toRadians(lon()), Math.toRadians(lat()));
-        double n = Ch1903.n(Math.toRadians(lon()), Math.toRadians(lat()));
+        double e = Ch1903.e(lon(), (lat()));
+        double n = Ch1903.n(lon(), (lat()));
         return SwissBounds.containsEN(e, n) ? new PointCh(e, n) : null;
     }
 }

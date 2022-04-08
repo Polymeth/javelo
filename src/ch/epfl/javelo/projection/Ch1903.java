@@ -16,6 +16,7 @@ public final class Ch1903 {
      */
     public static double e(double lon, double lat) {
         lat = Math.toDegrees(lat);
+        lon = Math.toDegrees(lon);
         double lambda1 = Math.pow(10, -4)*(3600*lon-26782.5);
         double phi1 = Math.pow(10, -4)*(3600*lat-169028.66);
 
@@ -29,6 +30,7 @@ public final class Ch1903 {
      * @return returns the North coordinates in the swiss system using latitude and longitude values
      */
     public static double n(double lon, double lat) {
+        lat = Math.toDegrees(lat);
         lon = Math.toDegrees(lon);
         double lambda1 = Math.pow(10, -4)*(3600*lon - 26782.5);
         double phi1 = Math.pow(10, -4)*(3600*lat - 169028.66);

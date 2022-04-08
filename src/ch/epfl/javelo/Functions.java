@@ -3,26 +3,28 @@ package ch.epfl.javelo;
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * Utility class creating math functions
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
 public final class Functions {
 
-    private Functions() {
-    }
+    private Functions() {}
 
     /**
      * @param y a real number
      * @return returns a constant function that is always y
      */
     public static DoubleUnaryOperator constant(double y) {
-        return new Constant(y);
+        return (operand) -> y;
     }
 
     /**
      * @param samples equally spaced height points
      * @param xMax the maximum distance (the distance of the last height point)
      * @return returns the interpolated function based on the equally spaced given heigh points
+     * @throws IllegalArgumentException if there is strictly less than 2 samples or if the xMax value isnt
+     *                                  strictly positive
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {
         Preconditions.checkArgument(samples.length >= 2);
@@ -30,14 +32,12 @@ public final class Functions {
         return new Sampled(samples.clone(), xMax);
     }
 
-    private record Constant(double y) implements DoubleUnaryOperator {
-        @Override
-        public double applyAsDouble(double operand) {
-            return y;
-        }
-    }
-
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator {
+
+        /**
+         * @param operand the x coordinate where you want to see the interpolated value
+         * @return the interpolated value at x
+         */
         @Override
         public double applyAsDouble(double operand) {
             if (operand >= xMax) {

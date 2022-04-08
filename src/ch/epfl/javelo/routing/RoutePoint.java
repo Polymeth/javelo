@@ -5,10 +5,12 @@ import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 
 /**
+ * Represents a point on a route
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-public record RoutePoint(PointCh point,double position, double distanceToReference) {
+public record RoutePoint(PointCh point, double position, double distanceToReference) {
+    // a public constant which represent an non existing point
     public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
 
     /**
@@ -31,7 +33,8 @@ public record RoutePoint(PointCh point,double position, double distanceToReferen
      * @param thatPoint any point
      * @param thatPosition any position
      * @param thatDistanceToReference any distance to reference
-     * @return itself if the distance to reference is lower than the entered one, otherwise it creates a new point with the entered arguments
+     * @return itself if the distance to reference is lower than the entered one,
+     *          otherwise it creates a new point with the entered arguments
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
         return (this.distanceToReference < thatDistanceToReference)

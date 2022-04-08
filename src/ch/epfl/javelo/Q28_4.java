@@ -1,6 +1,7 @@
 package ch.epfl.javelo;
 
 /**
+ * Utility class to manipulate Q28_4 bits format
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */

@@ -3,15 +3,16 @@ package ch.epfl.javelo.projection;
 import ch.epfl.javelo.Math2;
 
 /**
+ * Utility class for WebMercator coordinates conversions
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
 public final class WebMercator {
 
-    private WebMercator() {}
+    private WebMercator() {
+    }
 
     /**
-     *
      * @param lon longitudinal coordinates of point (radian)
      * @return x-coordinates of point (WebMercator system)
      */
@@ -20,7 +21,6 @@ public final class WebMercator {
     }
 
     /**
-     *
      * @param lat lattiduinal coordinates of point (radian)
      * @return y-coordinates of point (WebMercator)
      */

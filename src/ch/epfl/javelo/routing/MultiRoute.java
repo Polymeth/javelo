@@ -3,17 +3,26 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Creates a route composed of multiples SingleRoute or MultiRoute
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-public final class MultiRoute implements Route{
+public final class MultiRoute implements Route {
     private final List<Route> allRoutes;
 
-    public MultiRoute(List<Route> segments){
+    /**
+     * Creates a route composed of multiples SingleRoute or MultiRoute
+     *
+     * @param segments List of all the routes which compose the MultiRoute
+     * @throws IllegalArgumentException if the segments list is empty
+     */
+    public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!segments.isEmpty());
         allRoutes = List.copyOf(segments);
     }
@@ -31,17 +40,18 @@ public final class MultiRoute implements Route{
         for (Route route : allRoutes) {
             if (route.length() < pos) {
                 index += route.indexOfSegmentAt(pos) + 1;
-                pos-=route.length();
+                pos -= route.length();
             } else {
                 index += route.indexOfSegmentAt(pos) + 1;
                 break;
             }
         }
-        return index-1;
+        return index - 1;
     }
 
     /**
      * Iterates of all the routes in the Multiroute.
+     *
      * @return Total length of the path, in meters.
      */
     @Override
@@ -55,12 +65,13 @@ public final class MultiRoute implements Route{
 
     /**
      * Iterates of all the routes in the Multiroute.
+     *
      * @return All the edges of the path
      */
     @Override
     public List<Edge> edges() {
         List<Edge> allEdges = new ArrayList<>();
-        for(Route route : allRoutes){
+        for (Route route : allRoutes) {
             allEdges.addAll(route.edges());
         }
         return allEdges;
@@ -68,14 +79,15 @@ public final class MultiRoute implements Route{
 
     /**
      * Iterates of all the routes in the Multiroute.
+     *
      * @return All points on the end of the edges, without duplicates
      */
     @Override
     public List<PointCh> points() {
         List<PointCh> allPoints = new ArrayList<>();
-        for(Route route : allRoutes){
-            for(PointCh point : route.points()){
-                if(!(allPoints.contains(point))){
+        for (Route route : allRoutes) {
+            for (PointCh point : route.points()) {
+                if (!(allPoints.contains(point))) {
                     allPoints.add(point);
                 }
             }
@@ -86,6 +98,7 @@ public final class MultiRoute implements Route{
     /**
      * Iterates on all the routes. If the position is over the length of a route, then it must be on a route after it,
      * so we substract the length of the route to the position, and look on the next route
+     *
      * @param position the position
      * @return the PointCh at the given position
      */
@@ -98,7 +111,7 @@ public final class MultiRoute implements Route{
             if (position > pos + route.length()) {
                 pos += route.length();
             } else {
-                return route.pointAt(position-pos);
+                return route.pointAt(position - pos);
             }
         }
         return null;
@@ -107,6 +120,7 @@ public final class MultiRoute implements Route{
     /**
      * Iterates on all the routes. If the position is over the length of a route, then it must be on a route after it,
      * so we substract the length of the route to the position, and look on the next route
+     *
      * @param position the position
      * @return the closest node of the path to the position
      */
@@ -119,7 +133,7 @@ public final class MultiRoute implements Route{
             if (position > pos + route.length()) {
                 pos += route.length();
             } else {
-                return route.nodeClosestTo(position-pos);
+                return route.nodeClosestTo(position - pos);
             }
         }
         return 0;
@@ -127,6 +141,7 @@ public final class MultiRoute implements Route{
 
     /**
      * Iterates of all the routes in the Multiroute.
+     *
      * @param point any point
      * @return RoutePoint closest to the given PointCh point
      */
@@ -145,7 +160,6 @@ public final class MultiRoute implements Route{
     }
 
     /**
-     *
      * @param position any position
      * @return height of the position on path, can be NaN if edge has no profile
      */
@@ -156,9 +170,9 @@ public final class MultiRoute implements Route{
 
         for (Route route : allRoutes) {
             if (position > pos + route.length()) {
-                pos+=route.length();
+                pos += route.length();
             } else {
-                return route.elevationAt(position-pos);
+                return route.elevationAt(position - pos);
             }
         }
         return 0;

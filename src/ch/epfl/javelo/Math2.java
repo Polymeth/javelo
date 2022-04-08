@@ -1,29 +1,32 @@
 package ch.epfl.javelo;
 
 /**
+ * Utility class with different mathematicals methods
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
 public final class Math2 {
 
-    private Math2(){}
+    private Math2() {
+    }
 
     /**
-     *
      * @param x integer
      * @param y integer
      * @return the ceiled value of the division of x by y
+     * @throws IllegalArgumentException if x isn't positive or y isn't strictly positive
      */
-    public static int ceilDiv(int x, int y){
-        Preconditions.checkArgument(x>=0);
-        Preconditions.checkArgument(y>0);
+    public static int ceilDiv(int x, int y) {
+        Preconditions.checkArgument(x >= 0);
+        Preconditions.checkArgument(y > 0);
         return ((x + y - 1) / y);
     }
 
     /**
      * @param y0 y-coordinate of 1st point
      * @param y1 y-coordinate of 2nd point
-     * @param x x-coordinate of point on the slope
+     * @param x  x-coordinate of point on the slope
      * @return slope of line at point x
      */
     public static double interpolate(double y0, double y1, double x) {
@@ -33,8 +36,9 @@ public final class Math2 {
     /**
      * @param x coordinates of point
      * @return hyperbolix sinus inverse of point x
+     * @throws IllegalArgumentException if the exponential value of the entered x isn't striclty positive
      */
-    public static double asinh(double x){
+    public static double asinh(double x) {
         double exp = x + Math.sqrt(Math.pow(x, 2) + 1);
         Preconditions.checkArgument(exp > 0);
         return Math.log(exp);
@@ -42,30 +46,32 @@ public final class Math2 {
 
     /**
      * @param min minimum bound for variable v
-     * @param v value to be bounded
+     * @param v   value to be bounded
      * @param max maximum bound for variable v
      * @return value of v between min and max (included)
+     * @throws IllegalArgumentException if the minimum is strictly bigger than the maximum
      */
-    public static int clamp(int min, int v, int max){
+    public static int clamp(int min, int v, int max) {
         Preconditions.checkArgument(min < max);
-        if (v < min){
+        if (v < min) {
             return min;
-        } else if (v > max){
+        } else if (v > max) {
             return max;
         } else return v;
     }
 
     /**
      * @param min minimum bound for variable v
-     * @param v value to be bounded
+     * @param v   value to be bounded
      * @param max maximum bound for variable v
      * @return value of v between min and max (included)
+     * @throws IllegalArgumentException if the minimum is strictly bigger than the maximum
      */
-    public static double clamp(double min, double v, double max){
+    public static double clamp(double min, double v, double max) {
         Preconditions.checkArgument(min < max);
-        if (v < min){
+        if (v < min) {
             return min;
-        } else if (v > max){
+        } else if (v > max) {
             return max;
         } else return v;
     }
@@ -78,7 +84,7 @@ public final class Math2 {
      * @return the dot product of the vectors u and v
      */
     public static double dotProduct(double uX, double uY, double vX, double vY) {
-        return uX*vX + uY*vY;
+        return uX * vX + uY * vY;
     }
 
     /**
@@ -107,10 +113,11 @@ public final class Math2 {
      * @param pX x coordinates of the P point
      * @param pY y coordinates of the P point
      * @return the lenght of the orthogonal projection of the vector from A to P on the vector from A to B
+     * @throws IllegalArgumentException if the entered vector is just a point
      */
-    public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY){
+    public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY) {
         double vect = norm((bX - aX), (bY - aY));
         Preconditions.checkArgument(vect != 0);
-        return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY)/vect;
+        return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY) / vect;
     }
 }

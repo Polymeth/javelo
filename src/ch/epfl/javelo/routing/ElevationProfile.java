@@ -2,11 +2,13 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Preconditions;
+
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
 
-
 /**
+ * Creates an elevation profile according to entered elevation points
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
@@ -14,7 +16,14 @@ public final class ElevationProfile {
     private final double length;
     private final float[] elevationSamples;
 
-    public ElevationProfile(double length, float[] elevationSamples){
+    /**
+     * Creates an elevation profile according to entered elevation points
+     *
+     * @param length           length of the profile (in meter)
+     * @param elevationSamples the array containing all elevation points
+     * @throws IllegalArgumentException if the length is negative or if there is stricly less than 2 samples
+     */
+    public ElevationProfile(double length, float[] elevationSamples) {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples;
@@ -23,30 +32,25 @@ public final class ElevationProfile {
     /**
      * @return length of profile (in meters)
      */
-    public double length(){
+    public double length() {
         return length;
     }
 
     /**
      * @return minimum height of the profile (in meters)
      */
-    public double minElevation(){
+    public double minElevation() {
         DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
-//todo: test
-        for(float elevationSample : elevationSamples) {
+        for (float elevationSample : elevationSamples) {
             stats.accept(elevationSample);
         }
-
-       // for(int i = 0; i< elevationSamples.length; i++){
-         //   stats.accept(elevationSamples[i]);
-        //}
         return stats.getMin();
     }
 
     /**
      * @return maximum height of profile (in meters)
      */
-    public double maxElevation(){
+    public double maxElevation() {
         DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
         for (float elevationSample : elevationSamples) {
             stats.accept(elevationSample);
@@ -57,11 +61,11 @@ public final class ElevationProfile {
     /**
      * @return total positive ascent of profile (in meters)
      */
-    public double totalAscent(){
+    public double totalAscent() {
         double ascent = 0;
-        for(int i = 1; i < elevationSamples.length; i++){
-            if(elevationSamples[i] - elevationSamples[i-1] > 0){
-                ascent += elevationSamples[i] - elevationSamples[i-1];
+        for (int i = 1; i < elevationSamples.length; i++) {
+            if (elevationSamples[i] - elevationSamples[i - 1] > 0) {
+                ascent += elevationSamples[i] - elevationSamples[i - 1];
             }
         }
         return ascent;
@@ -70,11 +74,11 @@ public final class ElevationProfile {
     /**
      * @return total positive descent of profile (in meters)
      */
-    public double totalDescent(){
+    public double totalDescent() {
         double descent = 0;
-        for(int i = 1; i < elevationSamples.length; i++){
-            if(elevationSamples[i] - elevationSamples[i-1] < 0){
-                descent += elevationSamples[i] - elevationSamples[i-1];
+        for (int i = 1; i < elevationSamples.length; i++) {
+            if (elevationSamples[i] - elevationSamples[i - 1] < 0) {
+                descent += elevationSamples[i] - elevationSamples[i - 1];
             }
         }
         return Math.abs(descent);
@@ -84,11 +88,11 @@ public final class ElevationProfile {
      * @param position of wanted point height (can be negative or over length of samples)
      * @return height of profile at given position
      */
-    public double elevationAt(double position){
-        if(position < 0){
+    public double elevationAt(double position) {
+        if (position < 0) {
             return elevationSamples[0];
-        } else if(position >= length) {
-            return elevationSamples[elevationSamples.length -1];
+        } else if (position >= length) {
+            return elevationSamples[elevationSamples.length - 1];
         } else {
             DoubleUnaryOperator sample = Functions.sampled(elevationSamples, length);
             return sample.applyAsDouble(position);

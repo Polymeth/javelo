@@ -3,20 +3,25 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * Create a edge which a part of the route between two nodes
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length, DoubleUnaryOperator profile) {
+public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length,
+                   DoubleUnaryOperator profile) {
 
     /**
+     * Creates a edge using two nodeId
      *
-     * @param graph graph you want the instance of edges
-     * @param edgeId given id of edge
+     * @param graph      graph you want the instance of edges
+     * @param edgeId     given id of edge
      * @param fromNodeId given id of starting node
-     * @param toNodeId given id of end node
+     * @param toNodeId   given id of end node
      * @return instance of Edge with given parameters
      */
     public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
@@ -39,7 +44,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return a PointCh at the entered distance on the edge
      */
     public PointCh pointAt(double position) {
-        double progression = position/length;
+        double progression = position / length;
         return new PointCh(Math2.interpolate(fromPoint.e(), toPoint.e(), progression),
                 Math2.interpolate(fromPoint.n(), toPoint.n(), progression));
     }

@@ -3,6 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -10,11 +11,12 @@ import java.nio.ShortBuffer;
 import static java.lang.Short.toUnsignedInt;
 
 /**
+ * Creates the logic behind the edges of the graph
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
-public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations)
-{
+public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
     private static final int EMPTY = 0;
     private static final int UNCOMPRESSED = 1;
     private static final int COMPRESSED_Q_4_4 = 2;
@@ -30,7 +32,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return true if the edge is going to the inverse of the direction of its OSM data
      */
     public boolean isInverted(int edgeId) {
-        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId*OFFSET_EDGE), 31, 1) == 1;
+        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId * OFFSET_EDGE), 31, 1) == 1;
     }
 
     /**
@@ -38,7 +40,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the index of the first node corresponding to the edge
      */
     public int targetNodeId(int edgeId) {
-        int value = edgesBuffer.getInt(edgeId*OFFSET_EDGE);
+        int value = edgesBuffer.getInt(edgeId * OFFSET_EDGE);
         return (isInverted(edgeId)) ? ~value : value;
     }
 
@@ -55,7 +57,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return the elevation gain of the edge
      */
     public double elevationGain(int edgeId) {
-        return Q28_4.asDouble(toUnsignedInt(edgesBuffer.getShort(OFFSET_ELEVATION+edgeId*OFFSET_EDGE)));
+        return Q28_4.asDouble(toUnsignedInt(edgesBuffer.getShort(OFFSET_ELEVATION + edgeId * OFFSET_EDGE)));
     }
 
     /**
@@ -63,7 +65,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return returns the index of the first attribute
      */
     public int attributesIndex(int edgeId) {
-        return toUnsignedInt(edgesBuffer.getShort(OFFSET_ATTRIBUTES+edgeId*OFFSET_EDGE));
+        return toUnsignedInt(edgesBuffer.getShort(OFFSET_ATTRIBUTES + edgeId * OFFSET_EDGE));
     }
 
     /**
@@ -86,7 +88,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         float[] decompressed = new float[samplesNumber];
 
         switch (Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)) {
-            case EMPTY: // todo : enum ? could be swag
+            case EMPTY:
                 return new float[0];
             case UNCOMPRESSED:
                 for (int i = 0; i < samplesNumber; i++) {
@@ -104,25 +106,25 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     /**
      * @param samplesNumber the number of samples
-     * @param firstIndex the first index of the samples in the buffer
-     * @param edgeId the id of the edge you want to study
-     * @param type 4 or 8 depending on the compression
+     * @param firstIndex    the first index of the samples in the buffer
+     * @param edgeId        the id of the edge you want to study
+     * @param type          4 or 8 depending on the compression
      * @return the decompressed samples in the right order depending on the compression type
      */
     private float[] decompressSamples(int samplesNumber, int firstIndex, int edgeId, int type) {
         float[] decompressed = new float[samplesNumber];
         int samplesCount = 0;
 
-        for (int i = 0; i < Math2.ceilDiv(samplesNumber-1, 16/type)+1; i++) {
+        for (int i = 0; i < Math2.ceilDiv(samplesNumber - 1, 16 / type) + 1; i++) {
             if (i == 0) {
                 decompressed[i] = Q28_4.asFloat(elevations.get(firstIndex));
             } else {
-                for (int j = 0; j < 16/type; j++) {
+                for (int j = 0; j < 16 / type; j++) {
                     samplesCount++;
                     if (samplesCount < samplesNumber) {
-                        int start = (type == 4) ? 12-4*j : 8-8*j;
+                        int start = (type == 4) ? 12 - 4 * j : 8 - 8 * j;
                         float difference = Q28_4.asFloat(Bits.extractSigned(elevations.get(firstIndex + i), start, type));
-                        decompressed[samplesCount] = (decompressed[samplesCount-1])+difference;
+                        decompressed[samplesCount] = (decompressed[samplesCount - 1]) + difference;
                     }
                 }
             }
@@ -137,8 +139,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public float[] reverseOrder(float[] list) {
         float[] newList = new float[list.length];
         for (int i = 0; i < list.length; i++) {
-            newList[i] = list[list.length-i-1];
+            newList[i] = list[list.length - i - 1];
         }
         return newList;
     }
 }
+
+

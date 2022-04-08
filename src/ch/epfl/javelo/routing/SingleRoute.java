@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * A route maybe of multiple edges
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
@@ -15,8 +16,13 @@ public final class SingleRoute implements Route {
     private final List<Edge> allEdges;
     private final double[] distances;
 
+    /**
+     * Creates a route using a list of edges
+     * @param edges any list of edges to compose to route
+     * @throws IllegalArgumentException if the edges list is empty
+     */
     public SingleRoute(List<Edge> edges) {
-        Preconditions.checkArgument(edges.size() != 0);
+        Preconditions.checkArgument(!edges.isEmpty());
 
         allEdges = List.copyOf(edges);
         this.distances = new double[allEdges.size()+1];
@@ -92,9 +98,7 @@ public final class SingleRoute implements Route {
             return (index<allEdges.size()) ? allEdges.get(index).fromNodeId() : allEdges.get(index-1).toNodeId();
         } else {
             index = -(index + 2);
-            PointCh point = allEdges.get(index).pointAt(position);
             double u = position - distances[index];
-
             return (u <= allEdges.get(index).length()/2)
                     ? allEdges.get(index).fromNodeId()
                     : allEdges.get(index).toNodeId();
@@ -127,13 +131,11 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         position = Math2.clamp(0, position, length());
         int index = Arrays.binarySearch(distances, position);
-//todo: meilleur if (et le test)
-        if (index < 0) {
-            index = -(index)-2;
-            return (allEdges.get(index).elevationAt(position - distances[index]));
-        } else if (index >= allEdges.size()) {
+
+        if (index >= allEdges.size()){
             return (allEdges.get(index-1).elevationAt(position - distances[index-1]));
         } else {
+            if (index < 0) index = -(index)-2;
             return (allEdges.get(index).elevationAt(position - distances[index]));
         }
     }

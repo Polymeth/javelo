@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * Creates a pathfinding computer class
+ *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
  */
@@ -14,6 +16,13 @@ public final class RouteComputer {
     private final Graph graph;
     private final CostFunction costFunction;
 
+    /**
+     * Creates a pathfinding computer class
+     *
+     * @param graph        any graph
+     * @param costFunction the cost multiplication factor function for the route
+     *                     pathfinding algorithm
+     */
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
         this.costFunction = costFunction;
@@ -22,11 +31,14 @@ public final class RouteComputer {
     /**
      * Implementation of A* algorithm to find shortest path from a nodeID to a given nodeID
      * Also implements a cost function to go for an optimal path with a bike
+     *
      * @param startNodeId nodeID of the start of the path
-     * @param endNodeId nodeID of the end of the path
+     * @param endNodeId   nodeID of the end of the path
      * @return best Route to the point
+     * @throws IllegalArgumentException if the start node ID is the end node ID
+     *                                  (there is no route in that case)
      */
-    public Route bestRouteBetween(int startNodeId, int endNodeId){
+    public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
 
         float[] distance = new float[graph.nodeCount()];
@@ -40,7 +52,8 @@ public final class RouteComputer {
         WeightedNode currentNode;
         PointCh endPoint = graph.nodePoint(endNodeId);
 
-        while(!toExplore.isEmpty()) {
+        while (!toExplore.isEmpty()) {
+            // remove explored nodes
             do {
                 if (!toExplore.isEmpty()) {
                     currentNode = toExplore.remove();
@@ -49,10 +62,12 @@ public final class RouteComputer {
                 }
             } while (distance[currentNode.nodeId] == Float.NEGATIVE_INFINITY);
 
+            // check if we arrived
             if (currentNode.nodeId == endNodeId) {
                 return constructPath(previous, startNodeId, endNodeId);
             }
 
+            // pathfinding algorithm
             for (int i = 0; i < graph.nodeOutDegree(currentNode.nodeId); i++) {
                 int edgeId = graph.nodeOutEdgeId(currentNode.nodeId, i);
                 int targetNodeId = graph.edgeTargetNodeId(edgeId);
@@ -62,9 +77,9 @@ public final class RouteComputer {
 
                 if (distanceToPoint < distance[targetNodeId]) {
                     double Hcost = endPoint.distanceTo(graph.nodePoint(targetNodeId));
-                    distance[targetNodeId] = (float)distanceToPoint;
+                    distance[targetNodeId] = (float) distanceToPoint;
                     previous[targetNodeId] = currentNode.nodeId;
-                    toExplore.add(new WeightedNode(targetNodeId, (float)(distanceToPoint+Hcost)));
+                    toExplore.add(new WeightedNode(targetNodeId, (float) (distanceToPoint + Hcost)));
                 }
             }
             distance[currentNode.nodeId] = Float.NEGATIVE_INFINITY;
@@ -73,9 +88,9 @@ public final class RouteComputer {
     }
 
     /**
-     * @param previous the array with the parent node of each node
+     * @param previous    the array with the parent node of each node
      * @param startNodeId the first node id
-     * @param endNodeId the last node id
+     * @param endNodeId   the last node id
      * @return the route built of the pathfinding algorithm
      */
     private Route constructPath(int[] previous, int startNodeId, int endNodeId) {

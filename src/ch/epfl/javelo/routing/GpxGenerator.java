@@ -24,9 +24,15 @@ public final class GpxGenerator {
 
     }
 
+    /**
+     * Create the xml data that needs to be written in a gpx document
+     * @param route the route computed by the algorithm for the path
+     * @param profile the corresponding elevation profile of the route
+     * @return Document containing path (needs to be written in a gpx document)
+     */
     public static Document createGpx(Route route, ElevationProfile profile){
 
-        Document doc = newDocument(); // voir plus bas
+        Document doc = newDocument();
 
         Element root = doc.createElementNS("http://www.topografix.com/GPX/1/1", "gpx");
         doc.appendChild(root);
@@ -39,25 +45,20 @@ public final class GpxGenerator {
         root.setAttribute("version", "1.1");
         root.setAttribute("creator", "JaVelo");
 
+        //create elements needed for document
         Element metadata = doc.createElement("metadata");
         root.appendChild(metadata);
-
         Element name = doc.createElement("name");
         metadata.appendChild(name);
         name.setTextContent("Route JaVelo");
-
         Element rte = doc.createElement("rte");
-
-
 
         //Iterate on each edge of the route, and adds the frompoint, and the elevation based on the length of the edges
         int position = 0;
-        for(Edge edge : route.edges()){ //todo for i ou foreach ?
-            //Edge edge = route.edges().get(i);
-            //todo iterer avec la length de l'edge pour touver la position
+        for(Edge edge : route.edges()){
             Element rtept = doc.createElement("rtept");
-            rtept.setAttribute("lat",  String.format(Locale.ROOT, "%5f", edge.fromPoint().lat()));
-            rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",edge.fromPoint().lon()));
+            rtept.setAttribute("lat",  String.format(Locale.ROOT, "%5f", Math.toDegrees(edge.fromPoint().lat())));
+            rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",Math.toDegrees(edge.fromPoint().lon())));
 
             Element ele = doc.createElement("ele");
             ele.setTextContent(String.format(Locale.ROOT, "%2f",profile.elevationAt(position)));
@@ -71,20 +72,29 @@ public final class GpxGenerator {
 
         //Last point case
         Element rtept = doc.createElement("rtept");
-        rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", route.edges().get(route.edges().size() -1).toPoint().lat()));
-        rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",route.edges().get(route.edges().size() -1).toPoint().lon()));
+        rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() -1).toPoint().lat())));
+        rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",Math.toDegrees(route.edges().get(route.edges().size() -1).toPoint().lon())));
 
         Element ele = doc.createElement("ele");
         ele.setTextContent(String.format(Locale.ROOT, "%2f",profile.elevationAt(position)));
         rtept.appendChild(ele);
 
+        //append the created route to document
         rte.appendChild(rtept);
+        root.appendChild(rte);
 
         return doc;
     }
 
+    /**
+     * Write the path and elevation in a gpx file
+     * @param fileName Name of the file written in project folder (needs to end in .gpx)
+     * @param route the route computed by the algorithm for the path
+     * @param profile the corresponding elevation profile of the route
+     * @throws IOException
+     */
     public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException{
-        //todo try catch ?
+
         try{
             Document doc = createGpx(route, profile);
             Writer w = new PrintWriter(fileName);

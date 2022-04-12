@@ -20,18 +20,17 @@ import java.util.Locale;
 
 public final class GpxGenerator {
 
-    private GpxGenerator(){
-
+    private GpxGenerator() {
     }
 
     /**
      * Create the xml data that needs to be written in a gpx document
-     * @param route the route computed by the algorithm for the path
+     *
+     * @param route   the route computed by the algorithm for the path
      * @param profile the corresponding elevation profile of the route
      * @return Document containing path (needs to be written in a gpx document)
      */
-    public static Document createGpx(Route route, ElevationProfile profile){
-
+    public static Document createGpx(Route route, ElevationProfile profile) {
         Document doc = newDocument();
 
         Element root = doc.createElementNS("http://www.topografix.com/GPX/1/1", "gpx");
@@ -55,28 +54,26 @@ public final class GpxGenerator {
 
         //Iterate on each edge of the route, and adds the frompoint, and the elevation based on the length of the edges
         int position = 0;
-        for(Edge edge : route.edges()){
+        for (Edge edge : route.edges()) {
             Element rtept = doc.createElement("rtept");
-            rtept.setAttribute("lat",  String.format(Locale.ROOT, "%5f", Math.toDegrees(edge.fromPoint().lat())));
-            rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",Math.toDegrees(edge.fromPoint().lon())));
+            rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", Math.toDegrees(edge.fromPoint().lat())));
+            rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f", Math.toDegrees(edge.fromPoint().lon())));
 
             Element ele = doc.createElement("ele");
-            ele.setTextContent(String.format(Locale.ROOT, "%2f",profile.elevationAt(position)));
+            ele.setTextContent(String.format(Locale.ROOT, "%2f", profile.elevationAt(position)));
             rtept.appendChild(ele);
 
             position += edge.length();
             rte.appendChild(rtept);
-
-
         }
 
         //Last point case
         Element rtept = doc.createElement("rtept");
-        rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() -1).toPoint().lat())));
-        rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f",Math.toDegrees(route.edges().get(route.edges().size() -1).toPoint().lon())));
+        rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() - 1).toPoint().lat())));
+        rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() - 1).toPoint().lon())));
 
         Element ele = doc.createElement("ele");
-        ele.setTextContent(String.format(Locale.ROOT, "%2f",profile.elevationAt(position)));
+        ele.setTextContent(String.format(Locale.ROOT, "%2f", profile.elevationAt(position)));
         rtept.appendChild(ele);
 
         //append the created route to document
@@ -88,14 +85,15 @@ public final class GpxGenerator {
 
     /**
      * Write the path and elevation in a gpx file
+     *
      * @param fileName Name of the file written in project folder (needs to end in .gpx)
-     * @param route the route computed by the algorithm for the path
-     * @param profile the corresponding elevation profile of the route
+     * @param route    the route computed by the algorithm for the path
+     * @param profile  the corresponding elevation profile of the route
      * @throws IOException
      */
-    public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException{
+    public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException {
 
-        try{
+        try {
             Document doc = createGpx(route, profile);
             Writer w = new PrintWriter(fileName);
             Transformer transformer = TransformerFactory
@@ -104,10 +102,9 @@ public final class GpxGenerator {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
-        }catch(TransformerException e){
+        } catch (TransformerException e) {
             throw new Error(e);
         }
-
     }
 
     private static Document newDocument() {

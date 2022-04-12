@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Preconditions;
 import javafx.scene.image.Image;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @author Loris Tran (341214)
  */
 public final class TileManager {
-    private final static int RAM_CACHE_CAPACITY = 5;
+    private final static int RAM_CACHE_CAPACITY = 100;
 
     private final Path path;
     private final String serverName;
@@ -26,7 +27,8 @@ public final class TileManager {
 
     /**
      * Creates the cache system
-     * @param path path of the directory where the cache is stored
+     *
+     * @param path       path of the directory where the cache is stored
      * @param ServerName URL of the server used to download images
      * @throws IOException if there is a problem while creating the cache directory
      */
@@ -38,9 +40,10 @@ public final class TileManager {
 
     /**
      * The cache system image loader
+     *
      * @param tileId TileId(ZoomLevel, X position, Y position) object of the desired tile
      * @return the image, either loaded from the RAM cache, from the DISK cache or freshly downloaded and loaded
-     *         to the cache.
+     * to the cache.
      * @throws IOException
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
@@ -73,20 +76,20 @@ public final class TileManager {
 
     /**
      * Download an image from the server to the correct directory
-     * @param tileId TileId(ZoomLevel, X position, Y position) object of the desired tile
+     *
+     * @param tileId    TileId(ZoomLevel, X position, Y position) object of the desired tile
      * @param imagePath the path of the image
      * @throws IOException if there is a problem while creating the image file (corrupted, wrong path...)
      */
     private void WriteDiskCache(TileId tileId, Path imagePath) throws IOException {
-        URL u = new URL("https://" + serverName + "/" + tileId.zoomLevel + "/" + (int)tileId.x + "/" + (int)tileId.y + ".png");
+        URL u = new URL("https://" + serverName + "/" + tileId.zoomLevel + "/" + (int) tileId.x + "/" + (int) tileId.y + ".png");
         URLConnection c = u.openConnection();
         c.setRequestProperty("User-Agent", "JaVelo");
 
-        // todo : might be redondant ?
         if (!Files.exists(imagePath)) Files.createDirectories(imagePath);
 
         OutputStream o = new FileOutputStream(imagePath.resolve((int) tileId.y + ".png").toString());
-        try(InputStream i = c.getInputStream()) {
+        try (InputStream i = c.getInputStream()) {
             i.transferTo(o);
         }
     }
@@ -98,8 +101,8 @@ public final class TileManager {
      */
     private Image GetImageAtPath(Path path) throws IOException {
         Image image;
-        try(InputStream input = new FileInputStream(path.toString())) {
-             image = new Image(input);
+        try (InputStream input = new FileInputStream(path.toString())) {
+            image = new Image(input);
         }
         return image;
     }
@@ -111,8 +114,8 @@ public final class TileManager {
 
         /**
          * @param zoomLevel zoom level of the tile (0-19)
-         * @param x x-coordinates on the tile grid
-         * @param y y-coordinates on the tile grid
+         * @param x         x-coordinates on the tile grid
+         * @param y         y-coordinates on the tile grid
          * @throws IllegalArgumentException if the x or y coordinates don't exist in the grid tile
          *                                  at this zoom level.
          */
@@ -122,12 +125,12 @@ public final class TileManager {
 
         /**
          * @param zoomLevel zoom level of the tile (0-19)
-         * @param x x-coordinates on the tile grid
-         * @param y y-coordinates on the tile grid
+         * @param x         x-coordinates on the tile grid
+         * @param y         y-coordinates on the tile grid
          * @return whether or not the tile exist at this zoom level
          */
         public static boolean isValid(int zoomLevel, double x, double y) {
-            int maxCoordinates = (int)Math.pow(2, 2+zoomLevel)/4; //todo cast D:
+            int maxCoordinates = (int) Math.pow(2, 2 + zoomLevel) / 4; //todo cast D:
             return (x < maxCoordinates && y < maxCoordinates);
         }
     }

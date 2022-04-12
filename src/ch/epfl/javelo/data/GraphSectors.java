@@ -14,6 +14,7 @@ import static ch.epfl.javelo.projection.SwissBounds.*;
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
+ * @param buffer buffer containing all the information to make a GraphSector
  */
 public record GraphSectors(ByteBuffer buffer) {
     private static final int SECTOR_BYTES = Integer.BYTES + Short.BYTES;
@@ -25,6 +26,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * @param distance distance in meters from center
      * @return ArrayList of Sectors that are in the radius of the center
      */
+
     public List<Sector> sectorsInArea(PointCh center, double distance) {
         ArrayList<Sector> sectors = new ArrayList<>();
 

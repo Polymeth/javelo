@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
+ * @param buffer buffer containg all the data to make a GraphNode
  */
 public record GraphNodes(IntBuffer buffer) {
     private static final int OFFSET_E = 0;

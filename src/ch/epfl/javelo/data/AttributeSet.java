@@ -9,6 +9,7 @@ import java.util.StringJoiner;
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
+ * @param bits 64 bits representing all the parameters
  */
 public record AttributeSet(long bits) {
 

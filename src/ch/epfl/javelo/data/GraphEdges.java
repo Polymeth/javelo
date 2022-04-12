@@ -15,6 +15,9 @@ import static java.lang.Short.toUnsignedInt;
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
+ * @param edgesBuffer buffer with all the edges
+ * @param profileIds buffer with all the IDs of the profiles
+ * @param elevations buffer with all the elevations at points
  */
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
     private static final int EMPTY = 0;

@@ -9,6 +9,8 @@ import java.awt.*;
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
+ * @param x x coordinate of the point
+ * @param y y coordinate of the point
  */
 public record PointWebMercator(double x, double y) {
 

@@ -31,24 +31,30 @@ public final class BaseMapManager {
         pane = new Pane();
         canvas = new Canvas();
         pane.getChildren().add(canvas);
-        pane.setPrefSize(600, 300);
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
+
+        pane.setOnMouseClicked(e -> System.out.println("clicking mdr"));
+
         pane.setOnScroll(e -> {
+            // trackpad compatible zoom
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 250);
             double zoomDelta = Math.signum(e.getDeltaY());
             int oldZoom = property.get().zoomlevel();
+
             int newZoom = (int)Math2.clamp(8, this.property.get().zoomlevel() + zoomDelta, 19);
             System.out.println(newZoom);
             double multiplier = (oldZoom < newZoom) ? 2 : 0.5;
+
+            //double distanceFromTopLeft =
+
             this.property.set(new MapViewParameters(newZoom,
                     property.get().originXcoord()*multiplier,
                     property.get().originYcoord()*multiplier));
-            redrawOnNextPulse();
         });
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -70,7 +76,7 @@ public final class BaseMapManager {
 
             for(int y = (int)topLeft.getY()/256; y <= (int)bottomRight.getY()/256; y++) {
                 for(int x = (int)topLeft.getX()/256; x <= (int)bottomRight.getX()/256; x++) {
-                    System.out.println("zoom " + property.get().zoomlevel() + ", x: " + x + ", y: " + y);
+                    //System.out.println("zoom " + property.get().zoomlevel() + ", x: " + x + ", y: " + y);
                     TileManager.TileId toDraw = new TileManager.TileId(property.get().zoomlevel(), x, y);
 
                     int imageX = x*256 - (int)topLeft.getX();
@@ -89,7 +95,7 @@ public final class BaseMapManager {
     }
 
     public Pane pane() {
-        waypointsManager.pane();
+        waypointsManager.pane().eventDispatcherProperty().bind(this.pane.eventDispatcherProperty());
         return this.pane;
     }
 

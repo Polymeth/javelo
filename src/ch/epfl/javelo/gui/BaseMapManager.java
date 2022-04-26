@@ -55,6 +55,7 @@ public final class BaseMapManager {
             this.property.set(new MapViewParameters(newZoom,
                     property.get().originXcoord()*multiplier,
                     property.get().originYcoord()*multiplier));
+            redrawOnNextPulse();
         });
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {

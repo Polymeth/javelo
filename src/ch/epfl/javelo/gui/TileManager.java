@@ -23,7 +23,7 @@ public final class TileManager {
     private final Path path;
     private final String serverName;
 
-    private final Map<TileId, Image> cache = new LinkedHashMap<>(RAM_CACHE_CAPACITY, 1.1f, true);
+    private final Map<TileId, Image> cache = new LinkedHashMap<>(RAM_CACHE_CAPACITY, 0.75f, true);
 
     /**
      * Creates the cache system
@@ -68,6 +68,8 @@ public final class TileManager {
                 WriteDiskCache(tileId, imagePath);
             }
 
+            // todo: faire get image at path en utilisant image = newImage
+           // Image lol = new Image(imagePath.resolve((int) tileId.y + ".png").toAbsolutePath().toString());
             Image imageNotInMemory = GetImageAtPath(imagePath.resolve((int) tileId.y + ".png"));
             cache.put(tileId, imageNotInMemory);
             return imageNotInMemory;

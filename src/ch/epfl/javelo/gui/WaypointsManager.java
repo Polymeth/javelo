@@ -40,7 +40,8 @@ public final class WaypointsManager {
     }
 
     public Pane pane(){
-
+        //todo marqueur dedans ou dehors boucle for
+        /*
         SVGPath outsidePoint = new SVGPath();
         outsidePoint.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
         outsidePoint.getStyleClass().add("pin_outside");
@@ -48,9 +49,18 @@ public final class WaypointsManager {
         SVGPath insidePoint = new SVGPath();
         insidePoint.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
         insidePoint.getStyleClass().add("pin_inside");
+         */
 
 
         for(int i = 0; i < waypoints.size(); i++){
+
+            SVGPath outsidePoint = new SVGPath();
+            outsidePoint.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
+            outsidePoint.getStyleClass().add("pin_outside");
+
+            SVGPath insidePoint = new SVGPath();
+            insidePoint.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
+            insidePoint.getStyleClass().add("pin_inside");
 
             Group group = new Group();
             //todo switch ou if ?
@@ -80,5 +90,9 @@ public final class WaypointsManager {
         }
 
         return pane;
+    }
+
+    public void addWaypoint(double x, double y){
+
     }
 }

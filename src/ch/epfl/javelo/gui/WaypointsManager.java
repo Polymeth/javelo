@@ -6,6 +6,7 @@ import ch.epfl.javelo.projection.WebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
@@ -41,6 +42,7 @@ public final class WaypointsManager {
 
     public Pane pane(){
         //todo marqueur dedans ou dehors boucle for
+        //todo modulariser pour recalculer selon le nieveau de zoom
         /*
         SVGPath outsidePoint = new SVGPath();
         outsidePoint.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
@@ -63,18 +65,6 @@ public final class WaypointsManager {
             insidePoint.getStyleClass().add("pin_inside");
 
             Group group = new Group();
-            //todo switch ou if ?
-
-            //first point case
-            if (i == 0) {
-                group.getStyleClass().add("first");
-            }
-
-            //last point case
-            if(i == waypoints.size() -1){
-                group.getStyleClass().add("last");
-            }
-
             group.getStyleClass().add("pin");
             group.getChildren().add(outsidePoint);
             group.getChildren().add(insidePoint);
@@ -83,12 +73,31 @@ public final class WaypointsManager {
             group.setId(String.valueOf(waypoints.get(i).nodeId()));
 
             //set coordinates of group with coordinates of waypoint
-            group.setLayoutX(WebMercator.x(waypoints.get(i).point().lon()) - property.get().originXcoord()); //todo quel système de coordonées ?
-            group.setLayoutY(WebMercator.x(waypoints.get(i).point().lat()) - property.get().originXcoord());
+            //Transforms coordinates into PointWebMercator format
+            PointWebMercator pointMercator = PointWebMercator.ofPointCh((waypoints.get(i).point()));
+            group.setLayoutX(property.get().viewX(pointMercator));
+            group.setLayoutY(property.get().viewY(pointMercator));
+
+            //group.setLayoutX((waypoints.get(i).point().e()) - property.get().originXcoord()); //todo quel système de coordonées ?
+           // group.setLayoutY((waypoints.get(i).point().n()) - property.get().originYcoord());
+
+            if(i != 0 && i != waypoints.size() -1){
+                group.getStyleClass().add("middle");
+            }
+            //first point case
+            else if (i == 0) {
+                group.getStyleClass().add("first");
+            }
+            //last point case
+            else if(i == waypoints.size() -1){
+                group.getStyleClass().add("last");
+            }
+
 
             pane.getChildren().add(group);
         }
 
+        ObservableList<Node> jul = pane.getChildren();
         return pane;
     }
 

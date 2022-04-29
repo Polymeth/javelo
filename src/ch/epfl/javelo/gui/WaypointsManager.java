@@ -26,6 +26,7 @@ public final class WaypointsManager {
     private final Pane pane;
 
 
+
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> property, ObservableList<Waypoint> waypoints, Consumer<String> error){
         this.graph = graph;
         this.property = property;
@@ -46,7 +47,10 @@ public final class WaypointsManager {
             waypoints.forEach(System.out::println);
         });
 
-        pane.setPickOnBounds(false);
+
+        property.addListener((p) -> {
+            createWaypoints();
+        });
 
         //pane.setOnMouseClicked();
 
@@ -96,12 +100,8 @@ public final class WaypointsManager {
 
 
         ObjectProperty<Point2D> pointPressed = new SimpleObjectProperty<>();
-        ObjectProperty<Boolean> isBeingDragged = new SimpleObjectProperty<>();
-        isBeingDragged.set(false);
 
-        group.setOnMousePressed(e -> {
-            pointPressed.setValue(new Point2D(e.getX(), e.getY()));
-        });
+        group.setOnMousePressed(e -> pointPressed.setValue(new Point2D(e.getX(), e.getY())));
 
         group.setOnMouseDragged(e -> {
             double x = group.getLayoutX();
@@ -147,6 +147,11 @@ public final class WaypointsManager {
             double finalY = property.get().originYcoord() + e.getY();
             PointWebMercator newPoint = PointWebMercator.of(property.get().zoomlevel(), finalX, finalY);
 
+            waypoints.set(i, new Waypoint(newPoint.toPointCh(),
+                    graph.nodeClosestTo(newPoint.toPointCh(), 500)));
+            createWaypoints();
+        });
+*/
         return group;
     }
 
@@ -193,7 +198,7 @@ public final class WaypointsManager {
         if (nodeid == -1){
             error.accept("Aucune route à proximité !");
         } else {
-            waypoints.add(new Waypoint(pointWBM.toPointCh(), nodeid));
+            waypoints.add(new Waypoint(graph.nodePoint(nodeid), nodeid));
         }
 
     }

@@ -42,9 +42,17 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-        // click
         Property<Point2D> pressedPosition = new SimpleObjectProperty<>();
-        pane.setOnMousePressed(e -> pressedPosition.setValue(new Point2D(e.getX(), e.getY())));
+        pane.setOnMousePressed(e -> {
+            pressedPosition.setValue(new Point2D(e.getX(), e.getY()));
+        });
+
+        // click
+        pane.setOnMouseClicked(e -> {
+            if (e.isStillSincePress()) {
+                waypointsManager.addWaypoint(property.get().originXcoord() + e.getX(), property.get().originYcoord() + e.getY());
+            }
+        });
 
         // drag
         pane.setOnMouseDragged(e -> {

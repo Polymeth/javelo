@@ -3,20 +3,17 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public final class WaypointsManager {
@@ -27,7 +24,6 @@ public final class WaypointsManager {
     Consumer<String> error;
 
     private final Pane pane;
-    private final Canvas canvas;
 
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> property, ObservableList<Waypoint> waypoints, Consumer<String> error){
@@ -36,12 +32,13 @@ public final class WaypointsManager {
         this.waypoints = waypoints;
         this.error = error;
 
+
+
+
         pane = new Pane();
-        canvas = new Canvas();
-        pane.getChildren().add(canvas);
         pane.setPrefSize(600, 300);
-        canvas.widthProperty().bind(pane.widthProperty());
-        canvas.heightProperty().bind(pane.heightProperty());
+
+        pane.setPickOnBounds(false);
 
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
             createWaypoints();
@@ -111,7 +108,6 @@ public final class WaypointsManager {
             double y = group.getLayoutY();
             group.setLayoutX(e.getX() + x - pointPressed.get().getX());
             group.setLayoutY(e.getY() + y - pointPressed.get().getY());
-
         });
 
         group.setOnMouseReleased(e -> {
@@ -122,15 +118,24 @@ public final class WaypointsManager {
                 //PointWebMercator newPoint = PointWebMercator.of(property.get().zoomlevel(), property.get().originXcoord() + e.getX(), property.get().originYcoord() + e.getY());
                // System.out.println("new point is x: " + mousePoint + "; " + finalY);
                 //
-                Waypoint newPoint = placeWaypoint(group.getLayoutX(),  group.getLayoutY());
+
+                PointCh pos = property.get().pointAt(group.getLayoutX(), group.getLayoutY()).toPointCh();
+                int nodeid = graph.nodeClosestTo(pos, 500);
+                if (nodeid == -1){
+                    error.accept("Aucune route à proximité !");
+                    createWaypoints();
+                } else {
+                    waypoints.set(i, new Waypoint(graph.nodePoint(nodeid), nodeid));
+                    createWaypoints();
+                }
 
                 //System.out.println("sont affichés être en " + property.get().viewX(newPoint) + " ;" + property.get().viewY(newPoint));
 
                 //PointCh pointchtest = newPoint.toPointCh();
                 //int nodeId = graph.nodeClosestTo(newPoint.point(), 500); //todo fix node id
 
-                waypoints.set(i, newPoint);
-                createWaypoints();
+                //waypoints.set(i, newPoint);
+                //createWaypoints();
 
             }
 
@@ -191,10 +196,6 @@ public final class WaypointsManager {
             waypoints.add(new Waypoint(pointWBM.toPointCh(), nodeid));
         }
 
-    }
-
-    public ObjectProperty<Boolean> isBeingDragged(){
-        return this.isBeingDragged;
     }
 
 }

@@ -2,17 +2,19 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ObjectPropertyBase;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.ObservableList;
+import javafx.beans.property.*;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.canvas.*;
 import java.io.IOException;
 
+/**
+ * The system to display a map
+ *
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class BaseMapManager {
     private final TileManager tileManager;
     private final WaypointsManager waypointsManager;
@@ -22,6 +24,12 @@ public final class BaseMapManager {
     private final Pane pane;
     private final Canvas canvas;
 
+    /**
+     * Create a new map display system
+     * @param tileManager the tile manager, usually to use a cache system
+     * @param waypointsManager the waypoints manager,
+     * @param property
+     */
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager, ObjectProperty<MapViewParameters> property) {
         this.tileManager = tileManager;
         this.property = property;
@@ -34,28 +42,47 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
+        // click
+        Property<Point2D> pressedPosition = new SimpleObjectProperty<>();
+        pane.setOnMousePressed(e -> pressedPosition.setValue(new Point2D(e.getX(), e.getY())));
+
+        // drag
+        pane.setOnMouseDragged(e -> {
+            if (!e.isStillSincePress()) {
+                MapViewParameters mvp = property.get().withMinXY(
+                        property.get().originXcoord() + (pressedPosition.getValue().getX() - e.getX()),
+                        property.get().originYcoord() + (pressedPosition.getValue().getY() - e.getY())
+                );
+                property.set(mvp);
+                pressedPosition.setValue(new Point2D(e.getX(), e.getY()));
+                redrawOnNextPulse();
+            }
+        });
+
+        // scroll
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
-
-        pane.setOnMouseClicked(e -> System.out.println("clicking mdr"));
-
         pane.setOnScroll(e -> {
             // trackpad compatible zoom
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 250);
             double zoomDelta = Math.signum(e.getDeltaY());
-            int oldZoom = property.get().zoomlevel();
 
-            int newZoom = (int)Math2.clamp(8, this.property.get().zoomlevel() + zoomDelta, 19);
-            System.out.println(newZoom);
-            double multiplier = (oldZoom < newZoom) ? 2 : 0.5;
+            int currentZoom = property.get().zoomlevel();
+            int newZoom = (int)Math2.clamp(9, this.property.get().zoomlevel() + zoomDelta, 19);
 
-            //double distanceFromTopLeft =
+            if (currentZoom != newZoom) {
+                double mouseX = property.get().pointAt(e.getX(), e.getY()).xAtZoomLevel(newZoom);
+                double mouseY = property.get().pointAt(e.getX(), e.getY()).yAtZoomLevel(newZoom);
+                double diffX = mouseX - e.getX();
+                double diffY = mouseY - e.getY() ;
 
-            this.property.set(new MapViewParameters(newZoom,
-                    property.get().originXcoord()*multiplier,
-                    property.get().originYcoord()*multiplier));
-            redrawOnNextPulse();
+                this.property.set(new MapViewParameters(newZoom,
+                        diffX,
+                        diffY
+                ));
+                redrawOnNextPulse();
+            }
         });
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -63,12 +90,22 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
+        canvas.heightProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            redrawOnNextPulse();
+        });
+
+        canvas.widthProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            redrawOnNextPulse();
+        });
+
         redrawOnNextPulse();
     }
 
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
-        //redrawNeeded = false;
+        redrawNeeded = false;
         GraphicsContext context = canvas.getGraphicsContext2D();
         try {
             Point2D topLeft = property.get().topLeft();

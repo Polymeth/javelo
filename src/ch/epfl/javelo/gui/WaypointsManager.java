@@ -21,7 +21,7 @@ public final class WaypointsManager {
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> property;
     private final ObservableList<Waypoint> waypoints;
-    Consumer<String> error;
+    private final Consumer<String> error;
 
     private final Pane pane;
 

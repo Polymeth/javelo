@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
@@ -44,6 +45,11 @@ public final class BaseMapManager {
 
         // click
         Property<Point2D> pressedPosition = new SimpleObjectProperty<>();
+        pane.setOnMouseClicked(e -> {
+            if (e.isStillSincePress()) {
+                waypointsManager.addWaypoint(property.get().originXcoord() + e.getX(), property.get().originYcoord() + e.getY());
+            }
+        });
         pane.setOnMousePressed(e -> pressedPosition.setValue(new Point2D(e.getX(), e.getY())));
 
         // drag
@@ -114,7 +120,6 @@ public final class BaseMapManager {
 
             for(int y = (int)topLeft.getY()/256; y <= (int)bottomRight.getY()/256; y++) {
                 for(int x = (int)topLeft.getX()/256; x <= (int)bottomRight.getX()/256; x++) {
-                    //System.out.println("zoom " + property.get().zoomlevel() + ", x: " + x + ", y: " + y);
                     TileManager.TileId toDraw = new TileManager.TileId(property.get().zoomlevel(), x, y);
 
                     int imageX = x*256 - (int)topLeft.getX();
@@ -133,7 +138,6 @@ public final class BaseMapManager {
     }
 
     public Pane pane() {
-        waypointsManager.pane().eventDispatcherProperty().bind(this.pane.eventDispatcherProperty());
         return this.pane;
     }
 

@@ -18,56 +18,33 @@ import java.util.function.Consumer;
 
 public final class WaypointsManager {
 
-    private Graph graph;
-    private ObjectProperty<MapViewParameters> property;
-    private ObservableList<Waypoint> waypoints;
+    private final Graph graph;
+    private final ObjectProperty<MapViewParameters> property;
+    private final ObservableList<Waypoint> waypoints;
     Consumer<String> error;
 
     private final Pane pane;
-
-
 
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> property, ObservableList<Waypoint> waypoints, Consumer<String> error){
         this.graph = graph;
         this.property = property;
         this.waypoints = waypoints;
         this.error = error;
-
-
-
-
         pane = new Pane();
         pane.setPrefSize(600, 300);
 
         pane.setPickOnBounds(false);
 
+        // recreates waypoints when the list changes
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
             createWaypoints();
-            System.out.println("creating waypoints");
-            waypoints.forEach(System.out::println);
         });
 
-
-        property.addListener((p) -> {
-            createWaypoints();
-        });
-
-        //pane.setOnMouseClicked();
-
+        // recreates waypoints if the map changes
+        property.addListener(p -> createWaypoints());
     }
 
     public Pane pane(){
-        //todo marqueur dedans ou dehors boucle for
-        //todo modulariser pour recalculer selon le nieveau de zoom
-        /*
-        SVGPath outsidePoint = new SVGPath();
-        outsidePoint.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
-        outsidePoint.getStyleClass().add("pin_outside");
-
-        SVGPath insidePoint = new SVGPath();
-        insidePoint.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
-        insidePoint.getStyleClass().add("pin_inside");
-         */
         createWaypoints();
         return pane;
     }
@@ -91,18 +68,17 @@ public final class WaypointsManager {
         //set id of group with nodeId of waypoint
         group.setId(String.valueOf(waypoints.get(i).nodeId()));
 
-        //set coordinates of group with coordinates of waypoint
-        //Transforms coordinates into PointWebMercator format
+        // set coordinates of group with coordinates of waypoint
+        // transforms coordinates into PointWebMercator format
         PointWebMercator pointMercator = PointWebMercator.ofPointCh((waypoints.get(i).point()));
         group.setLayoutX(property.get().viewX(pointMercator));
         group.setLayoutY(property.get().viewY(pointMercator));
 
-
-
+        // click
         ObjectProperty<Point2D> pointPressed = new SimpleObjectProperty<>();
-
         group.setOnMousePressed(e -> pointPressed.setValue(new Point2D(e.getX(), e.getY())));
 
+        // drag
         group.setOnMouseDragged(e -> {
             double x = group.getLayoutX();
             double y = group.getLayoutY();
@@ -110,55 +86,28 @@ public final class WaypointsManager {
             group.setLayoutY(e.getY() + y - pointPressed.get().getY());
         });
 
+        // release
         group.setOnMouseReleased(e -> {
             if (e.isStillSincePress()) {
                 waypoints.remove(waypoints.get(i));
-                System.out.println("deleting point");
             } else {
-                //PointWebMercator newPoint = PointWebMercator.of(property.get().zoomlevel(), property.get().originXcoord() + e.getX(), property.get().originYcoord() + e.getY());
-               // System.out.println("new point is x: " + mousePoint + "; " + finalY);
-                //
-
                 PointCh pos = property.get().pointAt(group.getLayoutX(), group.getLayoutY()).toPointCh();
-                int nodeid = graph.nodeClosestTo(pos, 500);
-                if (nodeid == -1){
+                int nodeId = graph.nodeClosestTo(pos, 500);
+                if (nodeId == -1) {
                     error.accept("Aucune route à proximité !");
-                    createWaypoints();
                 } else {
-                    waypoints.set(i, new Waypoint(graph.nodePoint(nodeid), nodeid));
-                    createWaypoints();
+                    waypoints.set(i, new Waypoint(graph.nodePoint(nodeId), nodeId));
                 }
-
-                //System.out.println("sont affichés être en " + property.get().viewX(newPoint) + " ;" + property.get().viewY(newPoint));
-
-                //PointCh pointchtest = newPoint.toPointCh();
-                //int nodeId = graph.nodeClosestTo(newPoint.point(), 500); //todo fix node id
-
-                //waypoints.set(i, newPoint);
-                //createWaypoints();
-
+                createWaypoints();
             }
-
-            // Waypoint[point=PointCh[e=2535651.836318822, n=1155128.3486538585], nodeId=107825]
         });
 
-        /*group.setOnMouseReleased(e -> {
-            double finalX = property.get().originXcoord() + e.getX();
-            double finalY = property.get().originYcoord() + e.getY();
-            PointWebMercator newPoint = PointWebMercator.of(property.get().zoomlevel(), finalX, finalY);
-
-            waypoints.set(i, new Waypoint(newPoint.toPointCh(),
-                    graph.nodeClosestTo(newPoint.toPointCh(), 500)));
-            createWaypoints();
-        });
-*/
         return group;
     }
 
     private void createWaypoints() {
         pane.getChildren().clear();
         for(int i = 0; i < waypoints.size(); i++){
-            System.out.println("ntm");
             Group group = createPin(i);
 
             if(i != 0 && i != waypoints.size() -1){
@@ -180,7 +129,6 @@ public final class WaypointsManager {
     public Waypoint placeWaypoint(double x, double y){
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
         PointCh pos = property.get().pointAt(x, y).toPointCh();
-        System.out.println(" waypoint");
         int nodeid = graph.nodeClosestTo(pos, 500);
         if (nodeid == -1){
             error.accept("Aucune route à proximité !");
@@ -193,7 +141,6 @@ public final class WaypointsManager {
     public void addWaypoint(double x, double y) {
         //todo utiliser x at zoom level ? ou view x
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
-        System.out.println("adding waypoint");
         int nodeid = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
         if (nodeid == -1){
             error.accept("Aucune route à proximité !");

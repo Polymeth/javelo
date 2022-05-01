@@ -43,6 +43,7 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
+
         // click
         Property<Point2D> pressedPosition = new SimpleObjectProperty<>();
         pane.setOnMouseClicked(e -> {

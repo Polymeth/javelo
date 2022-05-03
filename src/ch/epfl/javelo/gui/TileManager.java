@@ -53,6 +53,7 @@ public final class TileManager {
         } else {
 
             // check if the RAM cache is too big
+            // todo with iterator!!!
             if (cache.size() == RAM_CACHE_CAPACITY) {
                 for (TileId id : cache.keySet()) {
                     cache.remove(id);
@@ -61,15 +62,11 @@ public final class TileManager {
             }
 
             // check if DISK cache already has the tile saved
-            //Path imagePath = Path.of(tileId.zoomLevel + "/" + (int) tileId.x);
             Path imagePath = path.resolve(tileId.zoomLevel + "/" + (int) tileId.x);
-
             if (!Files.exists(imagePath.resolve((int) tileId.y + ".png"))) {
                 WriteDiskCache(tileId, imagePath);
             }
 
-            // todo: faire get image at path en utilisant image = newImage
-           // Image lol = new Image(imagePath.resolve((int) tileId.y + ".png").toAbsolutePath().toString());
             Image imageNotInMemory = GetImageAtPath(imagePath.resolve((int) tileId.y + ".png"));
             cache.put(tileId, imageNotInMemory);
             return imageNotInMemory;

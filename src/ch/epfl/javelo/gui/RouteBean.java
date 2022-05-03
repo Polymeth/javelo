@@ -6,15 +6,18 @@ import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class RouteBean {
-
-    private RouteComputer rc;
+    private final RouteComputer rc;
     public ObservableList<Waypoint> waypoints;
     public ReadOnlyObjectProperty<Route> route;
     public DoubleProperty highlightedPosition;
@@ -22,8 +25,12 @@ public final class RouteBean {
 
     public RouteBean(RouteComputer rc){
         this.rc = rc;
+        this.waypoints = FXCollections.observableArrayList();
+        this.route = new SimpleObjectProperty<>(); // todo rly a simpleobjectproperty ?
+        this.highlightedPosition = new SimpleDoubleProperty();
+        this.elevationProfile = new SimpleObjectProperty<>();
 
-        if(waypoints.size() < 2){
+        if (waypoints.size() < 2) {
             route = null;
             elevationProfile = null;
         }

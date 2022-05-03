@@ -1,16 +1,9 @@
 package ch.epfl.javelo.gui;
 
-import ch.epfl.javelo.routing.ElevationProfile;
-import ch.epfl.javelo.routing.MultiRoute;
-import ch.epfl.javelo.routing.Route;
-import ch.epfl.javelo.routing.RouteComputer;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import ch.epfl.javelo.routing.*;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
@@ -19,32 +12,44 @@ import java.util.List;
 public final class RouteBean {
     private final RouteComputer rc;
     public ObservableList<Waypoint> waypoints;
-    public ReadOnlyObjectProperty<Route> route;
+    public ObjectProperty<Route> route;
     public DoubleProperty highlightedPosition;
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
+    public ObjectProperty<ElevationProfile> elevationProfile;
 
     public RouteBean(RouteComputer rc){
         this.rc = rc;
         this.waypoints = FXCollections.observableArrayList();
-        this.route = new SimpleObjectProperty<>(); // todo rly a simpleobjectproperty ?
         this.highlightedPosition = new SimpleDoubleProperty();
+        this.route = new SimpleObjectProperty<>();
         this.elevationProfile = new SimpleObjectProperty<>();
 
-        if (waypoints.size() < 2) {
-            route = null;
-            elevationProfile = null;
-        }
-        if (!isRouteBetween(waypoints)) {
-            route = null;
-            elevationProfile = null;
-        }
-
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
-            createRoute(waypoints);
+            if ((waypoints.size() < 2) || !isARouteNull()) {
+                route.set(null);
+                System.out.println("lol");
+                elevationProfile.set(null);
+            } else {
+                System.out.println("bite");
+                route.set(createRoute());
+                elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(), 5));
+                System.out.println("length: " + createRoute().length());
+                System.out.println(ElevationProfileComputer.elevationProfile(route.get(), 5).minElevation()
+                        + "m to " + ElevationProfileComputer.elevationProfile(route.get(), 5).maxElevation() + "m");
+            }
         });
     }
 
-    private boolean isRouteBetween(List<Waypoint> waypointList) {
+    private Route createRoute(){
+        //todo implements map to not recalculate everytime
+        List<Route> allSegments = new ArrayList<>();
+        for (int i = 0; i < waypoints.size() - 2; i++) {
+            Route segment = rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
+            allSegments.add(segment);
+        }
+        return new MultiRoute(allSegments);
+    }
+
+    private boolean isARouteNull() {
         for (int i = 0; i < waypoints.size() - 2; i++) {
             if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId()) == null) {
                 return false;
@@ -53,15 +58,30 @@ public final class RouteBean {
         return true;
     }
 
-    private void createRoute(List<Waypoint> waypointList){
-        //todo implements map to not recalculate everytime
-        List<Route> allSegments = new ArrayList<>();
-        for (int i = 0; i < waypoints.size() - 2; i++) {
-            Route segment = rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
-            allSegments.add(segment);
-        }
-        MultiRoute route1 = new MultiRoute(allSegments);
-        //todo create elevation profile
-
+    public DoubleProperty highlightedPositionProperty() {
+        return this.highlightedPosition;
     }
+
+    public double highlightedPosition() {
+        return this.highlightedPosition.get();
+    }
+
+    public void setHighlightedPosition(double pos) {
+        this.highlightedPosition.set(pos);
+    }
+
+    public ReadOnlyObjectProperty<Route> getRoute() {
+        return this.route;
+    }
+
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfile() {
+        return this.elevationProfile;
+    }
+
+    public List<Waypoint> getWaypoints() {
+        return this.waypoints;
+    }
+
+
+
 }

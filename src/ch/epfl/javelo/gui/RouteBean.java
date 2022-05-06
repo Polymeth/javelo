@@ -1,11 +1,13 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,10 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
             if ((waypoints.size() < 2) || !isARouteNull()) {
+                System.out.println("y'a r");
                 route.set(null);
-                System.out.println("lol");
                 elevationProfile.set(null);
             } else {
-                System.out.println("bite");
                 route.set(createRoute());
                 elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(), 5));
                 System.out.println("length: " + createRoute().length());
@@ -40,9 +41,9 @@ public final class RouteBean {
     }
 
     private Route createRoute(){
-        //todo implements map to not recalculate everytime
+        //todo cache
         List<Route> allSegments = new ArrayList<>();
-        for (int i = 0; i < waypoints.size() - 2; i++) {
+        for (int i = 0; i < waypoints.size() - 1; i++) {
             Route segment = rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
             allSegments.add(segment);
         }
@@ -78,10 +79,8 @@ public final class RouteBean {
         return this.elevationProfile;
     }
 
-    public List<Waypoint> getWaypoints() {
+    public ObservableList<Waypoint> getWaypoints() {
         return this.waypoints;
     }
-
-
 
 }

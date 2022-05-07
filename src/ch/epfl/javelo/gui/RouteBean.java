@@ -1,22 +1,24 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public final class RouteBean {
     private final RouteComputer rc;
-    public ObservableList<Waypoint> waypoints;
-    public ObjectProperty<Route> route;
-    public DoubleProperty highlightedPosition;
-    public ObjectProperty<ElevationProfile> elevationProfile;
+    private final ObservableList<Waypoint> waypoints;
+    private final ObjectProperty<Route> route;
+    private final DoubleProperty highlightedPosition;
+    private final ObjectProperty<ElevationProfile> elevationProfile;
+
+    // cache system
+    private final Map<Pair<Integer, Integer>, Route> cache;
+    private final static int RAM_CACHE_CAPACITY = 50;
 
     public RouteBean(RouteComputer rc){
         this.rc = rc;
@@ -24,9 +26,10 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.route = new SimpleObjectProperty<>();
         this.elevationProfile = new SimpleObjectProperty<>();
+        this.cache = new LinkedHashMap<>();
 
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
-            if ((waypoints.size() < 2) || !isARouteNull()) {
+            if (!isARouteNotNull() || waypoints.size() < 2) {
                 System.out.println("y'a r");
                 route.set(null);
                 elevationProfile.set(null);
@@ -44,15 +47,26 @@ public final class RouteBean {
         //todo cache
         List<Route> allSegments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            Route segment = rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
-            allSegments.add(segment);
+            Pair<Integer, Integer> node = new Pair<>(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
+            if (cache.containsKey(node)) {
+                allSegments.add(cache.get(node));
+            } else {
+                // check if the RAM cache is too big
+                if (cache.size() == RAM_CACHE_CAPACITY) {
+                    cache.remove(cache.entrySet().iterator().next().getKey());
+                }
+                Route segment = rc.bestRouteBetween(node.getKey(), node.getValue());
+                cache.put(node, segment);
+                allSegments.add(segment);
+            }
         }
         return new MultiRoute(allSegments);
     }
 
-    private boolean isARouteNull() {
-        for (int i = 0; i < waypoints.size() - 2; i++) {
-            if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId()) == null) {
+    private boolean isARouteNotNull() {
+        for (int i = 0; i < waypoints.size() - 1; i++) {
+            System.out.println("rouute: " + rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
+            if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()) == null) {
                 return false;
             }
         }
@@ -71,16 +85,20 @@ public final class RouteBean {
         this.highlightedPosition.set(pos);
     }
 
-    public ReadOnlyObjectProperty<Route> getRoute() {
+    public ReadOnlyObjectProperty<Route> route() {
         return this.route;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfile() {
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfile() {
         return this.elevationProfile;
     }
 
     public ObservableList<Waypoint> getWaypoints() {
         return this.waypoints;
+    }
+
+    public RouteComputer rc() {
+        return this.rc;
     }
 
 }

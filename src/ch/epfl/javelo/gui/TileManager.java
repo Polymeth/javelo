@@ -18,7 +18,7 @@ import java.util.Map;
  * @author Loris Tran (341214)
  */
 public final class TileManager {
-    private final static int RAM_CACHE_CAPACITY = 100;
+    private final static int RAM_CACHE_CAPACITY = 4;
 
     private final Path path;
     private final String serverName;
@@ -53,12 +53,8 @@ public final class TileManager {
         } else {
 
             // check if the RAM cache is too big
-            // todo with iterator!!!
             if (cache.size() == RAM_CACHE_CAPACITY) {
-                for (TileId id : cache.keySet()) {
-                    cache.remove(id);
-                    break;
-                }
+                cache.remove(cache.entrySet().iterator().next().getKey());
             }
 
             // check if DISK cache already has the tile saved

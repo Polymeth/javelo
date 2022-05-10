@@ -13,6 +13,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
+import java.awt.*;
+
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profile;
     private final ReadOnlyDoubleProperty mousePositionOnProfile;
@@ -27,9 +29,18 @@ public final class ElevationProfileManager {
         borderPane.getStylesheets().add("elevation_profile.css");
 
         // bottom
-        Text text = new Text("lol");
+        Text statText = new Text();
+        statText.setText(String.format("Longueur : %.1f km" +
+                        "     Montée : %.0f m" +
+                        "     Descente : %.0f m" +
+                        "     Altitude : de %.0f m à %.0f m",
+                profile.get().length(),
+                profile.get().totalAscent(),
+                profile.get().totalDescent(),
+                profile.get().maxElevation(),
+                profile.get().minElevation()));
 
-        VBox vbox = new VBox(text);
+        VBox vbox = new VBox(statText);
         vbox.setId("profile_data");
         borderPane.setBottom(vbox);
 
@@ -53,6 +64,7 @@ public final class ElevationProfileManager {
 
         Pane pane = new Pane();
         pane.getChildren().addAll(path, gridTexGroup, highlightedPoint, graph);
+        Insets insets = new Insets(10, 10, 20, 40);
         borderPane.setCenter(pane);
 
     }

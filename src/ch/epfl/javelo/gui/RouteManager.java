@@ -46,7 +46,10 @@ public final class RouteManager {
 
         circle.setOnMousePressed(e ->{
             Point2D point = circle.localToParent(e.getX(), e.getY());
-            PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), point.getX(), point.getY());
+
+            PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(),
+                    property.get().pointAt(point.getX(), point.getY()).xAtZoomLevel(property.get().zoomlevel()),
+                    property.get().pointAt(point.getX(), point.getY()).yAtZoomLevel(property.get().zoomlevel()));
             double pos = bean.route().get().pointClosestTo(pointWBM.toPointCh()).position();
             int nodeid = bean.route().get().nodeClosestTo(pos);
             boolean nodeAlreadyExists = false;

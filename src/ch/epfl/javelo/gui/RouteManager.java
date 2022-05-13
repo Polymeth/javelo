@@ -61,7 +61,8 @@ public final class RouteManager {
                 }
             }
             if (!nodeAlreadyExists) {
-                bean.getWaypoints().add(new Waypoint(pointWBM.toPointCh(), nodeid));
+                int index = bean.route().get().indexOfSegmentAt(pos);
+                bean.getWaypoints().add(index +1, new Waypoint(pointWBM.toPointCh(), nodeid));
             }
         });
 

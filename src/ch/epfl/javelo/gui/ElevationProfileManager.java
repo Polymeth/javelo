@@ -1,22 +1,26 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
-import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +33,8 @@ public final class ElevationProfileManager {
     private final Polygon graph;
     private final Pane pane;
     private final Path path;
+    private final Group gridTexGroup;
+    private final Insets insets;
 
     private final ObjectProperty<Affine> screenToWorld = new SimpleObjectProperty<>();
     private final ObjectProperty<Affine> worldToScreen = new SimpleObjectProperty<>();
@@ -58,16 +64,9 @@ public final class ElevationProfileManager {
 
         // center
         pane = new Pane();
-        Insets insets = new Insets(10, 40, 20, 10);
+        insets = new Insets(10, 10, 20, 40);
 
-        Text test1 = new Text("0m");
-        Text test2 = new Text("100m");
-
-        test1.getStyleClass().addAll("grid_label", "horizontal");
-        test2.getStyleClass().addAll("grid_label", "vertical");
-
-        Group gridTexGroup = new Group();
-        gridTexGroup.getChildren().addAll(test1, test2);
+        gridTexGroup = new Group();
 
         path = new Path();
         path.setId("grid");
@@ -83,8 +82,8 @@ public final class ElevationProfileManager {
         profileRectangle.set(Rectangle2D.EMPTY);
 
         profileRectangle.bind(Bindings.createObjectBinding(() -> {
-            double width = pane.getWidth() - insets.left - insets.right;
-            double height = pane.getHeight() - insets.top - insets.bottom;
+            double width = pane.getWidth() - insets.getLeft() - insets.getRight();
+            double height = pane.getHeight() - insets.getLeft() - insets.getRight();
 
             if (width < 0) width = 0;
             if (height < 0) height = 0;
@@ -92,12 +91,19 @@ public final class ElevationProfileManager {
             return new Rectangle2D(40, 10, width, height);
         }, pane.widthProperty(), pane.heightProperty()));
 
-        profileRectangle.addListener(e -> {
-            System.out.println("mddr");
+        pane.widthProperty().addListener(e -> {
             try {
                 drawElevations();
                 createGrid();
-                System.out.println("redrawing");
+            } catch (NonInvertibleTransformException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        pane.heightProperty().addListener(e -> {
+            try {
+                drawElevations();
+                createGrid();
             } catch (NonInvertibleTransformException ex) {
                 ex.printStackTrace();
             }
@@ -132,8 +138,6 @@ public final class ElevationProfileManager {
             Point2D transform = worldToScreen.get().transform(0, profile.get().elevationAt(height.getX()));
             pointsToAdd.add((double)x);
             pointsToAdd.add(transform.getY());
-
-            //System.out.println(x + ", " + transform.getY());
         }
 
         pointsToAdd.add(profileRectangle.get().getMaxX());
@@ -145,6 +149,7 @@ public final class ElevationProfileManager {
 
     private void createGrid(){
         path.getElements().clear();
+        gridTexGroup.getChildren().clear();
         int[] POS_STEPS =
                 { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
         int[] ELE_STEPS =
@@ -153,10 +158,12 @@ public final class ElevationProfileManager {
         /** VERTICAL LINES **/
         double steps = Math.ceil(profileRectangle.get().getWidth() / 50);
 
+        int selectedStep = 1000;
         double distanceBetween = 0;
-        for (int step : POS_STEPS) {
-            distanceBetween = worldToScreen.get().deltaTransform(step, 0).getX();
+        for (int step : ELE_STEPS) {
+            distanceBetween = Math.abs(worldToScreen.get().deltaTransform(step, 0).getX());
             if (distanceBetween >= 50) {
+                selectedStep = step;
                 break;
             }
         }
@@ -166,16 +173,26 @@ public final class ElevationProfileManager {
             LineTo line = new LineTo();
             move.setX(profileRectangle.get().getMinX() + i*distanceBetween);
             move.setY(profileRectangle.get().getMinY());
+
+            Text label = new Text(Double.toString(Math2.ceilDiv(i*selectedStep, 1000)));
+            label.textOriginProperty().set(VPos.TOP);
+            label.setFont(Font.font("Avenir", 10));
+            label.getStyleClass().addAll("grid_label", "vertical");
+
+            System.out.println((i * selectedStep));
+            label.setX(profileRectangle.get().getMinX() + i*distanceBetween - 0.5*label.prefWidth(0));
+            label.setY(profileRectangle.get().getMaxY());
+
             line.setX(profileRectangle.get().getMinX() + i*distanceBetween);
             line.setY(profileRectangle.get().getMaxY());
 
+            gridTexGroup.getChildren().add(label);
             path.getElements().addAll(move, line);
         }
 
-        /** HORIZONTAL LINES **/
-        double stepsH = Math.ceil(profileRectangle.get().getHeight() / 25); // todo 25
-        double distanceH = (profile.get().maxElevation() - profile.get().minElevation()) / stepsH;
 
+        /** HORIZONTAL LINES **/
+        // todo changer cette boucle wtf
         int selectedStepH = 5;
         double distanceBetweenH = 0;
         for (int step : ELE_STEPS) {
@@ -186,31 +203,34 @@ public final class ElevationProfileManager {
             }
         }
 
-        for (int i = 0; i < stepsH; i++){
+        double stepH = (profile.get().maxElevation() - profile.get().minElevation())/selectedStepH;
+        for (int i = 0; i < stepH; i++){
             MoveTo move = new MoveTo();
             LineTo line = new LineTo();
 
             int d = (int)profile.get().minElevation() / selectedStepH;
-            double length = profile.get().minElevation() - d*selectedStepH;
-            double firstLine = Math.abs(worldToScreen.get().deltaTransform(0, length).getY());
+            double diffBetweenSteppedValue = profile.get().minElevation() - d*selectedStepH;
+            double firstLineHeight = Math.abs(worldToScreen.get().deltaTransform(0, diffBetweenSteppedValue).getY());
+            double firstDisplayedHeight = profile.get().minElevation() - diffBetweenSteppedValue;
 
-            move.setY(profileRectangle.get().getMaxY() - firstLine - i*distanceBetweenH);
+            double y = profileRectangle.get().getMaxY() - firstLineHeight - i*distanceBetweenH;
+            double meters = (i+1) * selectedStepH + firstDisplayedHeight;
+
+            Text label = new Text(Integer.toString((int)meters));
+            label.textOriginProperty().set(VPos.CENTER);
+            label.setFont(Font.font("Avenir", 10));
+            label.getStyleClass().addAll("grid_label", "horizontal");
+
+            label.setX(profileRectangle.get().getMinX() - label.prefWidth(0) - 2);
+            label.setY(y);
+
+            move.setY(y);
             move.setX(profileRectangle.get().getMinX());
-            line.setY(profileRectangle.get().getMaxY() - firstLine - i*distanceBetweenH);
+            line.setY(y);
             line.setX(profileRectangle.get().getMaxX());
-            /*if (i == 1) {
-                move.setY(profileRectangle.get().getMaxY() - firstLine);
-                move.setX(profileRectangle.get().getMinX());
-                line.setY(profileRectangle.get().getMaxY() - firstLine);
-                line.setX(profileRectangle.get().getMaxX());
-            } else {
-               /*move.setY(profileRectangle.get().getMaxY() - i*distanceBetweenH);
-                move.setX(profileRectangle.get().getMinX());
-                line.setY(profileRectangle.get().getMaxY() - i*distanceBetweenH);
-                line.setX(profileRectangle.get().getMaxX());
-            }*/
 
             path.getElements().addAll(move, line);
+            gridTexGroup.getChildren().add(label);
         }
 
     }

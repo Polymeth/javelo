@@ -98,10 +98,10 @@ public final class RouteComputer {
         int id = endNodeId;
 
         while (id != startNodeId) {
-            for (int i = 0; i < graph.nodeOutDegree(id); i++) {
-                int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(id, i));
-                if (targetNodeId == previous[id]) {
-                    path.add(Edge.of(graph, graph.nodeOutEdgeId(id, i), previous[id], id));
+            for (int i = 0; i < graph.nodeOutDegree(previous[id]); i++) {
+                int targetNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(previous[id], i));
+                if (targetNodeId == id) {
+                    path.add(Edge.of(graph, graph.nodeOutEdgeId(previous[id], i), previous[id], id));
                     break;
                 }
             }
@@ -121,6 +121,20 @@ public final class RouteComputer {
             return Float.compare(this.distance, that.distance);
         }
     }
+
+    /**
+     * @param list list you want to reverse
+     * @return reverse the order of the list (the last element becomes the first etc..)
+     */
+    private <T> List<T> reverseOrder(List<T> list) {
+        for (int i = 0; i < list.size() / 2; i++) {
+            T temp = list.get(i);
+            list.set(i, list.get(list.size() - i - 1));
+            list.set(list.size() - i - 1, temp);
+        }
+        return list;
+    }
+
 }
 
 

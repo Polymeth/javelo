@@ -110,7 +110,6 @@ public final class RouteManager {
     }
 
     public void createCircle(){
-
         if (bean.route().get() != null) {
             PointCh point = bean.route().get().pointAt(bean.highlightedPosition());
             PointWebMercator circleWBM = PointWebMercator.ofPointCh(point);

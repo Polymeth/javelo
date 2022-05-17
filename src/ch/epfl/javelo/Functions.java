@@ -40,14 +40,14 @@ public final class Functions {
          */
         @Override
         public double applyAsDouble(double operand) {
-            if (operand >= xMax) {
-                return samples[samples.length - 1];
-            } else if (operand < 0) {
+            if (operand <= 0) {
                 return samples[0];
+            } else if (operand >= xMax) {
+                return samples[samples.length - 1];
             } else {
                 double interval = xMax/(samples.length-1);
-                double closestLowestIntervalX = Math.floor(operand/interval);
-                return Math2.interpolate(samples[(int)(closestLowestIntervalX)], samples[(int)(closestLowestIntervalX+1)], (operand-closestLowestIntervalX*interval)/interval);
+                int closestLowestIntervalX = (int)(operand/interval);
+                return Math2.interpolate(samples[(closestLowestIntervalX)], samples[closestLowestIntervalX+1], (operand-closestLowestIntervalX*interval)/interval);
             }
         }
     }

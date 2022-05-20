@@ -1,16 +1,17 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import javafx.scene.chart.StackedAreaChart;
+import javafx.geometry.Point2D;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-import java.util.Stack;
 import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
@@ -20,19 +21,24 @@ public final class AnnotatedMapManager {
     private final Consumer<String> errorConsumer;
 
     private final StackPane pane;
+    private SimpleObjectProperty<Point2D> mousePositionPoint2D;
     private final DoubleProperty mousePositionOnRouteProperty;
+    private ObjectProperty<MapViewParameters> mvp;
+    private final double DISTANCE = 15;
 
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean route, Consumer<String> errorConsumer) {
         this.routeGraph = graph;
         this.tileManager = tileManager;
         this.route = route;
         this.errorConsumer = errorConsumer;
+        this.mousePositionPoint2D = new SimpleObjectProperty<Point2D>();
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
+
 
         // todo : c bon là ?
         MapViewParameters mapViewParameters =
                 new MapViewParameters(12, 543200, 370650);
-        ObjectProperty<MapViewParameters> mvp =
+        mvp =
                 new SimpleObjectProperty<>(mapViewParameters);
 
         RouteManager routeManager = new RouteManager(route, mvp);
@@ -47,6 +53,19 @@ public final class AnnotatedMapManager {
         Pane waypointsPane = waypointsManager.pane();
 
         pane = new StackPane();
+
+        //Mouse Position Handler //todo pane ou route ?
+        pane.setOnMouseMoved(e ->{
+            Point2D point = new Point2D(e.getX(), e.getY());
+            mousePositionPoint2D.set(point);
+            pointClosestRoute();
+        });
+
+        pane.setOnMouseExited(e ->{
+            mousePositionOnRouteProperty.set(Double.NaN);
+        });
+
+
         pane.getChildren().add(mapPane);
         pane.getChildren().add(routePane);
         pane.getChildren().add(waypointsPane);
@@ -57,7 +76,22 @@ public final class AnnotatedMapManager {
         return this.pane;
     }
 
-    public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
+    private void pointClosestRoute(){
+        MapViewParameters mapParameters = mvp.get();
+        PointCh point = mapParameters.pointAt(mousePositionPoint2D.get().getX(), mousePositionPoint2D.get().getY()).toPointCh();
+
+        RoutePoint closestPoint = route.route().get().pointClosestTo(point);
+        double posX = mapParameters.viewX(PointWebMercator.ofPointCh(closestPoint.point()));
+        double posY = mapParameters.viewY(PointWebMercator.ofPointCh(closestPoint.point()));
+
+        if(Math2.norm((mousePositionPoint2D.get().getX() - posX), (mousePositionPoint2D.get().getY() - posY)) < DISTANCE){
+            mousePositionOnRouteProperty.set(closestPoint.position());
+        }else {
+            mousePositionOnRouteProperty.set(Double.NaN);
+        }
+    }
+
+    public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }
 }

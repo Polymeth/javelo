@@ -4,9 +4,13 @@ import ch.epfl.javelo.data.Graph;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
+import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import java.util.Stack;
 import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
@@ -15,7 +19,7 @@ public final class AnnotatedMapManager {
     private final RouteBean route;
     private final Consumer<String> errorConsumer;
 
-    private final Pane pane;
+    private final StackPane pane;
     private final DoubleProperty mousePositionOnRouteProperty;
 
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean route, Consumer<String> errorConsumer) {
@@ -23,8 +27,6 @@ public final class AnnotatedMapManager {
         this.tileManager = tileManager;
         this.route = route;
         this.errorConsumer = errorConsumer;
-
-        this.pane = new Pane();
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
 
         // todo : c bon là ?
@@ -33,19 +35,22 @@ public final class AnnotatedMapManager {
         ObjectProperty<MapViewParameters> mvp =
                 new SimpleObjectProperty<>(mapViewParameters);
 
-        ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-
-        RouteManager routeManager = new RouteManager(route, mvp, errorConsumer);
-        WaypointsManager waypointsManager = new WaypointsManager(graph, mvp, waypoints, errorConsumer);
+        RouteManager routeManager = new RouteManager(route, mvp);
+        WaypointsManager waypointsManager = new WaypointsManager(graph, mvp, route.getWaypoints(), errorConsumer);
         BaseMapManager mapManager = new BaseMapManager(tileManager, waypointsManager, mvp);
 
-        StackPane totalPane = new StackPane();
-        totalPane.getStylesheets().add("map.css");
+        SplitPane splitPane = new SplitPane();
+        splitPane.setOrientation(Orientation.VERTICAL);
+
         Pane mapPane = mapManager.pane();
         Pane routePane = routeManager.pane();
         Pane waypointsPane = waypointsManager.pane();
 
-        totalPane.getChildren().addAll(mapPane, routePane, waypointsPane);
+        pane = new StackPane();
+        pane.getChildren().add(mapPane);
+        pane.getChildren().add(routePane);
+        pane.getChildren().add(waypointsPane);
+        pane.getStylesheets().add("map.css");
     }
 
     public Pane pane() {

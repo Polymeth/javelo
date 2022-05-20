@@ -45,6 +45,7 @@ public final class AnnotatedMapManager {
         WaypointsManager waypointsManager = new WaypointsManager(graph, mvp, route.getWaypoints(), errorConsumer);
         BaseMapManager mapManager = new BaseMapManager(tileManager, waypointsManager, mvp);
 
+
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
 
@@ -54,15 +55,18 @@ public final class AnnotatedMapManager {
 
         pane = new StackPane();
 
-        //Mouse Position Handler //todo pane ou route ?
-        pane.setOnMouseMoved(e ->{
+        // Mouse Position Handler //todo pane ou route ?
+        pane.setOnMouseMoved(e -> {
             Point2D point = new Point2D(e.getX(), e.getY());
             mousePositionPoint2D.set(point);
-            pointClosestRoute();
+
+            if (route.route().get() != null) {
+                pointClosestRoute();
+            }
         });
 
-        pane.setOnMouseExited(e ->{
-            mousePositionOnRouteProperty.set(Double.NaN);
+        pane.setOnMouseExited(e -> {
+            mousePositionPoint2D.set(null);
         });
 
 
@@ -86,7 +90,7 @@ public final class AnnotatedMapManager {
 
         if(Math2.norm((mousePositionPoint2D.get().getX() - posX), (mousePositionPoint2D.get().getY() - posY)) < DISTANCE){
             mousePositionOnRouteProperty.set(closestPoint.position());
-        }else {
+        } else {
             mousePositionOnRouteProperty.set(Double.NaN);
         }
     }

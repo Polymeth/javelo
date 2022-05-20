@@ -9,6 +9,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -33,7 +34,6 @@ public final class JaVelo extends Application {
         TileManager tileManager = new TileManager(Path.of("osm-cache"), "tile.openstreetmap.org");
         CostFunction costFunction = new CityBikeCF(graph);
         ErrorManager errorManager = new ErrorManager();
-        //Consumer<String> errorConsumer = e -> "lol";
 
         RouteComputer rc = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(rc);
@@ -44,20 +44,27 @@ public final class JaVelo extends Application {
         DoubleProperty highlightProperty =
                 new SimpleDoubleProperty(1500);
 
-        ElevationProfileManager elevationProfileManager =
-                new ElevationProfileManager(routeBean.elevationProfile(), highlightProperty);
 
         // todo modifier?
         //highlightProperty.bind(
           //    profileManager.mousePositionOnProfileProperty());
 
+        StackPane finalPane = new StackPane();
         BorderPane completePane = new BorderPane();
         completePane.setPrefSize(800, 600);
 
         SplitPane splitPane = new SplitPane();
+        splitPane.setOrientation(Orientation.VERTICAL);
         splitPane.getItems().add(completeManager.pane());
 
         completePane.setCenter(splitPane);
+
+        ElevationProfileManager elevationProfileManager =
+                new ElevationProfileManager(routeBean.elevationProfile(), routeBean.highlightedPositionProperty());
+
+        if (routeBean.elevationProfile().get() != null) {
+            System.out.println("infos: " + routeBean.elevationProfile().get().length() + "m");
+        }
 
         MenuBar gpxMenubar = new MenuBar();
         Menu folderButton = new Menu("Fichier");
@@ -68,15 +75,17 @@ public final class JaVelo extends Application {
 
         completePane.setTop(gpxMenubar);
 
+        Pane profilePane = elevationProfileManager.pane();
+
         routeBean.getWaypoints().addListener((ListChangeListener<Waypoint>) e -> {
-            if (routeBean.getWaypoints().size() < 2) {
-                splitPane.getItems().remove(1);
-            } else {
-                if (splitPane.getItems().size() != 2) {
-                    splitPane.getItems().add(elevationProfileManager.pane());
-                }
+            splitPane.getItems().remove(profilePane);
+            if  (routeBean.getWaypoints().size() >= 2) {
+                splitPane.getItems().add(profilePane);
             }
         });
+
+        finalPane.getChildren().add(completePane);
+        finalPane.getChildren().add(errorManager.pane());
 
         //Highlighted Position Binding
         routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
@@ -85,12 +94,12 @@ public final class JaVelo extends Application {
             }else{
                 return elevationProfileManager.mousePositionOnProfileProperty().get();
             }
-        }));
+        }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));
 
         primaryStage.setTitle("JaVelo");
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-        primaryStage.setScene(new Scene(completePane));
+        primaryStage.setScene(new Scene(finalPane));
         primaryStage.show();
     }
 }

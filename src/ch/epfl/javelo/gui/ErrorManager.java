@@ -23,6 +23,7 @@ public final class ErrorManager {
         grid.getStylesheets().add("error.css");
         grid.setMouseTransparent(true);
         grid.getChildren().add(text);
+        pane.setPickOnBounds(false);
 
         java.awt.Toolkit.getDefaultToolkit().beep();
         FadeTransition transition = new  FadeTransition(Duration.millis(200), grid);

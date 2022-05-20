@@ -143,13 +143,9 @@ public final class ElevationProfileManager {
                 worldToScreen.get().transform(highlightedPositionProperty.get(), 0).getX(),
                 highlightedPositionProperty
         ));
-
         highlightedPoint.startYProperty().bind(Bindings.select(profileRectangle, "minY"));
-
         highlightedPoint.endYProperty().bind(Bindings.select(profileRectangle, "maxY"));
-
         highlightedPoint.visibleProperty().bind(Bindings.greaterThanOrEqual(mousePositionOnProfileProperty, 0));
-
     }
 
     private void createTransformations() throws NonInvertibleTransformException {
@@ -162,7 +158,6 @@ public final class ElevationProfileManager {
 
         screenToWorld.set(affine);
         worldToScreen.set(affine.createInverse());
-
     }
 
     private void drawElevations() throws NonInvertibleTransformException {
@@ -179,10 +174,8 @@ public final class ElevationProfileManager {
             pointsToAdd.add((double)x);
             pointsToAdd.add(transform.getY());
         }
-
         pointsToAdd.add(profileRectangle.get().getMaxX());
         pointsToAdd.add(profileRectangle.get().getMaxY());
-
 
         graph.getPoints().addAll(pointsToAdd);
     }

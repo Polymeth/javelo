@@ -50,7 +50,7 @@ public final class RouteManager {
                     property.get().pointAt(point.getX(), point.getY()).yAtZoomLevel(property.get().zoomlevel()));
             double pos = bean.route().get().pointClosestTo(pointWBM.toPointCh()).position();
             int nodeid = bean.route().get().nodeClosestTo(pos);
-            boolean nodeAlreadyExists = false;
+
             if(nodeid != 0){
                 int index = bean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
                 bean.getWaypoints().add(index +1, new Waypoint(pointWBM.toPointCh(), nodeid));

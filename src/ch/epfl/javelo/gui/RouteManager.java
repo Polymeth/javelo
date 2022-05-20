@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 public final class RouteManager {
 
     private final ReadOnlyObjectProperty<MapViewParameters> property;
-    private final Consumer<String> error;
     private final RouteBean bean;
     private final Pane pane;
 
@@ -25,10 +24,9 @@ public final class RouteManager {
     private final Circle circle;
     private int actualZoom;
 
-    public RouteManager(RouteBean bean, ReadOnlyObjectProperty<MapViewParameters> mapParameters, Consumer<String> error) {
+    public RouteManager(RouteBean bean, ReadOnlyObjectProperty<MapViewParameters> mapParameters) {
         this.property = mapParameters;
         this.pane = new Pane();
-        this.error = error;
         this.bean = bean;
         this.polyline = new Polyline();
         this.circle = new Circle();
@@ -53,17 +51,12 @@ public final class RouteManager {
             double pos = bean.route().get().pointClosestTo(pointWBM.toPointCh()).position();
             int nodeid = bean.route().get().nodeClosestTo(pos);
             boolean nodeAlreadyExists = false;
-
-            for (Waypoint wp : bean.getWaypoints()){
-                if (wp.nodeId() == nodeid){
-                    error.accept("Un point de passage est déjà présent à cet endroit !");
-                    nodeAlreadyExists = true;
-                }
-            }
-            if (!nodeAlreadyExists) {
-                int index = bean.route().get().indexOfSegmentAt(pos);
+            if(nodeid != 0){
+                int index = bean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
                 bean.getWaypoints().add(index +1, new Waypoint(pointWBM.toPointCh(), nodeid));
             }
+
+
         });
 
         mapParameters.addListener(p -> {

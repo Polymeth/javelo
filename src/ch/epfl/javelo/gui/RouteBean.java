@@ -43,21 +43,24 @@ public final class RouteBean {
         });
     }
 
+
     private Route createRoute(){
         //todo cache
         List<Route> allSegments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            Pair<Integer, Integer> node = new Pair<>(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
-            if (cache.containsKey(node)) {
-                allSegments.add(cache.get(node));
-            } else {
-                // check if the RAM cache is too big
-                if (cache.size() == RAM_CACHE_CAPACITY) {
-                    cache.remove(cache.entrySet().iterator().next().getKey());
+            if (waypoints.get(i).nodeId() != waypoints.get(i + 1).nodeId()) {
+                Pair<Integer, Integer> node = new Pair<>(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId());
+                if (cache.containsKey(node)) {
+                    allSegments.add(cache.get(node));
+                } else {
+                    // check if the RAM cache is too big
+                    if (cache.size() == RAM_CACHE_CAPACITY) {
+                        cache.remove(cache.entrySet().iterator().next().getKey());
+                    }
+                    Route segment = rc.bestRouteBetween(node.getKey(), node.getValue());
+                    cache.put(node, segment);
+                    allSegments.add(segment);
                 }
-                Route segment = rc.bestRouteBetween(node.getKey(), node.getValue());
-                cache.put(node, segment);
-                allSegments.add(segment);
             }
         }
         return new MultiRoute(allSegments);
@@ -65,12 +68,29 @@ public final class RouteBean {
 
     private boolean isARouteNotNull() {
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            System.out.println("rouute: " + rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
-            if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()) == null) {
-                return false;
+            System.out.println(" node 1 " + waypoints.get(i).nodeId() + " node2 " + waypoints.get(i+1).nodeId());
+            //System.out.println("rouute: " + rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
+            if((waypoints.get(i).nodeId() != waypoints.get(i+1).nodeId())){
+                //todo tester cas limite type autoroute
+                if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()) == null) {
+                    System.out.println("no route");
+                    return false;
+                }
             }
+
         }
+        System.out.println("route exists");
         return true;
+    }
+
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route().get().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i += 1) {
+            int n1 = waypoints.get(i).nodeId();
+            int n2 = waypoints.get(i + 1).nodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
     }
 
     public DoubleProperty highlightedPositionProperty() {

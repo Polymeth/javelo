@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -23,6 +24,8 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
+
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -74,6 +77,15 @@ public final class JaVelo extends Application {
                 }
             }
         });
+
+        //Highlighted Position Binding
+        routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
+            if(completeManager.mousePositionOnRouteProperty().get() >0){
+                return completeManager.mousePositionOnRouteProperty().get();
+            }else{
+                return elevationProfileManager.mousePositionOnProfileProperty().get();
+            }
+        }));
 
         primaryStage.setTitle("JaVelo");
         primaryStage.setMinWidth(800);

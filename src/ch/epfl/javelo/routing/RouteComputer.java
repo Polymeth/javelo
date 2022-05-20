@@ -122,19 +122,6 @@ public final class RouteComputer {
         }
     }
 
-    /**
-     * @param list list you want to reverse
-     * @return reverse the order of the list (the last element becomes the first etc..)
-     */
-    private <T> List<T> reverseOrder(List<T> list) {
-        for (int i = 0; i < list.size() / 2; i++) {
-            T temp = list.get(i);
-            list.set(i, list.get(list.size() - i - 1));
-            list.set(list.size() - i - 1, temp);
-        }
-        return list;
-    }
-
 }
 
 

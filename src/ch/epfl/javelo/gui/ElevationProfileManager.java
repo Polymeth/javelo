@@ -26,25 +26,32 @@ import java.util.List;
 
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profile;
-    private final ReadOnlyDoubleProperty mousePositionOnProfile;
 
     private final BorderPane borderPane;
-    private final ObjectProperty<Rectangle2D> profileRectangle = new SimpleObjectProperty<>();
+    private final ObjectProperty<Rectangle2D> profileRectangle;
     private final Polygon graph;
     private final Pane pane;
     private final Path path;
     private final Group gridTexGroup;
     private final Insets insets;
+    private final Line highlightedPoint;
 
     private final ObjectProperty<Affine> screenToWorld = new SimpleObjectProperty<>();
     private final ObjectProperty<Affine> worldToScreen = new SimpleObjectProperty<>();
 
-    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile, ReadOnlyDoubleProperty mousePositionOnProfile) throws NonInvertibleTransformException {
+    private final ReadOnlyDoubleProperty highlightedPositionProperty;
+    private final DoubleProperty mousePositionOnProfileProperty;
+
+    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile, ReadOnlyDoubleProperty highlightedPositionProperty) throws NonInvertibleTransformException {
         this.profile = profile;
-        this.mousePositionOnProfile = mousePositionOnProfile;
 
         borderPane = new BorderPane();
         borderPane.getStylesheets().add("elevation_profile.css");
+
+        this.highlightedPositionProperty = highlightedPositionProperty;
+
+        this.mousePositionOnProfileProperty = new SimpleDoubleProperty();
+
 
         // bottom
         Text statText = new Text();
@@ -74,16 +81,20 @@ public final class ElevationProfileManager {
         graph = new Polygon();
         graph.setId("profile");
 
+        highlightedPoint = new Line();
 
-        Line highlightedPoint = new Line();
         pane.getChildren().addAll(path, gridTexGroup, highlightedPoint, graph);
 
         // profile drawing
+        profileRectangle =  new SimpleObjectProperty<>();
         profileRectangle.set(Rectangle2D.EMPTY);
+
+        createTransformations();
+        createBindings();
 
         profileRectangle.bind(Bindings.createObjectBinding(() -> {
             double width = pane.getWidth() - insets.getLeft() - insets.getRight();
-            double height = pane.getHeight() - insets.getLeft() - insets.getRight();
+            double height = pane.getHeight() - insets.getTop() - insets.getBottom();
 
             if (width < 0) width = 0;
             if (height < 0) height = 0;
@@ -91,8 +102,22 @@ public final class ElevationProfileManager {
             return new Rectangle2D(40, 10, width, height);
         }, pane.widthProperty(), pane.heightProperty()));
 
+        pane.setOnMouseMoved(e -> {
+            Point2D pos = new Point2D(e.getX(), e.getY());
+            if (profileRectangle.get().contains(pos)) {
+                mousePositionOnProfileProperty.set(screenToWorld.get().transform(e.getX(), 0).getX());
+            } else {
+                mousePositionOnProfileProperty.set(Double.NaN);
+            }
+        });
+
+       pane.setOnMouseExited(e -> mousePositionOnProfileProperty.set(Double.NaN));
+
+
+        // listeners
         pane.widthProperty().addListener(e -> {
             try {
+                createTransformations();
                 drawElevations();
                 createGrid();
             } catch (NonInvertibleTransformException ex) {
@@ -102,6 +127,7 @@ public final class ElevationProfileManager {
 
         pane.heightProperty().addListener(e -> {
             try {
+                createTransformations();
                 drawElevations();
                 createGrid();
             } catch (NonInvertibleTransformException ex) {
@@ -112,22 +138,36 @@ public final class ElevationProfileManager {
         borderPane.setCenter(pane);
     }
 
-    private Affine affineScreenToWorld(Rectangle2D rect){
+    private void createBindings() {
+        highlightedPoint.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
+                worldToScreen.get().transform(highlightedPositionProperty.get(), 0).getX(),
+                highlightedPositionProperty
+        ));
+
+        highlightedPoint.startYProperty().bind(Bindings.select(profileRectangle, "minY"));
+
+        highlightedPoint.endYProperty().bind(Bindings.select(profileRectangle, "maxY"));
+
+        highlightedPoint.visibleProperty().bind(Bindings.greaterThanOrEqual(mousePositionOnProfileProperty, 0));
+
+    }
+
+    private void createTransformations() throws NonInvertibleTransformException {
         Affine affine = new Affine();
 
-        affine.prependTranslation(-rect.getMinX(), -rect.getMinY());
-        affine.prependScale( profile.get().length() / (rect.getMaxX() - rect.getMinX()),
-                (profile.get().minElevation()-profile.get().maxElevation()) / (rect.getMaxY() - rect.getMinY()));
+        affine.prependTranslation(-profileRectangle.get().getMinX(), -profileRectangle.get().getMinY());
+        affine.prependScale( profile.get().length() / (profileRectangle.get().getMaxX() - profileRectangle.get().getMinX()),
+                (profile.get().minElevation()-profile.get().maxElevation()) / (profileRectangle.get().getMaxY() - profileRectangle.get().getMinY()));
         affine.prependTranslation(0, profile.get().maxElevation());
-        return affine;
+
+        screenToWorld.set(affine);
+        worldToScreen.set(affine.createInverse());
+
     }
 
     private void drawElevations() throws NonInvertibleTransformException {
         graph.getPoints().clear();
         List<Double> pointsToAdd = new ArrayList<>();
-
-        screenToWorld.set(affineScreenToWorld(profileRectangle.get()));
-        worldToScreen.set(affineScreenToWorld(profileRectangle.get()).createInverse());
 
         pointsToAdd.add(profileRectangle.get().getMinX());
         pointsToAdd.add(profileRectangle.get().getMaxY());
@@ -156,7 +196,7 @@ public final class ElevationProfileManager {
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
 
         /** VERTICAL LINES **/
-        double steps = Math.ceil(profileRectangle.get().getWidth() / 50);
+        //double steps = Math.ceil(profileRectangle.get().getWidth() / 50);
 
         int selectedStep = 1000;
         double distanceBetween = 0;
@@ -168,11 +208,11 @@ public final class ElevationProfileManager {
             }
         }
 
+        double steps = Math.ceil(profile.get().length() / distanceBetween);
+
         for (int i = 0; i < steps; i++){
             MoveTo move = new MoveTo();
             LineTo line = new LineTo();
-            move.setX(profileRectangle.get().getMinX() + i*distanceBetween);
-            move.setY(profileRectangle.get().getMinY());
 
             Text label = new Text(Double.toString(Math2.ceilDiv(i*selectedStep, 1000)));
             label.textOriginProperty().set(VPos.TOP);
@@ -185,6 +225,9 @@ public final class ElevationProfileManager {
 
             line.setX(profileRectangle.get().getMinX() + i*distanceBetween);
             line.setY(profileRectangle.get().getMaxY());
+            move.setX(profileRectangle.get().getMinX() + i*distanceBetween);
+            move.setY(profileRectangle.get().getMinY());
+
 
             gridTexGroup.getChildren().add(label);
             path.getElements().addAll(move, line);
@@ -204,6 +247,7 @@ public final class ElevationProfileManager {
         }
 
         double stepH = (profile.get().maxElevation() - profile.get().minElevation())/selectedStepH;
+
         for (int i = 0; i < stepH; i++){
             MoveTo move = new MoveTo();
             LineTo line = new LineTo();
@@ -217,12 +261,12 @@ public final class ElevationProfileManager {
             double meters = (i+1) * selectedStepH + firstDisplayedHeight;
 
             Text label = new Text(Integer.toString((int)meters));
-            label.textOriginProperty().set(VPos.CENTER);
+            label.textOriginProperty().set(VPos.TOP);
             label.setFont(Font.font("Avenir", 10));
             label.getStyleClass().addAll("grid_label", "horizontal");
 
             label.setX(profileRectangle.get().getMinX() - label.prefWidth(0) - 2);
-            label.setY(y);
+            label.setY(y - 0.5*label.prefWidth(0)); // todo fix the position (not centered)
 
             move.setY(y);
             move.setX(profileRectangle.get().getMinX());
@@ -240,6 +284,6 @@ public final class ElevationProfileManager {
     }
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        return this.mousePositionOnProfile;
+        return mousePositionOnProfileProperty;
     }
 }

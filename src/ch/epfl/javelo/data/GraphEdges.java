@@ -7,6 +7,8 @@ import ch.epfl.javelo.Q28_4;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static java.lang.Short.toUnsignedInt;
 
@@ -35,7 +37,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return true if the edge is going to the inverse of the direction of its OSM data
      */
     public boolean isInverted(int edgeId) {
-        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId * OFFSET_EDGE), 31, 1) == 1;
+        return (edgesBuffer.getInt(edgeId * OFFSET_EDGE) < 0);
     }
 
     /**
@@ -140,11 +142,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * @return reverse the order of the list (the last element becomes the first etc..)
      */
     public float[] reverseOrder(float[] list) {
-        float[] newList = new float[list.length];
-        for (int i = 0; i < list.length; i++) {
-            newList[i] = list[list.length - i - 1];
+        for(int i = 0; i < list.length / 2; i++) {
+            float temp = list[i];
+            list[i] = list[list.length - i - 1];
+            list[list.length - i - 1] = temp;
         }
-        return newList;
+        return list;
     }
 }
 

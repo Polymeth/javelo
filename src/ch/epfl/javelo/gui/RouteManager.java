@@ -89,6 +89,7 @@ public final class RouteManager {
         polyline.getPoints().clear();
 
         if (bean.route().get() != null) {
+            polyline.setVisible(true);
             circle.setVisible(true);
             List<Double> routePoints = new ArrayList<>();
             for (PointCh point : route.points()) {
@@ -99,6 +100,8 @@ public final class RouteManager {
             polyline.getPoints().addAll(routePoints);
             polyline.setLayoutX(-property.get().topLeft().getX());
             polyline.setLayoutY(-property.get().topLeft().getY());
+        } else {
+            polyline.setVisible(false);
         }
     }
 

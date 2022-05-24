@@ -30,15 +30,11 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<Waypoint>) l-> {
             if (!isARouteNotNull() || waypoints.size() < 2) {
-                System.out.println("y'a r");
                 route.set(null);
                 elevationProfile.set(null);
             } else {
                 route.set(createRoute());
                 elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(), 5));
-                System.out.println("length: " + createRoute().length());
-                System.out.println(ElevationProfileComputer.elevationProfile(route.get(), 5).minElevation()
-                        + "m to " + ElevationProfileComputer.elevationProfile(route.get(), 5).maxElevation() + "m");
             }
         });
     }
@@ -68,18 +64,13 @@ public final class RouteBean {
 
     private boolean isARouteNotNull() {
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            System.out.println(" node 1 " + waypoints.get(i).nodeId() + " node2 " + waypoints.get(i+1).nodeId());
-            //System.out.println("rouute: " + rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
             if((waypoints.get(i).nodeId() != waypoints.get(i+1).nodeId())){
                 //todo tester cas limite type autoroute
                 if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()) == null) {
-                    System.out.println("no route");
                     return false;
                 }
             }
-
         }
-        System.out.println("route exists");
         return true;
     }
 

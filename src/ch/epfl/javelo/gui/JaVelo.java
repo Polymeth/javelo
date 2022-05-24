@@ -26,7 +26,9 @@ import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
 
-
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -62,10 +64,6 @@ public final class JaVelo extends Application {
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.elevationProfile(), routeBean.highlightedPositionProperty());
 
-        if (routeBean.elevationProfile().get() != null) {
-            System.out.println("infos: " + routeBean.elevationProfile().get().length() + "m");
-        }
-
         MenuBar gpxMenubar = new MenuBar();
         Menu folderButton = new Menu("Fichier");
         MenuItem generateButton = new MenuItem("Exporter GPX");
@@ -84,14 +82,14 @@ public final class JaVelo extends Application {
             }
         });
 
-        finalPane.getChildren().add(completePane);
         finalPane.getChildren().add(errorManager.pane());
+        finalPane.getChildren().add(completePane);
 
         //Highlighted Position Binding
         routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
-            if(completeManager.mousePositionOnRouteProperty().get() >0){
+            if (completeManager.mousePositionOnRouteProperty().get() >0){
                 return completeManager.mousePositionOnRouteProperty().get();
-            }else{
+            } else{
                 return elevationProfileManager.mousePositionOnProfileProperty().get();
             }
         }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));

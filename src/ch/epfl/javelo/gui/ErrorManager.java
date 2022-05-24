@@ -11,14 +11,13 @@ import javafx.util.Duration;
 public final class ErrorManager {
 
     private final Pane pane;
-    private SequentialTransition seqT;
-    private VBox grid;
-    private Text text;
+    private final SequentialTransition seqT;
+    private final Text text;
 
     public ErrorManager() {
         this.pane = new Pane();
 
-        grid =new VBox();
+        VBox grid = new VBox();
         text = new Text();
         grid.getStylesheets().add("error.css");
         grid.setMouseTransparent(true);
@@ -46,7 +45,6 @@ public final class ErrorManager {
         java.awt.Toolkit.getDefaultToolkit().beep();
         text.setText(error);
         seqT.play();
-
     }
 
 }

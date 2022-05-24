@@ -21,8 +21,8 @@ public final class ErrorManager {
         grid.getStylesheets().add("error.css");
         grid.setMouseTransparent(true);
         grid.getChildren().add(text);
-       // pane.getChildren().add(grid);
         //pane.setPickOnBounds(false);
+        // pane.getChildren().add(grid);
 
         FadeTransition transition = new FadeTransition(Duration.millis(200), grid);
         transition.setFromValue(0);

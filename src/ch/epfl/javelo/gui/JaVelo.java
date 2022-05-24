@@ -4,6 +4,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -43,13 +44,7 @@ public final class JaVelo extends Application {
         AnnotatedMapManager completeManager =
                 new AnnotatedMapManager(graph, tileManager, routeBean, errorManager::displayError);
 
-        DoubleProperty highlightProperty =
-                new SimpleDoubleProperty(1500);
 
-
-        // todo modifier?
-        //highlightProperty.bind(
-          //    profileManager.mousePositionOnProfileProperty());
 
         StackPane finalPane = new StackPane();
         BorderPane completePane = new BorderPane();
@@ -60,11 +55,9 @@ public final class JaVelo extends Application {
         splitPane.getItems().add(completeManager.pane());
 
         completePane.setCenter(splitPane);
-
-        //completePane.setTop(errorManager.pane());
-
+        DoubleProperty highlightedPositionProperty = new SimpleDoubleProperty();
         ElevationProfileManager elevationProfileManager =
-                new ElevationProfileManager(routeBean.elevationProfile(), routeBean.highlightedPositionProperty());
+                new ElevationProfileManager(routeBean.elevationProfile(), highlightedPositionProperty);
 
         MenuBar gpxMenubar = new MenuBar();
         Menu folderButton = new Menu("Fichier");
@@ -83,19 +76,30 @@ public final class JaVelo extends Application {
                 splitPane.getItems().add(profilePane);
             }
         });
-
         finalPane.getChildren().addAll(completePane, errorManager.pane());
-       // finalPane.getChildren().add(completePane);
 
-        //Highlighted Position Binding
-        routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
-            if (completeManager.mousePositionOnRouteProperty().get() >0){
+        // BINDINGS
+       /* highlightProperty.bind(routeBean.highlightedPositionProperty());
+        highlightProperty.bind(elevationProfileManager.mousePositionOnProfileProperty());
+        routeBean.highlightedPositionProperty().bind(Bindings
+                .when(completeManager.mousePositionOnRouteProperty().greaterThanOrEqualTo(0))
+                .then(completeManager.mousePositionOnRouteProperty())
+                .otherwise(elevationProfileManager.mousePositionOnProfileProperty()));*/
+
+        DoubleBinding highlightedPosBind = Bindings.createDoubleBinding(() -> {
+            if (completeManager.mousePositionOnRouteProperty().get() >= 0) {
                 return completeManager.mousePositionOnRouteProperty().get();
-            } else{
+            } else {
                 return elevationProfileManager.mousePositionOnProfileProperty().get();
             }
-        }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));
+        }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty());
 
+        highlightedPositionProperty.bind(highlightedPosBind);
+        routeBean.highlightedPositionProperty().bind(highlightedPositionProperty);
+
+
+
+        // SCENE CREATION
         primaryStage.setTitle("JaVelo");
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

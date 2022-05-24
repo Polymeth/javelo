@@ -3,6 +3,7 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Q28_4;
+import javafx.fxml.FXMLLoader;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -122,7 +123,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
         for (int i = 0; i < Math2.ceilDiv(samplesNumber - 1, 16 / type) + 1; i++) {
             if (i == 0) {
-                decompressed[i] = Q28_4.asFloat(elevations.get(firstIndex));
+                decompressed[i] = Q28_4.asFloat(Short.toUnsignedInt(elevations.get(firstIndex)));
             } else {
                 for (int j = 0; j < 16 / type; j++) {
                     samplesCount++;

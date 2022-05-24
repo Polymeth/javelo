@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public final class RouteManager {
-
     private final ReadOnlyObjectProperty<MapViewParameters> property;
     private final RouteBean bean;
     private final Pane pane;
@@ -24,10 +23,10 @@ public final class RouteManager {
     private final Circle circle;
     private int actualZoom;
 
-    public RouteManager(RouteBean bean, ReadOnlyObjectProperty<MapViewParameters> mapParameters) {
+    public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters) {
         this.property = mapParameters;
         this.pane = new Pane();
-        this.bean = bean;
+        this.bean = routeBean;
         this.polyline = new Polyline();
         this.circle = new Circle();
 
@@ -42,21 +41,19 @@ public final class RouteManager {
         circle.setRadius(5);
         circle.setVisible(false);
 
-        circle.setOnMousePressed(e ->{
+        circle.setOnMousePressed(e -> {
             Point2D point = circle.localToParent(e.getX(), e.getY());
 
             PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(),
                     property.get().pointAt(point.getX(), point.getY()).xAtZoomLevel(property.get().zoomlevel()),
                     property.get().pointAt(point.getX(), point.getY()).yAtZoomLevel(property.get().zoomlevel()));
-            double pos = bean.route().get().pointClosestTo(pointWBM.toPointCh()).position();
-            int nodeid = bean.route().get().nodeClosestTo(pos);
+            double pos = routeBean.route().get().pointClosestTo(pointWBM.toPointCh()).position();
+            int nodeid = routeBean.route().get().nodeClosestTo(pos);
 
-            if(nodeid != 0){
-                int index = bean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
-                bean.getWaypoints().add(index +1, new Waypoint(pointWBM.toPointCh(), nodeid));
+            if (nodeid != 0) {
+                int index = routeBean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
+                routeBean.getWaypoints().add(index + 1, new Waypoint(pointWBM.toPointCh(), nodeid));
             }
-
-
         });
 
         mapParameters.addListener(p -> {
@@ -71,10 +68,17 @@ public final class RouteManager {
             }
         });
 
-        bean.getWaypoints().addListener((ListChangeListener<Waypoint>) p -> {
+        routeBean.getWaypoints().addListener((ListChangeListener<Waypoint>) p -> {
             createLine();
             createCircle();
         });
+
+        routeBean.highlightedPositionProperty().addListener(o -> {
+            createCircle();
+        });
+
+        circle.visibleProperty().bind(routeBean.highlightedPositionProperty().greaterThanOrEqualTo(0));
+        polyline.visibleProperty().bind(routeBean.elevationProfile().isNotNull());
     }
 
     public Pane pane() {
@@ -89,8 +93,8 @@ public final class RouteManager {
         polyline.getPoints().clear();
 
         if (bean.route().get() != null) {
-            polyline.setVisible(true);
-            circle.setVisible(true);
+            //polyline.setVisible(true);
+            //circle.setVisible(true);
             List<Double> routePoints = new ArrayList<>();
             for (PointCh point : route.points()) {
                 PointWebMercator pointMercator = PointWebMercator.ofPointCh(point);
@@ -101,11 +105,11 @@ public final class RouteManager {
             polyline.setLayoutX(-property.get().topLeft().getX());
             polyline.setLayoutY(-property.get().topLeft().getY());
         } else {
-            polyline.setVisible(false);
+           // polyline.setVisible(false);
         }
     }
 
-    public void createCircle(){
+    public void createCircle() {
         if (bean.route().get() != null) {
             PointCh point = bean.route().get().pointAt(bean.highlightedPosition());
             PointWebMercator circleWBM = PointWebMercator.ofPointCh(point);
@@ -116,7 +120,7 @@ public final class RouteManager {
                     circleWBM.yAtZoomLevel(property.get().zoomlevel()) -
                             property.get().pointAt(0, 0).yAtZoomLevel(property.get().zoomlevel()));
         } else {
-            circle.setVisible(false);
+          //  circle.setVisible(false);
         }
 
     }

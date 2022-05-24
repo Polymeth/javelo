@@ -23,7 +23,7 @@ public final class RouteBean {
     public RouteBean(RouteComputer rc){
         this.rc = rc;
         this.waypoints = FXCollections.observableArrayList();
-        this.highlightedPosition = new SimpleDoubleProperty();
+        this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
         this.route = new SimpleObjectProperty<>();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.cache = new LinkedHashMap<>();

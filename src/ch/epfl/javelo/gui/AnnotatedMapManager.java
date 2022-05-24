@@ -5,6 +5,7 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.routing.RoutePoint;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -31,9 +32,8 @@ public final class AnnotatedMapManager {
         this.tileManager = tileManager;
         this.route = route;
         this.errorConsumer = errorConsumer;
-        this.mousePositionPoint2D = new SimpleObjectProperty<Point2D>();
+        this.mousePositionPoint2D = new SimpleObjectProperty<>(new Point2D(0, 0));
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
-
 
         // todo : c bon là ?
         MapViewParameters mapViewParameters =
@@ -44,7 +44,6 @@ public final class AnnotatedMapManager {
         RouteManager routeManager = new RouteManager(route, mvp);
         WaypointsManager waypointsManager = new WaypointsManager(graph, mvp, route.getWaypoints(), errorConsumer);
         BaseMapManager mapManager = new BaseMapManager(tileManager, waypointsManager, mvp);
-
 
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
@@ -59,20 +58,31 @@ public final class AnnotatedMapManager {
         pane.setOnMouseMoved(e -> {
             Point2D point = new Point2D(e.getX(), e.getY());
             mousePositionPoint2D.set(point);
-
-            if (route.route().get() != null) {
-                pointClosestRoute();
-            }
         });
 
         pane.setOnMouseExited(e -> {
-            mousePositionPoint2D.set(null);
+            mousePositionPoint2D.set(new Point2D(0, 0));
         });
 
+        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
+            if (route.route().get() != null) {
+                MapViewParameters mapParameters = mvp.get();
+                PointCh point = mapParameters.pointAt(mousePositionPoint2D.get().getX(), mousePositionPoint2D.get().getY()).toPointCh();
 
-        pane.getChildren().add(mapPane);
-        pane.getChildren().add(routePane);
-        pane.getChildren().add(waypointsPane);
+                RoutePoint closestPoint = route.route().get().pointClosestTo(point);
+                double posX = mapParameters.viewX(PointWebMercator.ofPointCh(closestPoint.point()));
+                double posY = mapParameters.viewY(PointWebMercator.ofPointCh(closestPoint.point()));
+
+                if (Math2.norm((mousePositionPoint2D.get().getX() - posX), (mousePositionPoint2D.get().getY() - posY)) < DISTANCE) {
+                    return closestPoint.position();
+                } else {
+                    return Double.NaN;
+                }
+            }
+            else
+                return Double.NaN;
+        }, mousePositionPoint2D, mvp, route.route()));
+        pane.getChildren().addAll(mapPane, routePane, waypointsPane);
         pane.getStylesheets().add("map.css");
     }
 

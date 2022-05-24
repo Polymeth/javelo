@@ -9,27 +9,26 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public final class ErrorManager {
-
-    private final Pane pane;
+    private final VBox grid;
     private final SequentialTransition seqT;
     private final Text text;
 
     public ErrorManager() {
-        this.pane = new Pane();
+       // this.pane = new Pane();
 
-        VBox grid = new VBox();
+        grid = new VBox();
         text = new Text();
         grid.getStylesheets().add("error.css");
         grid.setMouseTransparent(true);
         grid.getChildren().add(text);
-        pane.setPickOnBounds(false);
+       // pane.getChildren().add(grid);
+        //pane.setPickOnBounds(false);
 
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        FadeTransition transition = new  FadeTransition(Duration.millis(200), grid);
+        FadeTransition transition = new FadeTransition(Duration.millis(200), grid);
         transition.setFromValue(0);
         transition.setToValue(0.8);
         PauseTransition pause = new PauseTransition(Duration.millis(2000));
-        FadeTransition transition2 = new  FadeTransition(Duration.millis(500), grid);
+        FadeTransition transition2 = new FadeTransition(Duration.millis(500), grid);
         transition2.setFromValue(0.8);
         transition2.setToValue(0);
 
@@ -37,7 +36,7 @@ public final class ErrorManager {
     }
 
     public Pane pane() {
-        return this.pane;
+        return grid;
     }
 
     public void displayError(String error) {

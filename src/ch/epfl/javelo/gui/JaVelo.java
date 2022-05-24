@@ -61,6 +61,8 @@ public final class JaVelo extends Application {
 
         completePane.setCenter(splitPane);
 
+        //completePane.setTop(errorManager.pane());
+
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.elevationProfile(), routeBean.highlightedPositionProperty());
 
@@ -82,8 +84,8 @@ public final class JaVelo extends Application {
             }
         });
 
-        finalPane.getChildren().add(errorManager.pane());
-        finalPane.getChildren().add(completePane);
+        finalPane.getChildren().addAll(completePane, errorManager.pane());
+       // finalPane.getChildren().add(completePane);
 
         //Highlighted Position Binding
         routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {

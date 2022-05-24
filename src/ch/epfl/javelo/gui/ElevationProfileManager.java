@@ -150,7 +150,7 @@ public final class ElevationProfileManager {
             ));
             highlightedLine.startYProperty().bind(Bindings.select(profileRectangle, "minY"));
             highlightedLine.endYProperty().bind(Bindings.select(profileRectangle, "maxY"));
-            highlightedLine.visibleProperty().bind(Bindings.greaterThanOrEqual(mousePositionOnProfileProperty, 0));
+            highlightedLine.visibleProperty().bind(Bindings.greaterThanOrEqual(highlightedPositionProperty, 0));
         //}
     }
 

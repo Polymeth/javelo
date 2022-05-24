@@ -60,9 +60,7 @@ public final class AnnotatedMapManager {
             mousePositionPoint2D.set(point);
         });
 
-        pane.setOnMouseExited(e -> {
-            mousePositionPoint2D.set(new Point2D(0, 0));
-        });
+
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if (route.route().get() != null) {

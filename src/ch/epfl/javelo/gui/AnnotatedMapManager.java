@@ -15,31 +15,38 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
+/**
+ * The manager for the whole map
+ *
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class AnnotatedMapManager {
-    private final Graph routeGraph;
-    private final TileManager tileManager;
-    private final RouteBean route;
-    private final Consumer<String> errorConsumer;
+    private static final int DEFAULT_ZOOM_LEVEL = 12;
+    private static final int DEFAULT_X_COORDS = 543200;
+    private static final int DEFAULT_Y_COORDS = 370650;
 
     private final StackPane pane;
-    private SimpleObjectProperty<Point2D> mousePositionPoint2D;
+    private final SimpleObjectProperty<Point2D> mousePositionPoint2D;
     private final DoubleProperty mousePositionOnRouteProperty;
-    private ObjectProperty<MapViewParameters> mvp;
+    private final ObjectProperty<MapViewParameters> mvp;
     private final double DISTANCE = 15;
 
+    /**
+     * The manager for the whole map
+     *
+     * @param graph         any graph containg the map's information
+     * @param tileManager   any Tile Manager
+     * @param route         a bean which will contain the route
+     * @param errorConsumer an error consumer for error management
+     */
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean route, Consumer<String> errorConsumer) {
-        this.routeGraph = graph;
-        this.tileManager = tileManager;
-        this.route = route;
-        this.errorConsumer = errorConsumer;
         this.mousePositionPoint2D = new SimpleObjectProperty<>(new Point2D(0, 0));
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
 
-        // todo : c bon là ?
         MapViewParameters mapViewParameters =
-                new MapViewParameters(12, 543200, 370650);
-        mvp =
-                new SimpleObjectProperty<>(mapViewParameters);
+                new MapViewParameters(DEFAULT_ZOOM_LEVEL, DEFAULT_X_COORDS, DEFAULT_Y_COORDS);
+        mvp = new SimpleObjectProperty<>(mapViewParameters);
 
         RouteManager routeManager = new RouteManager(route, mvp);
         WaypointsManager waypointsManager = new WaypointsManager(graph, mvp, route.getWaypoints(), errorConsumer);
@@ -53,14 +60,14 @@ public final class AnnotatedMapManager {
         Pane waypointsPane = waypointsManager.pane();
 
         pane = new StackPane();
+        pane.getStylesheets().add("map.css");
+        pane.getChildren().addAll(mapPane, routePane, waypointsPane);
 
-        // Mouse Position Handler //todo pane ou route ?
+        // mouse moving
         pane.setOnMouseMoved(e -> {
             Point2D point = new Point2D(e.getX(), e.getY());
             mousePositionPoint2D.set(point);
         });
-
-
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(() -> {
             if (route.route().get() != null) {
@@ -76,33 +83,22 @@ public final class AnnotatedMapManager {
                 } else {
                     return Double.NaN;
                 }
-            }
-            else
+            } else {
                 return Double.NaN;
+            }
         }, mousePositionPoint2D, mvp, route.route()));
-        pane.getChildren().addAll(mapPane, routePane, waypointsPane);
-        pane.getStylesheets().add("map.css");
     }
 
+    /**
+     * @return a pane with the map, the waypoints and the route
+     */
     public Pane pane() {
         return this.pane;
     }
 
-    private void pointClosestRoute(){
-        MapViewParameters mapParameters = mvp.get();
-        PointCh point = mapParameters.pointAt(mousePositionPoint2D.get().getX(), mousePositionPoint2D.get().getY()).toPointCh();
-
-        RoutePoint closestPoint = route.route().get().pointClosestTo(point);
-        double posX = mapParameters.viewX(PointWebMercator.ofPointCh(closestPoint.point()));
-        double posY = mapParameters.viewY(PointWebMercator.ofPointCh(closestPoint.point()));
-
-        if(Math2.norm((mousePositionPoint2D.get().getX() - posX), (mousePositionPoint2D.get().getY() - posY)) < DISTANCE){
-            mousePositionOnRouteProperty.set(closestPoint.position());
-        } else {
-            mousePositionOnRouteProperty.set(Double.NaN);
-        }
-    }
-
+    /**
+     * @return a jfx propert containg the mouse position on the route, if it exists (otherwise Null)
+     */
     public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }

@@ -139,13 +139,12 @@ public final class WaypointsManager {
     }
 
     public void addWaypoint(double x, double y) {
-        //todo utiliser x at zoom level ? ou view x
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
-        int nodeid = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
-        if (nodeid == -1){
+        int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
+        if (nodeId == -1){
             error.accept("Aucune route à proximité !");
         } else {
-            waypoints.add(new Waypoint(graph.nodePoint(nodeid), nodeid));
+            waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
         }
 
     }

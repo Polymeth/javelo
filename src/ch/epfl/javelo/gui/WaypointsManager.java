@@ -9,22 +9,33 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
-
 import java.util.function.Consumer;
 
+/**
+ * Manages the display and the interaction with the waypoints
+ *
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class WaypointsManager {
 
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> property;
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> error;
-
     private final Pane pane;
 
+    /**
+     * Creates an instance of a WaypointManager
+     *
+     * @param graph the road network
+     * @param property the parameters of the displayed map
+     * @param waypoints a list of waypoints
+     * @param error an object to report an error
+     */
     public WaypointsManager(Graph graph, ObjectProperty<MapViewParameters> property, ObservableList<Waypoint> waypoints, Consumer<String> error){
         this.graph = graph;
         this.property = property;
@@ -44,9 +55,31 @@ public final class WaypointsManager {
         property.addListener(p -> createWaypoints());
     }
 
+    /**
+     * returns the pane containing the waypoints
+     *
+     * @return the pane containing the waypoints
+     */
     public Pane pane(){
         createWaypoints();
         return pane;
+    }
+
+    /**
+     * add a new waypoint to the node of the graph that is closest to it
+     *
+     * @param x the x-coordinate of a point
+     * @param y the y-coordinate of a point
+     */
+    public void addWaypoint(double x, double y) {
+        PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
+        int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
+        if (nodeId == -1){
+            error.accept("Aucune route à proximité !");
+        } else {
+            waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
+        }
+
     }
 
 
@@ -126,8 +159,8 @@ public final class WaypointsManager {
             pane.getChildren().add(group);
         }
     }
-
-    public Waypoint placeWaypoint(double x, double y){
+/*
+    private Waypoint placeWaypoint(double x, double y){
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
         PointCh pos = property.get().pointAt(x, y).toPointCh();
         int nodeid = graph.nodeClosestTo(pos, 500);
@@ -139,15 +172,6 @@ public final class WaypointsManager {
         }
     }
 
-    public void addWaypoint(double x, double y) {
-        PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
-        int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
-        if (nodeId == -1){
-            error.accept("Aucune route à proximité !");
-        } else {
-            waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
-        }
-
-    }
+ */
 
 }

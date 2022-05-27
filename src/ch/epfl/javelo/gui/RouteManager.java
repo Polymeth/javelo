@@ -30,7 +30,8 @@ public final class RouteManager {
 
     /**
      * Initiliaze the route manager
-     * @param routeBean a jfx bean containing the current route
+     *
+     * @param routeBean     a jfx bean containing the current route
      * @param mapParameters a property containg the map view parameters
      */
     public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters) {
@@ -62,7 +63,7 @@ public final class RouteManager {
             int nodeid = routeBean.route().get().nodeClosestTo(pos);
 
             if (nodeid != 0) {
-                int index = routeBean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
+                int index = routeBean.indexOfNonEmptySegmentAt(pos);
                 routeBean.getWaypoints().add(index + 1, new Waypoint(pointWBM.toPointCh(), nodeid));
             }
         });
@@ -90,6 +91,9 @@ public final class RouteManager {
         polyline.visibleProperty().bind(routeBean.elevationProfile().isNotNull());
     }
 
+    /**
+     * @return a pane with the route
+     */
     public Pane pane() {
         createLine();
         createCircle();
@@ -97,7 +101,10 @@ public final class RouteManager {
         return pane;
     }
 
-    public void createLine() {
+    /**
+     * Creates the line representing the route
+     */
+    private void createLine() {
         Route route = bean.route().get();
         polyline.getPoints().clear();
 
@@ -114,6 +121,9 @@ public final class RouteManager {
         }
     }
 
+    /**
+     * Creates the circle representing the highlighted position
+     */
     public void createCircle() {
         if (bean.route().get() != null) {
             PointCh point = bean.route().get().pointAt(bean.highlightedPosition());

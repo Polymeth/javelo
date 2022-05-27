@@ -9,6 +9,12 @@ import javafx.util.Pair;
 
 import java.util.*;
 
+/**
+ * The bean containing the current route
+ *
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class RouteBean {
     private final RouteComputer rc;
     private final ObservableList<Waypoint> waypoints;
@@ -16,11 +22,15 @@ public final class RouteBean {
     private final DoubleProperty highlightedPosition;
     private final ObjectProperty<ElevationProfile> elevationProfile;
 
-    // cache system
     private final Map<Pair<Integer, Integer>, Route> cache;
     private final static int RAM_CACHE_CAPACITY = 50;
 
-    public RouteBean(RouteComputer rc){
+    /**
+     * Initiliaze the bean contaning the current route
+     *
+     * @param rc any RouteComputer used to compute a path
+     */
+    public RouteBean(RouteComputer rc) {
         this.rc = rc;
         this.waypoints = FXCollections.observableArrayList();
         this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
@@ -28,7 +38,7 @@ public final class RouteBean {
         this.elevationProfile = new SimpleObjectProperty<>();
         this.cache = new LinkedHashMap<>();
 
-        waypoints.addListener((ListChangeListener<Waypoint>) l-> {
+        waypoints.addListener((ListChangeListener<Waypoint>) l -> {
             if (!isARouteNotNull() || waypoints.size() < 2) {
                 route.set(null);
                 elevationProfile.set(null);
@@ -39,9 +49,70 @@ public final class RouteBean {
         });
     }
 
+    /**
+     * @param position the position on the segment (in meters)
+     * @return the index of the segment of the position on the complete route
+     */
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route().get().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i += 1) {
+            int n1 = waypoints.get(i).nodeId();
+            int n2 = waypoints.get(i + 1).nodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
+    }
 
-    private Route createRoute(){
-        //todo cache
+    /**
+     * @return the highlighted position on the route, as a property
+     */
+    public DoubleProperty highlightedPositionProperty() {
+        return this.highlightedPosition;
+    }
+
+    /**
+     * @return the highlighted position on the route, in meters
+     */
+    public double highlightedPosition() {
+        return this.highlightedPosition.get();
+    }
+
+    /**
+     * Set the highlighted position to the entered value
+     *
+     * @param pos the desired position (in meters)
+     */
+    public void setHighlightedPosition(double pos) {
+        this.highlightedPosition.set(pos);
+    }
+
+    /**
+     * @return the route, as a read only property
+     */
+    public ReadOnlyObjectProperty<Route> route() {
+        return this.route;
+    }
+
+    /**
+     * @return the elevation profile, as a ready only property
+     */
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfile() {
+        return this.elevationProfile;
+    }
+
+    /**
+     * @return A observable list with all the waypoints making the route
+     */
+    public ObservableList<Waypoint> getWaypoints() {
+        return this.waypoints;
+    }
+
+    /**
+     * Initialize the route
+     *
+     * @return a route with all the segment
+     */
+    private Route createRoute() {
         List<Route> allSegments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; i++) {
             if (waypoints.get(i).nodeId() != waypoints.get(i + 1).nodeId()) {
@@ -54,7 +125,6 @@ public final class RouteBean {
                         cache.remove(cache.entrySet().iterator().next().getKey());
                     }
                     Route segment = rc.bestRouteBetween(node.getKey(), node.getValue());
-                    assert segment != null;
                     cache.put(node, segment);
                     allSegments.add(segment);
                 }
@@ -63,54 +133,19 @@ public final class RouteBean {
         return new MultiRoute(allSegments);
     }
 
+    /**
+     * @return weither or not the route is really existing
+     */
     private boolean isARouteNotNull() {
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            if((waypoints.get(i).nodeId() != waypoints.get(i+1).nodeId())){
+            if ((waypoints.get(i).nodeId() != waypoints.get(i + 1).nodeId())) {
                 //todo tester cas limite type autoroute
-                if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()) == null) {
+                if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId()) == null) {
                     return false;
                 }
             }
         }
         return true;
-    }
-
-    public int indexOfNonEmptySegmentAt(double position) {
-        int index = route().get().indexOfSegmentAt(position);
-        for (int i = 0; i <= index; i += 1) {
-            int n1 = waypoints.get(i).nodeId();
-            int n2 = waypoints.get(i + 1).nodeId();
-            if (n1 == n2) index += 1;
-        }
-        return index;
-    }
-
-    public DoubleProperty highlightedPositionProperty() {
-        return this.highlightedPosition;
-    }
-
-    public double highlightedPosition() {
-        return this.highlightedPosition.get();
-    }
-
-    public void setHighlightedPosition(double pos) {
-        this.highlightedPosition.set(pos);
-    }
-
-    public ReadOnlyObjectProperty<Route> route() {
-        return this.route;
-    }
-
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfile() {
-        return this.elevationProfile;
-    }
-
-    public ObservableList<Waypoint> getWaypoints() {
-        return this.waypoints;
-    }
-
-    public RouteComputer rc() {
-        return this.rc;
     }
 
 }

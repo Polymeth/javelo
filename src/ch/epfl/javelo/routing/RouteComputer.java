@@ -4,7 +4,6 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
-import java.util.List;
 
 /**
  * Creates a pathfinding computer class

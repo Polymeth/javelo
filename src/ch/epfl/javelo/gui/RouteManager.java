@@ -12,17 +12,28 @@ import javafx.scene.shape.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
+/**
+ * The system to draw the route
+ *
+ * @author Rayan BOUCHENY (327575)
+ * @author Loris Tran (341214)
+ */
 public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> property;
     private final RouteBean bean;
     private final Pane pane;
 
-    private final Polyline polyline; // todo legal ?
+    private final Polyline polyline;
     private final Circle circle;
     private int actualZoom;
 
+    /**
+     * Initiliaze the route manager
+     *
+     * @param routeBean     a jfx bean containing the current route
+     * @param mapParameters a property containg the map view parameters
+     */
     public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters) {
         this.property = mapParameters;
         this.pane = new Pane();
@@ -30,17 +41,18 @@ public final class RouteManager {
         this.polyline = new Polyline();
         this.circle = new Circle();
 
+        this.actualZoom = property.get().zoomlevel();
         this.pane.getChildren().add(polyline);
+        this.pane.setPickOnBounds(false);
         this.polyline.setLayoutX(-mapParameters.get().topLeft().getX());
         this.polyline.setLayoutY(-mapParameters.get().topLeft().getY());
-        this.pane.setPickOnBounds(false);
-        this.actualZoom = property.get().zoomlevel();
-        polyline.setId("route");
+        this.polyline.setId("route");
 
         circle.setId("highlight");
         circle.setRadius(5);
         circle.setVisible(false);
 
+        // mouse click
         circle.setOnMousePressed(e -> {
             Point2D point = circle.localToParent(e.getX(), e.getY());
 
@@ -51,7 +63,7 @@ public final class RouteManager {
             int nodeid = routeBean.route().get().nodeClosestTo(pos);
 
             if (nodeid != 0) {
-                int index = routeBean.indexOfNonEmptySegmentAt(pos); //todo optimiser ?
+                int index = routeBean.indexOfNonEmptySegmentAt(pos);
                 routeBean.getWaypoints().add(index + 1, new Waypoint(pointWBM.toPointCh(), nodeid));
             }
         });
@@ -73,14 +85,15 @@ public final class RouteManager {
             createCircle();
         });
 
-        routeBean.highlightedPositionProperty().addListener(o -> {
-            createCircle();
-        });
+        routeBean.highlightedPositionProperty().addListener(o -> createCircle());
 
         circle.visibleProperty().bind(routeBean.highlightedPositionProperty().greaterThanOrEqualTo(0));
         polyline.visibleProperty().bind(routeBean.elevationProfile().isNotNull());
     }
 
+    /**
+     * @return a pane with the route
+     */
     public Pane pane() {
         createLine();
         createCircle();
@@ -88,13 +101,14 @@ public final class RouteManager {
         return pane;
     }
 
-    public void createLine() {
+    /**
+     * Creates the line representing the route
+     */
+    private void createLine() {
         Route route = bean.route().get();
         polyline.getPoints().clear();
 
         if (bean.route().get() != null) {
-            //polyline.setVisible(true);
-            //circle.setVisible(true);
             List<Double> routePoints = new ArrayList<>();
             for (PointCh point : route.points()) {
                 PointWebMercator pointMercator = PointWebMercator.ofPointCh(point);
@@ -104,11 +118,12 @@ public final class RouteManager {
             polyline.getPoints().addAll(routePoints);
             polyline.setLayoutX(-property.get().topLeft().getX());
             polyline.setLayoutY(-property.get().topLeft().getY());
-        } else {
-           // polyline.setVisible(false);
         }
     }
 
+    /**
+     * Creates the circle representing the highlighted position
+     */
     public void createCircle() {
         if (bean.route().get() != null) {
             PointCh point = bean.route().get().pointAt(bean.highlightedPosition());
@@ -119,9 +134,6 @@ public final class RouteManager {
             circle.setCenterY(
                     circleWBM.yAtZoomLevel(property.get().zoomlevel()) -
                             property.get().pointAt(0, 0).yAtZoomLevel(property.get().zoomlevel()));
-        } else {
-          //  circle.setVisible(false);
         }
-
     }
 }

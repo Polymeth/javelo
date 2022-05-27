@@ -4,7 +4,6 @@ import ch.epfl.javelo.Math2;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.canvas.*;
 
@@ -139,6 +138,9 @@ public final class BaseMapManager {
         return this.pane;
     }
 
+    /**
+     * Redraw the whole pane on next jfx pulse
+     */
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();

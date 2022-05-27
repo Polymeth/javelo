@@ -47,9 +47,7 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
 
         // recreates waypoints when the list changes
-        waypoints.addListener((ListChangeListener<Waypoint>) l-> {
-            createWaypoints();
-        });
+        waypoints.addListener((ListChangeListener<Waypoint>) l-> createWaypoints());
 
         // recreates waypoints if the map changes
         property.addListener(p -> createWaypoints());

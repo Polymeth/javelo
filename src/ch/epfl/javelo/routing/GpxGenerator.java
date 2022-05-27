@@ -1,7 +1,6 @@
 package ch.epfl.javelo.routing;
 
 
-import ch.epfl.javelo.projection.PointCh;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

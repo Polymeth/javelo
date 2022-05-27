@@ -9,7 +9,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
@@ -36,9 +35,7 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
 
         // recreates waypoints when the list changes
-        waypoints.addListener((ListChangeListener<Waypoint>) l-> {
-            createWaypoints();
-        });
+        waypoints.addListener((ListChangeListener<Waypoint>) l-> createWaypoints());
 
         // recreates waypoints if the map changes
         property.addListener(p -> createWaypoints());

@@ -22,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -62,6 +63,16 @@ public final class JaVelo extends Application {
         MenuBar gpxMenubar = new MenuBar();
         Menu folderButton = new Menu("Fichier");
         MenuItem generateButton = new MenuItem("Exporter GPX");
+        generateButton.setOnAction(e-> {
+            if (routeBean.route() != null) {
+                try {
+                    GpxGenerator.writeGpx(routeBean.hashCode() + ".gpx", routeBean.route().get(), routeBean.elevationProfile().get());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
 
         folderButton.getItems().add(generateButton);
         gpxMenubar.getMenus().add(folderButton);

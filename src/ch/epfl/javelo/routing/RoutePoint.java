@@ -18,6 +18,9 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return a RoutePoint located at the position of your point plus the difference
      */
     public RoutePoint withPositionShiftedBy(double positionDifference){
+        if (positionDifference == 0){
+            return this;
+        }
         return new RoutePoint(point, position + positionDifference, distanceToReference);
     }
 
@@ -26,7 +29,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return itself if the distance to reference is lower than the entered point one, returns the entered point otherwhise
      */
     public RoutePoint min(RoutePoint that){
-        return (this.distanceToReference < that.distanceToReference) ? this : that;
+        return (this.distanceToReference <= that.distanceToReference) ? this : that;
     }
 
     /**
@@ -37,7 +40,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      *          otherwise it creates a new point with the entered arguments
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
-        return (this.distanceToReference < thatDistanceToReference)
+        return (this.distanceToReference <= thatDistanceToReference)
                 ? this
                 : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
     }

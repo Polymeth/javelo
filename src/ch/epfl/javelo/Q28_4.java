@@ -7,6 +7,8 @@ package ch.epfl.javelo;
  */
 public final class Q28_4 {
 
+    public static final int OFFSET_RIGHT = 4;
+
     private Q28_4() {}
 
     /**
@@ -14,7 +16,7 @@ public final class Q28_4 {
      * @return return the Q28_4 integer
      */
     public static int ofInt(int i) {
-        return i<<4;
+        return i<< OFFSET_RIGHT;
     }
 
     /**
@@ -22,7 +24,7 @@ public final class Q28_4 {
      * @return returns the Q28_4 decimal value as a double
      */
     public static double asDouble(int q28_4){
-        return Math.scalb((double)q28_4, -4);
+        return Math.scalb((double)q28_4, -OFFSET_RIGHT);
     }
 
     /**
@@ -30,6 +32,6 @@ public final class Q28_4 {
      * @return returns the Q28_4 decimal value as a float
      */
     public static float asFloat(int q28_4){
-        return Math.scalb(q28_4, -4);
+        return Math.scalb(q28_4, -OFFSET_RIGHT);
     }
 }

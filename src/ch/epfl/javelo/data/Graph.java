@@ -142,7 +142,7 @@ public final class Graph {
     public int nodeClosestTo(PointCh point, double searchDistance) {
         List<GraphSectors.Sector> sectorsWithinPoint = sectors.sectorsInArea(point, searchDistance);
         int startNodeId, endNodeId, minId = -1;
-        double minDistance = Double.MAX_VALUE;
+        double minDistance = Math.pow(searchDistance , 2);
 
         for (GraphSectors.Sector sector : sectorsWithinPoint) {
             startNodeId = sector.startNodeId();

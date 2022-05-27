@@ -14,6 +14,9 @@ import java.awt.*;
  */
 public record PointWebMercator(double x, double y) {
 
+
+    public static final int BASE_ZOOM = 8;
+
     /**
      * Creates a point in WebMercator coordinates
      *
@@ -33,7 +36,7 @@ public record PointWebMercator(double x, double y) {
      * @return WebMercator point with parametered values
      */
     public static PointWebMercator of(int zoomLevel, double x, double y) {
-        return new PointWebMercator(Math.scalb(x, -zoomLevel - 8), Math.scalb(y, -zoomLevel - 8));
+        return new PointWebMercator(Math.scalb(x, -zoomLevel - BASE_ZOOM), Math.scalb(y, -zoomLevel - BASE_ZOOM));
     }
 
     /**
@@ -51,7 +54,7 @@ public record PointWebMercator(double x, double y) {
      * @return x-coordinates zoomed in
      */
     public double xAtZoomLevel(int zoomLevel) {
-        return Math.scalb(x, 8 + zoomLevel);
+        return Math.scalb(x, BASE_ZOOM + zoomLevel);
     }
 
     /**
@@ -59,7 +62,7 @@ public record PointWebMercator(double x, double y) {
      * @return y-coordinates zoomed in
      */
     public double yAtZoomLevel(int zoomLevel) {
-        return Math.scalb(y, 8 + zoomLevel);
+        return Math.scalb(y, BASE_ZOOM + zoomLevel);
     }
 
     /**

@@ -19,10 +19,10 @@ public final class Bits {
      *                                  an overflow)
      */
     public static int extractSigned(int value, int start, int length) {
-        Preconditions.checkArgument(length <= 32 && length >= 0 && start >= 0
-                && start < 31 && start+length <= 32);
-        int temp = value << 32 - start - length;
-        return temp >> 32 - length;
+        Preconditions.checkArgument(length <= Integer.SIZE && length >= 0 && start >= 0
+                && start < Integer.SIZE -1 && start+length <= Integer.SIZE);
+        int temp = value << Integer.SIZE - start - length;
+        return temp >> Integer.SIZE - length;
     }
 
     /**
@@ -36,9 +36,9 @@ public final class Bits {
      *                                  an overflow)
      */
    public static int extractUnsigned(int value, int start, int length){
-        Preconditions.checkArgument(length < 32 && length >= 0 && start >= 0
-                && start <= 31 && start+length <= 32);
-        int temp = value << 32 - start - length;
-        return temp >>> 32-length;
+        Preconditions.checkArgument(length < Integer.SIZE && length >= 0 && start >= 0
+                && start <= Integer.SIZE -1 && start+length <= Integer.SIZE);
+        int temp = value << Integer.SIZE - start - length;
+        return temp >>> Integer.SIZE-length;
    }
 }

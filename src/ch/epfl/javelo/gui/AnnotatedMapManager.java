@@ -74,9 +74,11 @@ public final class AnnotatedMapManager {
                 MapViewParameters mapParameters = mvp.get();
                 PointCh point = mapParameters.pointAt(mousePositionPoint2D.get().getX(), mousePositionPoint2D.get().getY()).toPointCh();
 
+                if (point == null) System.out.println("zebi");
                 RoutePoint closestPoint = route.route().get().pointClosestTo(point);
-                double posX = mapParameters.viewX(PointWebMercator.ofPointCh(closestPoint.point()));
-                double posY = mapParameters.viewY(PointWebMercator.ofPointCh(closestPoint.point()));
+                PointWebMercator pwb = PointWebMercator.ofPointCh(closestPoint.point());
+                double posX = mapParameters.viewX(pwb);
+                double posY = mapParameters.viewY(pwb);
 
                 if (Math2.norm((mousePositionPoint2D.get().getX() - posX), (mousePositionPoint2D.get().getY() - posY)) < DISTANCE) {
                     return closestPoint.position();

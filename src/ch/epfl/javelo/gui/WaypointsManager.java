@@ -82,6 +82,7 @@ public final class WaypointsManager {
         group.setOnMouseDragged(e -> {
             double x = group.getLayoutX();
             double y = group.getLayoutY();
+            if (pointPressed.get() != null) return;
             group.setLayoutX(e.getX() + x - pointPressed.get().getX());
             group.setLayoutY(e.getY() + y - pointPressed.get().getY());
         });

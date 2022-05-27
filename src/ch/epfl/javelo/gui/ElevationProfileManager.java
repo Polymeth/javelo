@@ -175,9 +175,6 @@ public final class ElevationProfileManager {
             int[] ELE_STEPS =
                     {5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000};
 
-            /** VERTICAL LINES **/
-            //double steps = Math.ceil(profileRectangle.get().getWidth() / 50);
-
             int selectedStep = 1000;
             double distanceBetween = 0;
 
@@ -296,7 +293,7 @@ public final class ElevationProfileManager {
         }
     }
 
-    public void redrawCompleteProfile() throws NonInvertibleTransformException {
+    private void redrawCompleteProfile() throws NonInvertibleTransformException {
         createTransformations();
         drawElevations();
         createGrid();

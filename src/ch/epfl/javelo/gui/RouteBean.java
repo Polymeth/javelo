@@ -54,6 +54,7 @@ public final class RouteBean {
                         cache.remove(cache.entrySet().iterator().next().getKey());
                     }
                     Route segment = rc.bestRouteBetween(node.getKey(), node.getValue());
+                    assert segment != null;
                     cache.put(node, segment);
                     allSegments.add(segment);
                 }

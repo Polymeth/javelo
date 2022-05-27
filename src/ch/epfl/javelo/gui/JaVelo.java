@@ -83,32 +83,30 @@ public final class JaVelo extends Application {
 
         routeBean.getWaypoints().addListener((ListChangeListener<Waypoint>) e -> {
             splitPane.getItems().remove(profilePane);
-            if  (routeBean.getWaypoints().size() >= 2) {
+            if (routeBean.getWaypoints().size() >= 2 && routeBean.route().get().length() != 0) {
                 splitPane.getItems().add(profilePane);
             }
         });
         finalPane.getChildren().addAll(completePane, errorManager.pane());
 
         // BINDINGS
-       /* highlightProperty.bind(routeBean.highlightedPositionProperty());
-        highlightProperty.bind(elevationProfileManager.mousePositionOnProfileProperty());
+        highlightedPositionProperty.bind(routeBean.highlightedPositionProperty());
+        highlightedPositionProperty.bind(elevationProfileManager.mousePositionOnProfileProperty());
         routeBean.highlightedPositionProperty().bind(Bindings
                 .when(completeManager.mousePositionOnRouteProperty().greaterThanOrEqualTo(0))
                 .then(completeManager.mousePositionOnRouteProperty())
-                .otherwise(elevationProfileManager.mousePositionOnProfileProperty()));*/
+                .otherwise(elevationProfileManager.mousePositionOnProfileProperty()));
 
-        DoubleBinding highlightedPosBind = Bindings.createDoubleBinding(() -> {
+        /*DoubleBinding highlightedPosBind = Bindings.createDoubleBinding(() -> {
             if (completeManager.mousePositionOnRouteProperty().get() >= 0) {
                 return completeManager.mousePositionOnRouteProperty().get();
             } else {
                 return elevationProfileManager.mousePositionOnProfileProperty().get();
             }
-        }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty());
+        }, completeManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty());*/
 
-        highlightedPositionProperty.bind(highlightedPosBind);
+        //highlightedPositionProperty.bind(highlightedPosBind);
         routeBean.highlightedPositionProperty().bind(highlightedPositionProperty);
-
-
 
         // SCENE CREATION
         primaryStage.setTitle("JaVelo");

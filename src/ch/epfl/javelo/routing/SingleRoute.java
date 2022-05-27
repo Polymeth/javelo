@@ -114,11 +114,13 @@ public final class SingleRoute implements Route {
         RoutePoint minimum = RoutePoint.NONE;
         double pos = 0;
         for (Edge edge : allEdges) {
+
             double edgePosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
             PointCh newPoint = pointAt(edgePosition + pos);
             double distance = newPoint.distanceTo(point);
             minimum = minimum.min(newPoint, edgePosition+pos, distance);
             pos += edge.length();
+
         }
         return minimum;
     }

@@ -44,6 +44,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return a PointCh at the entered distance on the edge
      */
     public PointCh pointAt(double position) {
+        if (length == 0) return fromPoint;
         double progression = position / length;
         return new PointCh(Math2.interpolate(fromPoint.e(), toPoint.e(), progression),
                 Math2.interpolate(fromPoint.n(), toPoint.n(), progression));

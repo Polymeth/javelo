@@ -117,7 +117,6 @@ public final class Math2 {
      */
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY) {
         double vect = norm((bX - aX), (bY - aY));
-        //Preconditions.checkArgument(vect != 0); //todo laisser sans check ?
         return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY) / vect;
     }
 }

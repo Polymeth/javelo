@@ -279,7 +279,7 @@ public final class ElevationProfileManager {
                     label.getStyleClass().addAll("grid_label", "horizontal");
 
                     label.setX(profileRectangle.get().getMinX() - label.prefWidth(0) - 2);
-                    label.setY(y - 0.5 * label.prefWidth(0)); // todo pos cheloue
+                    label.setY(y - 0.5 * label.prefWidth(0));
 
                     move.setY(y);
                     move.setX(profileRectangle.get().getMinX());

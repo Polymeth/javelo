@@ -139,7 +139,6 @@ public final class RouteBean {
     private boolean isARouteNotNull() {
         for (int i = 0; i < waypoints.size() - 1; i++) {
             if ((waypoints.get(i).nodeId() != waypoints.get(i + 1).nodeId())) {
-                //todo tester cas limite type autoroute
                 if (rc.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i + 1).nodeId()) == null) {
                     return false;
                 }

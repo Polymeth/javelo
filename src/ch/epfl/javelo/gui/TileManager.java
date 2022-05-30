@@ -125,7 +125,7 @@ public final class TileManager {
          * @return whether or not the tile exist at this zoom level
          */
         public static boolean isValid(int zoomLevel, double x, double y) {
-            int maxCoordinates = (int) Math.pow(2, 2 + zoomLevel) / 4; //todo cast D:
+            int maxCoordinates = (int) Math.pow(2, 2 + zoomLevel) / 4;
             return (x < maxCoordinates && y < maxCoordinates);
         }
     }

@@ -82,7 +82,6 @@ public final class WaypointsManager {
 
 
     private Group createPin(int i){
-        //todo ptet modulariser on verra
         SVGPath outsidePoint = new SVGPath();
         outsidePoint.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
         outsidePoint.getStyleClass().add("pin_outside");

@@ -100,11 +100,11 @@ public final class JaVelo extends Application {
         Pane profilePane = elevationProfileManager.pane();
         setResizableWithParent(profilePane, false);
 
-        routeBean.route().addListener((p, o, n) -> {
+        routeBean.elevationProfile().addListener((p, o, n) -> {
             if (o == null && n != null) {
                 splitPane.getItems().add(profilePane);
                 setResizableWithParent(profilePane, false);
-            } else {
+            } else if (n == null) {
                 splitPane.getItems().remove(profilePane);
             }
         });

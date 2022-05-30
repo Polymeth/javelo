@@ -71,13 +71,12 @@ public final class RouteManager {
         mapParameters.addListener(p -> {
             if (actualZoom != property.get().zoomlevel()) {
                 createLine();
-                createCircle();
                 actualZoom = property.get().zoomlevel();
             } else {
                 polyline.setLayoutX(-mapParameters.get().topLeft().getX());
                 polyline.setLayoutY(-mapParameters.get().topLeft().getY());
-                createCircle();
             }
+            createCircle();
         });
 
         routeBean.getWaypoints().addListener((ListChangeListener<Waypoint>) p -> {

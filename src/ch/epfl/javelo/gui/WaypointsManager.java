@@ -71,17 +71,11 @@ public final class WaypointsManager {
      */
     public void addWaypoint(double x, double y) {
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
-        System.out.println(pointWBM.toPointCh());
-        if(pointWBM.toPointCh() == null){
+        int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
+        if (nodeId == -1){
             error.accept("Aucune route à proximité !");
-        }else {
-            int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
-            System.out.println(nodeId);
-            if (nodeId == -1) {
-                error.accept("Aucune route à proximité !");
-            } else {
-                waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
-            }
+        } else {
+            waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
         }
 
     }

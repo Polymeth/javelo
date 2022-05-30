@@ -25,6 +25,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static javafx.scene.control.SplitPane.setResizableWithParent;
+
 /**
  * The main program
  *
@@ -32,6 +34,11 @@ import java.nio.file.Path;
  * @author Loris Tran (341214)
  */
 public final class JaVelo extends Application {
+    private static final String DATA_LOCATION = "javelo-data";
+    private static final String CACHE_LOCATION = "osm-cache";
+    private static final String TILE_SERVER_NAME = "tile.openstreetmap.org";
+    private static final int PREF_WIDTH = 800;
+    private static final int PREF_HEIGHT = 600;
 
     /**
      * Launches the JavaFX application
@@ -50,8 +57,8 @@ public final class JaVelo extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Graph graph = Graph.loadFrom(Path.of("javelo-data"));
-        TileManager tileManager = new TileManager(Path.of("osm-cache"), "tile.openstreetmap.org");
+        Graph graph = Graph.loadFrom(Path.of(DATA_LOCATION));
+        TileManager tileManager = new TileManager(Path.of(CACHE_LOCATION), TILE_SERVER_NAME);
         CostFunction costFunction = new CityBikeCF(graph);
         ErrorManager errorManager = new ErrorManager();
 
@@ -66,7 +73,7 @@ public final class JaVelo extends Application {
 
         StackPane finalPane = new StackPane();
         BorderPane completePane = new BorderPane();
-        completePane.setPrefSize(800, 600);
+        completePane.setPrefSize(PREF_WIDTH, PREF_HEIGHT);
 
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
@@ -91,13 +98,18 @@ public final class JaVelo extends Application {
         completePane.setTop(gpxMenubar);
 
         Pane profilePane = elevationProfileManager.pane();
+        setResizableWithParent(profilePane, false);
 
-        routeBean.getWaypoints().addListener((ListChangeListener<Waypoint>) e -> {
-            splitPane.getItems().remove(profilePane);
-            if (routeBean.elevationProfile().get() != null && routeBean.route().get() != null) {
+        routeBean.route().addListener((p, o, n) -> {
+            if (o == null && n != null) {
                 splitPane.getItems().add(profilePane);
+                setResizableWithParent(profilePane, false);
+            } else {
+                splitPane.getItems().remove(profilePane);
             }
         });
+
+
         finalPane.getChildren().addAll(completePane, errorManager.pane());
 
         // bindings
@@ -114,8 +126,8 @@ public final class JaVelo extends Application {
 
         // scene creation
         primaryStage.setTitle("JaVelo");
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(PREF_WIDTH);
+        primaryStage.setMinHeight(PREF_HEIGHT);
         primaryStage.setScene(new Scene(finalPane));
         primaryStage.show();
     }

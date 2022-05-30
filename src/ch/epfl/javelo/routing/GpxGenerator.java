@@ -15,6 +15,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 
 public final class GpxGenerator {
@@ -43,7 +45,7 @@ public final class GpxGenerator {
         root.setAttribute("version", "1.1");
         root.setAttribute("creator", "JaVelo");
 
-        //create elements needed for document
+        // Create elements needed for document
         Element metadata = doc.createElement("metadata");
         root.appendChild(metadata);
         Element name = doc.createElement("name");
@@ -51,7 +53,7 @@ public final class GpxGenerator {
         name.setTextContent("Route JaVelo");
         Element rte = doc.createElement("rte");
 
-        //Iterate on each edge of the route, and adds the frompoint, and the elevation based on the length of the edges
+        // Iterate on each edge of the route, and adds the frompoint, and the elevation based on the length of the edges
         int position = 0;
         for (Edge edge : route.edges()) {
             Element rtept = doc.createElement("rtept");
@@ -66,7 +68,7 @@ public final class GpxGenerator {
             rte.appendChild(rtept);
         }
 
-        //Last point case
+        // last point case
         Element rtept = doc.createElement("rtept");
         rtept.setAttribute("lat", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() - 1).toPoint().lat())));
         rtept.setAttribute("lon", String.format(Locale.ROOT, "%5f", Math.toDegrees(route.edges().get(route.edges().size() - 1).toPoint().lon())));
@@ -75,7 +77,7 @@ public final class GpxGenerator {
         ele.setTextContent(String.format(Locale.ROOT, "%2f", profile.elevationAt(position)));
         rtept.appendChild(ele);
 
-        //append the created route to document
+        // append the created route to document
         rte.appendChild(rtept);
         root.appendChild(rte);
 
@@ -94,7 +96,7 @@ public final class GpxGenerator {
 
         try {
             Document doc = createGpx(route, profile);
-            Writer w = new PrintWriter(fileName);
+            Writer w = Files.newBufferedWriter(Path.of(fileName));
             Transformer transformer = TransformerFactory
                     .newDefaultInstance()
                     .newTransformer();

@@ -63,13 +63,13 @@ public final class ElevationProfileComputer {
         float v2 = 0f, v1;
         boolean alreadyFound = false;
 
-        //Detection Of NaN in middle
+        // Detection Of NaN in middle
         for (int k = 0; k < edgesElevations2.length; k++) {
             if (Float.isNaN(edgesElevations2[k])) {
                 begin = k - 1;
                 v1 = edgesElevations2[k - 1];
 
-                //Finding index of non NaN values before and after
+                // Finding index of non NaN values before and after
                 for (int i = begin + 1; i < edgesElevations2.length; i++) {
                     if (!Float.isNaN(edgesElevations2[i]) && !alreadyFound) {
                         end = i;
@@ -77,7 +77,7 @@ public final class ElevationProfileComputer {
                         alreadyFound = true;
                     }
                 }
-                //Filling NaN with interpolation of value before and after
+                // Filling NaN with interpolation of value before and after
                 for (int p = begin + 1; p < end; p++) {
                     edgesElevations2[p] = (float) Math2.interpolate(v1, v2, (double) (p - begin) / (end - begin));
                     alreadyFound = false;

@@ -47,7 +47,9 @@ public final class BaseMapManager {
         Property<Point2D> pressedPosition = new SimpleObjectProperty<>();
         pane.setOnMouseClicked(e -> {
             if (e.isStillSincePress()) {
-                waypointsManager.addWaypoint(property.get().originXcoord() + e.getX(), property.get().originYcoord() + e.getY());
+                waypointsManager.addWaypoint(
+                        property.get().originXcoord() + e.getX(),
+                        property.get().originYcoord() + e.getY());
             }
         });
         pane.setOnMousePressed(e -> pressedPosition.setValue(new Point2D(e.getX(), e.getY())));
@@ -96,6 +98,7 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+
         canvas.heightProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             redrawOnNextPulse();

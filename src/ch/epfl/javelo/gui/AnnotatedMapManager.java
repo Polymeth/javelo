@@ -73,9 +73,11 @@ public final class AnnotatedMapManager {
             if (route.route().get() != null) {
                 MapViewParameters mapParameters = mvp.get();
                 PointCh point = mapParameters.pointAt(mousePositionPoint2D.get().getX(), mousePositionPoint2D.get().getY()).toPointCh();
-
+                //If point is null then there set the property to NaN
+                if (point == null) return Double.NaN;
                 RoutePoint closestPoint = route.route().get().pointClosestTo(point);
                 PointWebMercator pwb = PointWebMercator.ofPointCh(closestPoint.point());
+                //Coords of Point
                 double posX = mapParameters.viewX(pwb);
                 double posY = mapParameters.viewY(pwb);
 

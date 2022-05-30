@@ -22,6 +22,9 @@ import java.util.function.Consumer;
  */
 public final class WaypointsManager {
 
+    public static final int SEARCH_DISTANCE = 500; //Prefered Search Distance for Points
+    public static final int PREF_HEIGHT = 300; //Prefered Height
+    public static final int PREF_WIDTH = 600; //Prefered Width
     private final Graph graph;
     private final ObjectProperty<MapViewParameters> property;
     private final ObservableList<Waypoint> waypoints;
@@ -42,7 +45,7 @@ public final class WaypointsManager {
         this.waypoints = waypoints;
         this.error = error;
         pane = new Pane();
-        pane.setPrefSize(600, 300);
+        pane.setPrefSize(PREF_WIDTH, PREF_HEIGHT);
 
         pane.setPickOnBounds(false);
 
@@ -71,13 +74,19 @@ public final class WaypointsManager {
      */
     public void addWaypoint(double x, double y) {
         PointWebMercator pointWBM = PointWebMercator.of(property.get().zoomlevel(), x, y);
-        int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), 500);
-        if (nodeId == -1){
-            error.accept("Aucune route à proximité !");
-        } else {
-            waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
-        }
 
+        //If cannot find a pointCH from given coordinates
+        if(pointWBM.toPointCh() == null){
+            error.accept("Aucune route à proximité !");
+        }else {
+            int nodeId = graph.nodeClosestTo(pointWBM.toPointCh(), SEARCH_DISTANCE);
+            //If node Is not valid
+            if (nodeId == -1) {
+                error.accept("Aucune route à proximité !");
+            } else {
+                waypoints.add(new Waypoint(graph.nodePoint(nodeId), nodeId));
+            }
+        }
     }
 
 
@@ -110,6 +119,7 @@ public final class WaypointsManager {
 
         // drag
         group.setOnMouseDragged(e -> {
+            if (pointPressed.get() == null) return;
             double x = group.getLayoutX();
             double y = group.getLayoutY();
             group.setLayoutX(e.getX() + x - pointPressed.get().getX());
@@ -122,13 +132,14 @@ public final class WaypointsManager {
                 waypoints.remove(waypoints.get(i));
             } else {
                 PointCh pos = property.get().pointAt(group.getLayoutX(), group.getLayoutY()).toPointCh();
-                int nodeId = graph.nodeClosestTo(pos, 500);
-                if (nodeId == -1) {
-                    error.accept("Aucune route à proximité !");
-                } else {
-                    waypoints.set(i, new Waypoint(graph.nodePoint(nodeId), nodeId));
-                }
-                createWaypoints();
+                if (pos == null) return; //Assert point is not null otherwise PointAt throws
+                    int nodeId = graph.nodeClosestTo(pos, SEARCH_DISTANCE);
+                    if (nodeId == -1) {
+                        error.accept("Aucune route à proximité !");
+                    } else {
+                        waypoints.set(i, new Waypoint(graph.nodePoint(nodeId), nodeId));
+                    }
+                    createWaypoints();
             }
         });
 

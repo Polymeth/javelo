@@ -35,7 +35,7 @@ public final class AnnotatedMapManager {
     /**
      * The manager for the whole map
      *
-     * @param graph         any graph containg the map's information
+     * @param graph         any graph contain the map's information
      * @param tileManager   any Tile Manager
      * @param route         a bean which will contain the route
      * @param errorConsumer an error consumer for error management
@@ -100,7 +100,7 @@ public final class AnnotatedMapManager {
     }
 
     /**
-     * @return a jfx propert containg the mouse position on the route, if it exists (otherwise Null)
+     * @return a javafx property contain the mouse position on the route, if it exists (otherwise Null)
      */
     public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;

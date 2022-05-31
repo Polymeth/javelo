@@ -69,7 +69,7 @@ public record GraphSectors(ByteBuffer buffer) {
     }
 
     /**
-     * Represent a sector and it's associated start and end nodes
+     * Represent a sector, and it's associated start and end nodes
      */
     public record Sector(int startNodeId, int endNodeId) {
     }

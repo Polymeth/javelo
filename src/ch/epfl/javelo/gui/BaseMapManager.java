@@ -30,7 +30,7 @@ public final class BaseMapManager {
      *
      * @param tileManager      the tile manager, usually to use a cache system
      * @param waypointsManager the waypoints manager
-     * @param property         a property containg a map view parameter
+     * @param property         a property contain a map view parameter
      */
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointsManager, ObjectProperty<MapViewParameters> property) {
         this.tileManager = tileManager;

@@ -28,7 +28,7 @@ public final class RouteComputer {
     }
 
     /**
-     * Implementation of A* algorithm to find shortest path from a nodeID to a given nodeID
+     * Implementation of A* algorithm to find the shortest path from a nodeID to a given nodeID
      * Also implements a cost function to go for an optimal path with a bike
      *
      * @param startNodeId nodeID of the start of the path

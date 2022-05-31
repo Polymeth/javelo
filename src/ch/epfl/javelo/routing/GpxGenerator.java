@@ -90,7 +90,7 @@ public final class GpxGenerator {
      * @param fileName Name of the file written in project folder (needs to end in .gpx)
      * @param route    the route computed by the algorithm for the path
      * @param profile  the corresponding elevation profile of the route
-     * @throws IOException
+     * @throws IOException Should effectively never be thrown
      */
     public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException {
 

@@ -137,7 +137,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     /**
      * @param list list you want to reverse
-     * @return reverse the order of the list (the last element becomes the first etc..)
+     * @return reverse the order of the list (the last element becomes the first etc...)
      */
     public float[] reverseOrder(float[] list) {
         for(int i = 0; i < list.length / 2; i++) {

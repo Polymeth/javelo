@@ -22,8 +22,8 @@ public final class Functions {
     /**
      * @param samples equally spaced height points
      * @param xMax the maximum distance (the distance of the last height point)
-     * @return returns the interpolated function based on the equally spaced given heigh points
-     * @throws IllegalArgumentException if there is strictly less than 2 samples or if the xMax value isnt
+     * @return returns the interpolated function based on the equally spaced given height points
+     * @throws IllegalArgumentException if there is strictly less than 2 samples or if the xMax value is not
      *                                  strictly positive
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax) {

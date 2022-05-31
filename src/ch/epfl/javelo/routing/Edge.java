@@ -7,7 +7,7 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Create a edge which a part of the route between two nodes
+ * Create an edge which a part of the route between two nodes
  *
  * @author Rayan BOUCHENY (327575)
  * @author Loris Tran (341214)
@@ -16,7 +16,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
                    DoubleUnaryOperator profile) {
 
     /**
-     * Creates a edge using two nodeId
+     * Creates an edge using two nodeId
      *
      * @param graph      graph you want the instance of edges
      * @param edgeId     given id of edge

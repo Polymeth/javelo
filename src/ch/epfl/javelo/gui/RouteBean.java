@@ -101,7 +101,7 @@ public final class RouteBean {
     }
 
     /**
-     * @return A observable list with all the waypoints making the route
+     * @return An observable list with all the waypoints making the route
      */
     public ObservableList<Waypoint> getWaypoints() {
         return this.waypoints;

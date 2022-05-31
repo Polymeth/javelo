@@ -31,6 +31,8 @@ public final class ElevationProfileManager {
     private static final int TOP_AND_RIGHT_MARGIN = 10;
     private static final int BOTTOM_MARGIN = 20;
     private static final int LEFT_MARGIN = 40;
+    public static final int MIN_H_DISTANCE = 25;
+    public static final int MIN_V_DISTANCE = 50;
 
     private final BorderPane borderPane;
     private final ObjectProperty<Rectangle2D> profileRectangle;
@@ -55,7 +57,7 @@ public final class ElevationProfileManager {
      *
      * @param profile                     a property containing the ElevationProfile
      * @param highlightedPositionProperty a property binded to the mouse position
-     * @throws NonInvertibleTransformException if the transformation managed to fails
+     * @throws NonInvertibleTransformException if the transformation managed to fail
      */
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profile, ReadOnlyDoubleProperty highlightedPositionProperty) throws NonInvertibleTransformException {
         this.profile = profile;
@@ -214,11 +216,11 @@ public final class ElevationProfileManager {
                     {5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000};
 
             // VERTICAL LINES
-            int selectedStep = 1000;
+            int selectedStep = POS_STEPS[0]; //Minimum Number of Steps
             double distanceBetween = 0;
             for (int step : POS_STEPS) {
                 distanceBetween = Math.abs(worldToScreen.get().deltaTransform(step, 0).getX());
-                if (distanceBetween >= 50) {
+                if (distanceBetween >= MIN_V_DISTANCE) {
                     selectedStep = step;
                     break;
                 }
@@ -249,11 +251,11 @@ public final class ElevationProfileManager {
             }
 
             // HORIZONTAL LINES
-            int selectedStepH = 5;
+            int selectedStepH = ELE_STEPS[0]; //Minimum Number of Steps
             double distanceBetweenH = 0;
             for (int step : ELE_STEPS) {
                 distanceBetweenH = Math.abs(worldToScreen.get().deltaTransform(0, step).getY());
-                if (distanceBetweenH >= 25) {
+                if (distanceBetweenH >= MIN_H_DISTANCE) {
                     selectedStepH = step;
                     break;
                 }

@@ -44,7 +44,7 @@ public final class TileManager {
      * @param tileId TileId(ZoomLevel, X position, Y position) object of the desired tile
      * @return the image, either loaded from the RAM cache, from the DISK cache or freshly downloaded and loaded
      * to the cache.
-     * @throws IOException
+     * @throws IOException Should effectively never be thrown
      */
     public Image imageForTileAt(TileId tileId) throws IOException {
         // check if the RAM cache already has the tile saved
@@ -103,7 +103,7 @@ public final class TileManager {
     }
 
     /**
-     * Object that correspond to a tile, with 3 informations packed in
+     * Object that correspond to a tile, with 3 information packed in
      */
     public record TileId(int zoomLevel, double x, double y) {
 
@@ -122,7 +122,7 @@ public final class TileManager {
          * @param zoomLevel zoom level of the tile (0-19)
          * @param x         x-coordinates on the tile grid
          * @param y         y-coordinates on the tile grid
-         * @return whether or not the tile exist at this zoom level
+         * @return whether the tile exist at this zoom level
          */
         public static boolean isValid(int zoomLevel, double x, double y) {
             int maxCoordinates = (int) Math.pow(2, 2 + zoomLevel) / 4;

@@ -10,7 +10,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * @author Loris Tran (341214)
  */
 public record RoutePoint(PointCh point, double position, double distanceToReference) {
-    // a public constant which represent an non existing point
+    // a public constant which represent a non-existing point
     public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
 
     /**

@@ -21,7 +21,7 @@ public final class ElevationProfile {
      *
      * @param length           length of the profile (in meter)
      * @param elevationSamples the array containing all elevation points
-     * @throws IllegalArgumentException if the length is negative or if there is stricly less than 2 samples
+     * @throws IllegalArgumentException if the length is negative or if there is strictly less than 2 samples
      */
     public ElevationProfile(double length, float[] elevationSamples) {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);

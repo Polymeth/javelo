@@ -17,6 +17,9 @@ import java.io.IOException;
  */
 public final class BaseMapManager {
     private static final int TILE_SIZE = 256;
+    private static final int MIN_ZOOM = 9;
+    private static final int MAX_ZOOM = 19;
+    private static final int SCROLL_OFFSET = 250;
 
     private final TileManager tileManager;
     private final ObjectProperty<MapViewParameters> property;
@@ -73,11 +76,11 @@ public final class BaseMapManager {
             // trackpad compatible zoom
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + 250);
+            minScrollTime.set(currentTime + SCROLL_OFFSET);
             double zoomDelta = Math.signum(e.getDeltaY());
 
             int currentZoom = property.get().zoomlevel();
-            int newZoom = (int) Math2.clamp(9, this.property.get().zoomlevel() + zoomDelta, 19);
+            int newZoom = (int) Math2.clamp(MIN_ZOOM, this.property.get().zoomlevel() + zoomDelta, MAX_ZOOM);
 
             if (currentZoom != newZoom) {
                 double mouseX = property.get().pointAt(e.getX(), e.getY()).xAtZoomLevel(newZoom);

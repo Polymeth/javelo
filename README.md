@@ -1,4 +1,3 @@
 # JaVelo
 
-1,2,3 vodka
-OUUUUO
+Implementation of a cycling google map like map for switzerland
